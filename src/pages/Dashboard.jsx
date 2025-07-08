@@ -7,7 +7,19 @@ import $ from "jquery";
 import TaskDetails from "./TaskDetails";
 import { AnimatePresence } from "framer-motion";
 import { Filter, Layers2, RefreshCcw, User2 } from "lucide-react";
-import { Tag, User, Flag, CheckCircle, CalendarDays, Layers, ClipboardList, ShieldCheck, Briefcase, Info, Wallet } from "lucide-react";
+import {
+  Tag,
+  User,
+  Flag,
+  CheckCircle,
+  CalendarDays,
+  Layers,
+  ClipboardList,
+  ShieldCheck,
+  Briefcase,
+  Info,
+  Wallet,
+} from "lucide-react";
 import Select from "react-select";
 
 function Dashboard() {
@@ -52,7 +64,7 @@ function Dashboard() {
         body: JSON.stringify({
           user_id: user?.id,
           user_type: user?.fld_admin_type,
-          assigned_team : user?.fld_assigned_team,
+          assigned_team: user?.fld_assigned_team,
           filters: filters,
         }),
       });
@@ -191,7 +203,7 @@ function Dashboard() {
     setDetailsOpen(true);
   };
 
-  const [filtersVisible, setFiltersVisible] = useState(false)
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   // Initialize DataTable
   useEffect(() => {
@@ -210,35 +222,56 @@ function Dashboard() {
     };
   }, [tasks]);
 
+  const resetFilters = () => {
+    setFilters({
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
+    fetchTasks(user, setTasks, setLoading);
+  };
+
   return (
     <div className="p-4 bg-gray-100">
       <h1 className="text-xl font-bold mb-4 flex items-center justify-between">
         Dashboard
         <div className="flex items-center gap-3">
           <button
-            onClick={() => {
-              fetchTasks(user, setTasks, setLoading);
-            }}
+            onClick={resetFilters}
             className="p-1 rounded hover:bg-gray-100"
           >
             <RefreshCcw className="text-gray-700" />
           </button>
 
           <p
-          onClick={()=>{setFiltersVisible(!filtersVisible)}}
-           className=" flex items-center gap-1 bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer">
+            onClick={() => {
+              setFiltersVisible(!filtersVisible);
+            }}
+            className=" flex items-center gap-1 bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer"
+          >
             <Filter size={15} /> Filter
           </p>
         </div>
       </h1>
 
-      <div className={`${filtersVisible ? "block" : "hidden"}`}>
+      <div className={`${filtersVisible ? "block mb-2" : "hidden"}`}>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-4 text-[11px] bg-white rounded border-t-2 border-blue-400 p-2">
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <Tag size={13} className="text-gray-500" />
-    Task Title / ID
-  </label>
+              <Tag size={13} className="text-gray-500" />
+              Task Title / ID
+            </label>
             <input
               type="text"
               placeholder="Task Title / ID"
@@ -252,8 +285,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <User size={13} className="text-gray-500" />
-    
+              <User size={13} className="text-gray-500" />
               Assigned To
             </label>
             <Select
@@ -284,7 +316,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <Flag size={13} className="text-gray-500" />
+              <Flag size={13} className="text-gray-500" />
               Milestone
             </label>
             <Select
@@ -315,7 +347,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <CheckCircle size={13} className="text-gray-500" />
+              <CheckCircle size={13} className="text-gray-500" />
               Milestone Completion Status
             </label>
             <Select
@@ -348,7 +380,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <CalendarDays size={13} className="text-gray-500" />
+              <CalendarDays size={13} className="text-gray-500" />
               Created Date
             </label>
             <input
@@ -363,7 +395,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <CalendarDays size={13} className="text-gray-500" />
+              <CalendarDays size={13} className="text-gray-500" />
               Due Date
             </label>
             <input
@@ -378,7 +410,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <Layers2 size={13} className="text-gray-500" />
+              <Layers2 size={13} className="text-gray-500" />
               Bucket Name
             </label>
             <Select
@@ -409,7 +441,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <ClipboardList size={13} className="text-gray-500" />
+              <ClipboardList size={13} className="text-gray-500" />
               Task Status
             </label>
             <Select
@@ -445,7 +477,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <User2 size={13} className="text-gray-500" />
+              <User2 size={13} className="text-gray-500" />
               Assigned By
             </label>
             <Select
@@ -476,7 +508,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <Briefcase size={13} className="text-gray-500" />
+              <Briefcase size={13} className="text-gray-500" />
               Project
             </label>
             <Select
@@ -507,7 +539,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <Info size={13} className="text-gray-500" />
+              <Info size={13} className="text-gray-500" />
               Query Status
             </label>
             <Select
@@ -555,7 +587,7 @@ function Dashboard() {
 
           <div className="flex flex-col">
             <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-    <Wallet size={13} className="text-gray-500" />
+              <Wallet size={13} className="text-gray-500" />
               Payment Range
             </label>
             <Select

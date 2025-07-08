@@ -6,6 +6,8 @@ import { useAuth } from "../utils/idb";
 import { useEffect } from "react";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
+import AddTask from "../pages/AddTask";
+import EditTask from "../pages/EditTask";
 
 
 
@@ -20,6 +22,8 @@ export default function AppRouter() {
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/tasks/add" element={<AddTask />} />
+            <Route path="/tasks/edit/:taskId" element={<EditTask />} />
           </Route>
         </Route>
         
