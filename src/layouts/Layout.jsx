@@ -17,14 +17,13 @@ export default function Layout() {
         <div className="container m-0 max-w-[100%]">
           <Outlet />
         </div>
+        <div className="border-t  bg-black text-white px-4 py-1 flex items-center justify-center">
+          <p className="text-sm ">
+            © {new Date().getFullYear()} LOOP. All Rights Reserved.
+          </p>
+        </div> 
       </main>
-       <div className="border-t  bg-black text-white px-4 py-1 flex items-center justify-center">
-        
-        <p className="text-sm ">
-          © {new Date().getFullYear()} LOOP. All Rights Reserved.
-        </p>
-
-      </div> 
+       
     </div>
   );
 }

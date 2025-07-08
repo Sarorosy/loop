@@ -67,3 +67,35 @@ button{
   .f-14{
   font-size: 14px;
   }
+
+
+
+
+
+
+
+/* ----------------------------------------------------------------------- */
+body{
+  font-family: "Roboto", sans-serif;
+}
+
+span.dt-column-title {
+    white-space: nowrap;
+}
+.dataTable {
+    border: 1px solid #ccc  !important;
+    border-bottom: 0px solid #ccc !important;
+    border-right: 0px solid #ccc  !important;
+}
+
+table.dataTable>tbody>tr>td {
+    border-bottom: 1px solid #ccc !important;
+    border-right: 1px solid #ccc;
+}
+
+table.dataTable>thead>tr>th, table.dataTable>thead>tr>td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    background: #e4eaff;
+}

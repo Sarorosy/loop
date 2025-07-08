@@ -104,12 +104,12 @@ function Dashboard() {
       data: "fld_title",
       orderable: false,
       render: (data, type, row) => `
-        <div>
-          <strong class="view-btn hover:cursor-pointer hover:underline">${
+        <div class="truncate !w-50">
+          <small>${row.fld_unique_task_id || "-"}</small>
+          <br>
+           <strong class="view-btn hover:cursor-pointer hover:underline ">${
             row.fld_title || "-"
           }</strong>
-          <br>
-          <small>${row.fld_unique_task_id || "-"}</small>
         </div>
       `,
     },
@@ -211,38 +211,41 @@ function Dashboard() {
   }, [tasks]);
 
   return (
-    <div className="p-4 bg-gray-100">
-      <h1 className="text-xl font-bold mb-4 flex items-center justify-between">
+    <div className=" bg-[#F3F3F3]">
+      <div className="max-w-[1250px] mx-auto py-5">
+      <div className="bg-white py-4 px-4">
+      <div className="text-xl font-bold mb-4 flex items-center justify-between">
         Dashboard
-        <div className="flex items-center gap-3">
+        <div className="flex gap-3">
           <button
             onClick={() => {
               fetchTasks(user, setTasks, setLoading);
             }}
-            className="p-1 rounded hover:bg-gray-100"
+            className="px-2 py-1 rounded hover:bg-gray-200 bg-gray-100"
           >
-            <RefreshCcw className="text-gray-700" />
+            <RefreshCcw size={14} className="text-gray-700" />
           </button>
 
           <p
-          onClick={()=>{setFiltersVisible(!filtersVisible)}}
-           className=" flex items-center gap-1 bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer">
-            <Filter size={15} /> Filter
+            onClick={()=>{setFiltersVisible(!filtersVisible)}}
+            className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
+          >
+            <Filter size={11} /> Filter
           </p>
         </div>
-      </h1>
+      </div>
 
-      <div className={`${filtersVisible ? "block" : "hidden"}`}>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-4 text-[11px] bg-white rounded border-t-2 border-blue-400 p-2">
+      <div className={`${filtersVisible ? "block bg-gray-100 rounded   border-blue-400 p-3" : "hidden"}`}>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <Tag size={13} className="text-gray-500" />
     Task Title / ID
   </label>
             <input
               type="text"
               placeholder="Task Title / ID"
-              className="px-1 py-2 border rounded"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
               value={filters.taskNameOrId}
               onChange={(e) =>
                 setFilters({ ...filters, taskNameOrId: e.target.value })
@@ -251,7 +254,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <User size={13} className="text-gray-500" />
     
               Assigned To
@@ -283,7 +286,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <Flag size={13} className="text-gray-500" />
               Milestone
             </label>
@@ -314,7 +317,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <CheckCircle size={13} className="text-gray-500" />
               Milestone Completion Status
             </label>
@@ -347,13 +350,13 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <CalendarDays size={13} className="text-gray-500" />
               Created Date
             </label>
             <input
               type="date"
-              className="px-1 py-2 border rounded"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
               value={filters.createdDate}
               onChange={(e) =>
                 setFilters({ ...filters, createdDate: e.target.value })
@@ -362,13 +365,13 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <CalendarDays size={13} className="text-gray-500" />
               Due Date
             </label>
             <input
               type="date"
-              className="px-1 py-2 border rounded"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
               value={filters.dueDate}
               onChange={(e) =>
                 setFilters({ ...filters, dueDate: e.target.value })
@@ -377,7 +380,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <Layers2 size={13} className="text-gray-500" />
               Bucket Name
             </label>
@@ -408,7 +411,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <ClipboardList size={13} className="text-gray-500" />
               Task Status
             </label>
@@ -444,7 +447,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <User2 size={13} className="text-gray-500" />
               Assigned By
             </label>
@@ -475,7 +478,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <Briefcase size={13} className="text-gray-500" />
               Project
             </label>
@@ -506,7 +509,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <Info size={13} className="text-gray-500" />
               Query Status
             </label>
@@ -554,7 +557,7 @@ function Dashboard() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-[10px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
     <Wallet size={13} className="text-gray-500" />
               Payment Range
             </label>
@@ -605,7 +608,7 @@ function Dashboard() {
       ) : tasks.length === 0 ? (
         <div>No tasks found.</div>
       ) : (
-        <div className="bg-white p-4 border-t-2 border-blue-400 rounded w-full f-13">
+        <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
           <div className="table-scrollable">
             <DataTable
               data={tasks}
@@ -633,6 +636,8 @@ function Dashboard() {
           />
         )}
       </AnimatePresence>
+    </div>
+    </div>
     </div>
   );
 }
