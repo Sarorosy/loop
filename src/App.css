@@ -1,0 +1,69 @@
+#root {
+  max-width: 100%;
+}
+button{
+  cursor: pointer;
+}
+
+
+
+
+.overflow-y-auto::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.overflow-y-auto::-webkit-scrollbar
+{
+	width: 5px;
+	background-color: #e79676;
+  border-radius: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb
+{
+	background-color: #e79676;
+	border: 2px solid #e79676;
+  border-radius: 8px;
+}
+
+
+
+
+
+
+.overflow-x-auto::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.overflow-x-auto::-webkit-scrollbar
+{
+	height: 5px;
+	background-color: #e79676;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb
+{
+	background-color: #e79676;
+	border: 2px solid #e79676;
+  border-radius: 3px;
+}
+
+
+
+.f-11{
+  font-size: 11px;
+}
+.f-12{
+  font-size: 12px;
+  }
+  .f-13{
+  font-size: 13px;
+  }
+  .f-14{
+  font-size: 14px;
+  }
