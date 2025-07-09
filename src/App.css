@@ -42,6 +42,7 @@ button{
 .overflow-x-auto::-webkit-scrollbar
 {
 	height: 5px;
+  width: 5px;
 	background-color: #e79676;
   border-radius: 3px;
 }
@@ -98,4 +99,10 @@ table.dataTable>thead>tr>th, table.dataTable>thead>tr>td {
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
     background: #e4eaff;
+}
+
+
+
+.react-tooltip{
+  z-index: 99;
 }

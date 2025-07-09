@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { FlagIcon } from "lucide-react";
 
 export default function MilestoneInfo({ taskId }) {
   const [milestones, setMilestones] = useState([]);
 
   const fetchMilestones = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/helper/getTaskMilestones", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ taskId }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/helper/getTaskMilestones",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskId }),
+        }
+      );
       const data = await response.json();
       if (data.status) {
         setMilestones(data.data);
@@ -39,21 +43,32 @@ export default function MilestoneInfo({ taskId }) {
   };
 
   return (
-    <div className="text-sm">
-      <h3 className="font-semibold mb-2">Milestones</h3>
+    <div className="">
+      <div className="flex items-center gap-1 mb-3">
+        <FlagIcon size={13} className="text-green-600" />
+        <h3 className="text-[13px] font-semibold text-gray-900 flex items-center leading-none">
+          Milestones
+        </h3>
+      </div>
+      <div className=" max-h-[230px] overflow-y-auto pr-2 flex flex-col gap-2">
       {milestones.map((milestone) => (
-        <div key={milestone.benchmark_id} className="mb-3">
-          <div className={milestone.completed ? "text-green-600 font-medium" : ""}>
+        <div key={milestone.benchmark_id} className="bg-gray-50 shadow px-2 py-1 rounded ">
+          <div
+            className={milestone.completed ? "text-green-600 text-[13px] font-medium" : "text-[13px]"}
+          >
             {milestone.name}
             {milestone.completed_by ? (
-              <span className="text-xs text-gray-500 ml-1">[{milestone.completed_by}]</span>
+              <span className="text-[12px] text-gray-500 ml-1">
+                [{milestone.completed_by}]
+              </span>
             ) : null}
           </div>
-          <div className="text-gray-600">
+          <div className="text-gray-600 text-[12px]">
             Deadline: {formatDate(milestone.deadline)}
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 }
