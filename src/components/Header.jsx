@@ -39,15 +39,15 @@ function TabDropdown({ title, icon: Icon, children }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-1 text-white px-1 py-0.5 hover:bg-[#265472] rounded"
+        className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
       >
-        <Icon size={16} />
+        <Icon size={12} />
         <span>{title}</span>
         <ChevronDown size={14} />
       </button>
       <AnimatePresence>
         {open && (
-          <div className="absolute left-0 mt-1 w-56 bg-white border rounded shadow text-sm z-50">
+          <div className="absolute left-0  w-56 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
             <ul className="py-1 text-gray-700">{children}</ul>
           </div>
         )}
@@ -63,7 +63,7 @@ function TabLink({ label, icon: Icon, onClick }) {
       className="flex items-center px-3 py-1 hover:bg-gray-100 cursor-pointer"
       onClick={onClick}
     >
-      <Icon size={14} className="mr-2" />
+      <Icon size={13} className="mr-2" />
       {label}
     </li>
   );
@@ -88,9 +88,9 @@ export default function Header() {
 
   return (
     <header className="bg-white text-[#092e46] shadow-md">
-      <div className="mx-auto flex items-center justify-between px-4 py-2 max-w-7xl">
+      <div className="flex items-center justify-between py-3 max-w-[1250px] mx-auto ">
         <div onClick={() => navigate("/")} className="cursor-pointer">
-          <img src={logo} className="h-8 w-auto" />
+          <img src={logo} className="h-7 w-auto" />
         </div>
 
         {user ? (
@@ -100,21 +100,21 @@ export default function Header() {
                 onClick={() => setUserDropdownOpen((prev) => !prev)}
                 className="flex items-center px-2 py-1 rounded  text-black"
               >
-                <CircleUserRound className="mr-1" size={18} />
+                <CircleUserRound className="mr-1" size={15} />
                 <span>Welcome , {user.fld_first_name}</span>
-                <ChevronDown className="mr-1" size={18} />
+                <ChevronDown className="mt-0.5" size={15} />
               </button>
 
               <AnimatePresence>
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-1 w-52 bg-white border rounded shadow text-sm z-50">
+                  <div className="absolute right-3 mt-1 w-52 bg-white border border-gray-300 rounded shadow text-sm z-50">
                     <div className="px-3 py-2">
-                      <p className="font-semibold text-gray-800">{user.fld_first_name}</p>
-                      <p className="text-xs text-gray-500">{user.fld_email}</p>
+                      <p className="font-semibold text-gray-800 text-center">{user.fld_first_name}</p>
+                      <p className="text-xs text-gray-500 truncate w-full">{user.fld_email}</p>
                     </div>
                     <ul>
                       <li
-                        className="flex items-center px-3 py-1 hover:bg-gray-100 cursor-pointer"
+                        className="flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
                         onClick={() => {
                           logout();
                           setUserDropdownOpen(false);
@@ -135,13 +135,13 @@ export default function Header() {
       </div>
 
       {/* Tabs */}
-      <div className="h-12 w-full bg-[#336c91] flex items-center  space-x-4  text-xs pl-13">
-        
+      <div className="w-full bg-[#224d68] text-[13px]">
+        <div className="max-w-[1250px] mx-auto flex items-center space-x-6">
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-1 text-white px-1 py-0.5 hover:bg-[#265472] rounded"
+          className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
         >
-          <LayoutDashboard size={16} /> Dashboard
+          <LayoutDashboard size={12} /> Dashboard
         </button>
 
         <TabDropdown title="Team" icon={Users}>
@@ -166,9 +166,9 @@ export default function Header() {
 
         <button
           onClick={() => navigate("/manage/queries")}
-          className="flex items-center gap-1 text-white px-1 py-0.5 hover:bg-[#265472] rounded"
+          className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
         >
-          <MessageCircleQuestion size={16} /> Manage Query
+          <MessageCircleQuestion size={12} /> Manage Query
         </button>
 
         <TabDropdown title="Others" icon={Wrench}>
@@ -179,10 +179,11 @@ export default function Header() {
 
         <button
           onClick={() => navigate("/ask-for-scope")}
-          className="flex items-center gap-1 text-white px-1 py-0.5 hover:bg-[#265472] rounded"
+          className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
         >
-          <FileQuestion size={16} /> Ask For Scope
+          <FileQuestion size={12} /> Ask For Scope
         </button>
+      </div>
       </div>
 
       <AnimatePresence>

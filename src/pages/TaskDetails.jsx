@@ -14,6 +14,7 @@ import {
   RefreshCcw,
   Hash,
   UserPlus,
+  ArrowLeft,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import History from "./History";
@@ -155,10 +156,12 @@ export default function TaskDetails({ taskId, onClose }) {
   const calculateTaskProgress = (task) => {
     let totalPercent = 0;
 
-    if(task.fld_task_status == "Updated" || task.fld_task_status == "Completed"){
+    if (
+      task.fld_task_status == "Updated" ||
+      task.fld_task_status == "Completed"
+    ) {
       totalPercent = 100;
-    }
-    else if (task.fld_benchmark_name && task.fld_benchmark_name !== "") {
+    } else if (task.fld_benchmark_name && task.fld_benchmark_name !== "") {
       const benchmarkNames = task.fld_benchmark_name.split(","); // e.g., ['6', '7', '8']
       const completedBenchmarks = task.fld_completed_benchmarks
         ? task.fld_completed_benchmarks.split(",")
@@ -209,19 +212,19 @@ export default function TaskDetails({ taskId, onClose }) {
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto"
     >
-      <div className="bg-gray-100">
-        <div className="max-w-5xl mx-auto p-4 bg-white">
+      <div className="bg-gray-100 py-5">
+        <div className="max-w-[1250px] mx-auto p-4 bg-white">
           <div className="bg-white border-b border-gray-200 pb-4 mb-4 w-full">
             <div className="flex justify-between items-start w-full space-x-2">
               {/* Left Side */}
               <div className="w-1/2">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                     <Target className="w-4 h-4 text-white" />
-                  </div>
+                  </div> */}
                   <div>
-                    <h1 className="text-lg font-semibold text-gray-900">
-                      {task.fld_title}
+                    <h1 className="text-md font-semibold text-gray-900">
+                      View Details - {task.fld_title}
                     </h1>
                     <p className="text-sm text-gray-600">
                       {task.fld_unique_task_id}
@@ -255,275 +258,291 @@ export default function TaskDetails({ taskId, onClose }) {
                   </div>
                 </div>
               </div>
-
-              {/* Right Side */}
-              <div className="flex flex-col items-end gap-3 w-1/2">
-                {/* Progress */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4 w-full">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <h3 className="text-sm font-semibold text-gray-900 flex items-center">
-                      Task Progress
-                      {task.fld_assign_to == user?.id &&
-                        (task.fld_task_status != "Updated" &&
-                          task.fld_task_status != "Completed") && (
-                          <button
-                          onClick={()=>{setUpdateTaskModalOpen(true)}}
-                          className="flex items-center bg-yellow-500 text-white ml-2 px-1 py-0.5 rounded f-12">
-                            Update Task Progress
-                          </button>
-                        )}
-                    </h3>
+              <div className="flex items-end flex-col gap-5 justify-end">
+                <button
+                  onClick={onClose}
+                  className="bg-gray-700 hover:bg-gray-800 px-2 py-0.5 rounded flex items-center justify-center gap-1 text-gray-100 text-[13px]"
+                >
+                  <ArrowLeft size={13} className="" /> Back
+                </button>
+                <div className="flex items-center justify-between my-2 space-x-2">
+                  <div className="flex items-center space-x-1">
+                    {task.tag_names &&
+                      task.tag_names
+                        .split(",")
+                        .map((tag) => (
+                          <span className="bg-orange-500 text-white f-11 rounded px-1 py-0.5">
+                            # {tag}
+                          </span>
+                        ))}
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-600 h-2 rounded-full"
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-600 mt-1">{progressLabel}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center"
-              >
-                <X className="w-4 h-4 text-gray-600" />
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between my-2 space-x-2">
-            <div className="flex items-center space-x-1">
-              {task.tag_names &&
-                task.tag_names
-                  .split(",")
-                  .map((tag) => (
-                    <span className="bg-orange-500 text-white f-11 rounded px-1 py-0.5">
-                      # {tag}
-                    </span>
-                  ))}
-            </div>
-            <div className="flex items-center space-x-2">
-              {task.is_marked_as_ongoing == 1 ? (
-                <div className="flex items-center space-x-2">
-                  {user?.id == task.marked_as_ongoing_by &&
-                    task.fld_task_status != "Completed" && (
+                  <div className="flex items-center space-x-2">
+                    {task.is_marked_as_ongoing == 1 ? (
+                      <div className="flex items-center space-x-2">
+                        {user?.id == task.marked_as_ongoing_by &&
+                          task.fld_task_status != "Completed" && (
+                            <button
+                              onClick={handleMarkAsCompleted}
+                              className="px-1 py-0.5 f-11 bg-green-600 text-white rounded flex items-center"
+                            >
+                              <CheckCircle size={13} className="mr-2" /> Mark As
+                              Complete
+                            </button>
+                          )}
+                        {task.ongoing_by_name ? (
+                          <span className="bg-orange-600 text-white f-11 rounded px-1 py-0.5">
+                            {task.ongoing_by_name + " Marked as ongoing"}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : (
                       <button
-                        onClick={handleMarkAsCompleted}
-                        className="px-1 py-0.5 f-11 bg-green-600 text-white rounded flex items-center"
+                        onClick={() => {
+                          handleMarkAsOnGoing();
+                        }}
+                        className="px-1 py-0.5 f-11 bg-green-600 text-white rounded"
                       >
-                        <CheckCircle size={13} className="mr-2" /> Mark As
-                        Complete
+                        Mark As Ongoing
                       </button>
                     )}
-                  {task.ongoing_by_name ? (
-                    <span className="bg-orange-600 text-white f-11 rounded px-1 py-0.5">
-                      {task.ongoing_by_name + " Marked as ongoing"}
-                    </span>
-                  ) : null}
-                </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    handleMarkAsOnGoing();
-                  }}
-                  className="px-1 py-0.5 f-11 bg-green-600 text-white rounded"
-                >
-                  Mark As Ongoing
-                </button>
-              )}
-              {(task.fld_assign_to == user?.id ||
-                task.fld_added_by == user?.id) && (
-                <button
-                  onClick={() => {
-                    setTransferModalOpen(true);
-                  }}
-                  className="px-1 py-0.5 f-11 bg-yellow-600 text-white rounded flex items-center"
-                >
-                  <RefreshCcw size={13} className="mr-2" /> Transfer
-                </button>
-              )}
+                    {(task.fld_assign_to == user?.id ||
+                      task.fld_added_by == user?.id) && (
+                      <button
+                        onClick={() => {
+                          setTransferModalOpen(true);
+                        }}
+                        className="px-1 py-0.5 f-11 bg-yellow-600 text-white rounded flex items-center"
+                      >
+                        <RefreshCcw size={13} className="mr-2" /> Transfer
+                      </button>
+                    )}
 
-              <button
-                onClick={() => {
-                  setAddTagsOpen(true);
-                }}
-                className="px-1 py-0.5 f-11 bg-blue-600 text-white rounded flex items-center"
-              >
-                <Hash size={13} className="mr-2" /> Add tags
-              </button>
-              <button
-                onClick={() => {
-                  setAddFollowersOpen(true);
-                }}
-                className="px-1 py-0.5 f-11 bg-orange-600 text-white rounded flex items-center"
-              >
-                <UserPlus size={13} className="mr-2" /> Add Follower(s)
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-            {/* Assigned To */}
-            <div className="bg-white border border-gray-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="w-4 h-4 text-blue-600" />
-                <h4 className="text-sm font-semibold text-gray-900">
-                  Assigned To
-                </h4>
-              </div>
-              <div className="flex flex-wrap gap-2 text-sm text-gray-900">
-                <span className="font-medium">{task.assigned_to_name}</span>
-                <span className="text-gray-500">|</span>
-                <span className="text-xs text-gray-600">
-                  {task.assigned_to_email}
-                </span>
-              </div>
-            </div>
-
-            {/* Due Date */}
-            <div className="bg-white border border-gray-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-4 h-4 text-red-600" />
-                <h4 className="text-sm font-semibold text-gray-900">
-                  Due Date
-                </h4>
-              </div>
-              <div className="flex text-sm text-gray-900">
-                <span className="font-medium">
-                  {task.fld_due_date || "No due date"}
-                </span>
-              </div>
-            </div>
-
-            {/* Added By */}
-            <div className="bg-white border border-gray-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <User className="w-4 h-4 text-purple-600" />
-                <h4 className="text-sm font-semibold text-gray-900">
-                  Added By
-                </h4>
-              </div>
-              <div className="flex flex-wrap gap-2 text-sm text-gray-900">
-                <span className="font-medium">{task.added_by_name}</span>
-                <span className="text-gray-500">|</span>
-                <span className="text-xs text-gray-600">
-                  {task.added_by_email}
-                </span>
-              </div>
-            </div>
-
-            {/* Ongoing By */}
-            <div className="bg-white border border-gray-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-4 h-4 text-orange-600" />
-                <h4 className="text-sm font-semibold text-gray-900">
-                  Ongoing By
-                </h4>
-              </div>
-              <div className="flex flex-wrap gap-2 text-sm text-gray-900">
-                <span className="font-medium">
-                  {task.ongoing_by_name || "Not assigned"}
-                </span>
-                <span className="text-gray-500">|</span>
-                <span className="text-xs text-gray-600">
-                  {task.ongoing_by_email || "-"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Followers */}
-          {task.followers?.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-lg p-3 mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-4 h-4 text-green-600" />
-                <h4 className="text-sm font-semibold text-gray-900">
-                  Followers
-                </h4>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {task.followers.map((follower) => (
-                  <div
-                    key={follower.id}
-                    className="flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
-                      {follower.name.charAt(0)}
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-sm text-gray-900">
-                      <span className="font-medium">{follower.name}</span>
-                      <span className="text-gray-500">|</span>
-                      <span className="text-xs text-gray-600">
-                        {follower.email}
-                      </span>
-                    </div>
+                    <button
+                      onClick={() => {
+                        setAddTagsOpen(true);
+                      }}
+                      className="px-1 py-0.5 f-11 bg-blue-600 text-white rounded flex items-center"
+                    >
+                      <Hash size={13} className="mr-2" /> Add tags
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAddFollowersOpen(true);
+                      }}
+                      className="px-1 py-0.5 f-11 bg-orange-600 text-white rounded flex items-center"
+                    >
+                      <UserPlus size={13} className="mr-2" /> Add Follower(s)
+                    </button>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
-          )}
-
-          {/* Description */}
-          <div className="flex items-start justify-between mb-2">
-            <div className="bg-white border border-gray-200 rounded-lg px-4 py-2">
-              <div className="flex items-center gap-2 mb-3">
-                <FileText className="w-4 h-4 text-indigo-600" />
-                <h4 className="text-sm font-semibold text-gray-900">
-                  Task Description
-                </h4>
-              </div>
-              <div
-                className="bg-gray-50 p-3 rounded-lg text-gray-800 text-sm leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html:
-                    task.fld_description ||
-                    "<p class='text-gray-500 italic'>No description provided</p>",
-                }}
-              />
-            </div>
-
-            {task.fld_benchmark_name && (
-              <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 ">
-                <MilestoneInfo taskId={taskId} />
-              </div>
-            )}
           </div>
 
-          {/* Timestamps */}
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-4 h-4 text-gray-600" />
-              <h4 className="text-sm font-semibold text-gray-900">Timeline</h4>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              {task.fld_recurring_tasks && (
-                <>
+          <div className="flex gap-3 mb-4">
+            <div className="w-[70%] bg-gray-100 p-3 rounded flex flex-col justify-between gap-3">
+              {/* Description */}
+
+              <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="w-4 h-4 text-indigo-600" />
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    Task Description
+                  </h4>
+                </div>
+                <div
+                  className="bg-gray-50 p-3 rounded-lg text-gray-800 text-sm leading-relaxed"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      task.fld_description ||
+                      "<p class='text-gray-500 italic'>No description provided</p>",
+                  }}
+                />
+              </div>
+
+              {task.fld_benchmark_name && (
+                <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 ">
+                  <MilestoneInfo taskId={taskId} />
+                </div>
+              )}
+
+              {/* Timestamps */}
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="w-4 h-4 text-gray-600" />
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    Timeline
+                  </h4>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  {task.fld_recurring_tasks && (
+                    <>
+                      <div>
+                        <span className="font-medium">Recurring Tasks:</span>
+                        <span className="text-gray-900 ml-1">
+                          {task.fld_recurring_tasks}
+                        </span>
+                      </div>
+                      <span className="text-gray-400">|</span>
+                    </>
+                  )}
+
                   <div>
-                    <span className="font-medium">Recurring Tasks:</span>
+                    <span className="font-medium">Created:</span>
                     <span className="text-gray-900 ml-1">
-                      {task.fld_recurring_tasks}
+                      {task.fld_addedon}
                     </span>
                   </div>
                   <span className="text-gray-400">|</span>
-                </>
-              )}
 
-              <div>
-                <span className="font-medium">Created:</span>
-                <span className="text-gray-900 ml-1">{task.fld_addedon}</span>
-              </div>
-              <span className="text-gray-400">|</span>
-
-              <div>
-                <span className="font-medium">Completed:</span>
-                <span className="text-gray-900 ml-1">
-                  {task.fld_completed_at || "Not completed"}
-                </span>
+                  <div>
+                    <span className="font-medium">Completed:</span>
+                    <span className="text-gray-900 ml-1">
+                      {task.fld_completed_at || "Not completed"}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
+            <div className="mb-4 w-[30%] flex flex-col gap-3">
+              {/* Right Side */}
+              <div className="flex flex-col items-end gap-3">
+                {/* Progress */}
+                <div className="bg-white border border-gray-200 rounded-lg p-3 w-full">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <h3 className="text-sm font-semibold text-gray-900 flex items-center">
+                        Task Progress
+                      </h3>
+                    </div>
+                    {task.fld_assign_to == user?.id &&
+                    task.fld_task_status != "Updated" &&
+                    task.fld_task_status != "Completed" && (
+                      <div className="flex justify-end items-center">
+                        <button
+                          onClick={() => {
+                            setUpdateTaskModalOpen(true);
+                          }}
+                          className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded f-11"
+                        >
+                          Update Task Progress
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-green-600 h-3 rounded-full"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1 ml-1 ">{progressLabel}</p>
+                  
+                  
+                </div>
+              </div>
+              {/* Assigned To */}
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    Assigned To
+                  </h4>
+                </div>
+                <div className="flex flex-wrap gap-2 text-sm text-gray-900">
+                  <span className="font-medium">{task.assigned_to_name}</span>
+                  <span className="text-gray-500">|</span>
+                  <span className="text-xs text-gray-600">
+                    {task.assigned_to_email}
+                  </span>
+                </div>
+              </div>
+
+              {/* Due Date */}
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4 text-red-600" />
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    Due Date
+                  </h4>
+                </div>
+                <div className="flex text-sm text-gray-900">
+                  <span className="font-medium">
+                    {task.fld_due_date || "No due date"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Added By */}
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-purple-600" />
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    Added By
+                  </h4>
+                </div>
+                <div className="flex flex-wrap gap-2 text-sm text-gray-900">
+                  <span className="font-medium">{task.added_by_name}</span>
+                  <span className="text-gray-500">|</span>
+                  <span className="text-xs text-gray-600">
+                    {task.added_by_email}
+                  </span>
+                </div>
+              </div>
+
+              {/* Ongoing By */}
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-orange-600" />
+                  <h4 className="text-sm font-semibold text-gray-900">
+                    Ongoing By
+                  </h4>
+                </div>
+                <div className="flex flex-wrap gap-2 text-sm text-gray-900">
+                  <span className="font-medium">
+                    {task.ongoing_by_name || "Not assigned"}
+                  </span>
+                  <span className="text-gray-500">|</span>
+                  <span className="text-xs text-gray-600">
+                    {task.ongoing_by_email || "-"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Followers */}
+              {task.followers?.length > 0 && (
+                <div className="bg-white border border-gray-200 rounded-lg p-3 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-4 h-4 text-green-600" />
+                    <h4 className="text-sm font-semibold text-gray-900">
+                      Followers
+                    </h4>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {task.followers.map((follower) => (
+                      <div
+                        key={follower.id}
+                        className="flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition"
+                      >
+                        <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                          {follower.name.charAt(0)}
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-sm text-gray-900">
+                          <span className="font-medium">{follower.name}</span>
+                          <span className="text-gray-500">|</span>
+                          <span className="text-xs text-gray-600">
+                            {follower.email}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
           {task.fld_google_sheets_or_docs_link && (
             <div className="bg-white border border-gray-200 rounded-lg p-4">
               <div className=" gap-3 text-sm">
@@ -614,11 +633,13 @@ export default function TaskDetails({ taskId, onClose }) {
           />
         )}
         {updateTaskModalOpen && (
-          <UpdateTaskProgress 
-          taskId={taskId}
-          task={task}
-          after={fetchTaskDetails}
-          onClose={()=>{setUpdateTaskModalOpen(false)}}
+          <UpdateTaskProgress
+            taskId={taskId}
+            task={task}
+            after={fetchTaskDetails}
+            onClose={() => {
+              setUpdateTaskModalOpen(false);
+            }}
           />
         )}
       </AnimatePresence>

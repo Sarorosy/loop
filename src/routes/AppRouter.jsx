@@ -8,6 +8,7 @@ import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import AddTask from "../pages/AddTask";
 import EditTask from "../pages/EditTask";
+import ManageUser from "../pages/manageuser/ManageUser";
 
 
 
@@ -24,6 +25,9 @@ export default function AppRouter() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/tasks/add" element={<AddTask />} />
             <Route path="/tasks/edit/:taskId" element={<EditTask />} />
+
+
+            <Route path="/team/members" element={<ManageUser />} />
           </Route>
         </Route>
         

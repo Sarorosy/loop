@@ -27,7 +27,10 @@ export default function ManageUser({ onClose }) {
       });
       const data = await response.json();
       if (data.status) {
-        setUsers(data.data);
+        const sortedUsers = data.data.sort((a, b) =>
+        a.fld_first_name.localeCompare(b.fld_first_name)
+      );
+      setUsers(sortedUsers);
       }
     } catch (e) {
       console.log(e);
@@ -65,19 +68,17 @@ export default function ManageUser({ onClose }) {
   }
 
   return (
-    <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 w-full h-full bg-white shadow-lg z-50 overflow-y-auto"
-    >
+    // <motion.div
+    //   initial={{ x: "100%" }}
+    //   animate={{ x: 0 }}
+    //   exit={{ x: "100%" }}
+    //   transition={{ duration: 0.3 }}
+    //   className="fixed top-0 right-0 w-full h-full bg-white shadow-lg z-50 overflow-y-auto"
+    // >
+    <div>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <h2 className="text-lg font-semibold">Manage Users</h2>
-        <button onClick={onClose}>
-          <X size={20} />
-        </button>
       </div>
 
       {/* Content */}
@@ -108,8 +109,12 @@ export default function ManageUser({ onClose }) {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-4 py-2 text-left border">Name</th>
-                  <th className="px-4 py-2 text-left border">Email</th>
                   <th className="px-4 py-2 text-left border">Role</th>
+                  <th className="px-4 py-2 text-left border">Access Type</th>
+                  <th className="px-4 py-2 text-left border">Email Id</th>
+                  <th className="px-4 py-2 text-left border">Password</th>
+                  <th className="px-4 py-2 text-left border">Added On</th>
+                  <th className="px-4 py-2 text-left border">Status</th>
                   <th className="px-4 py-2 text-left border">Actions</th>
                 </tr>
               </thead>
@@ -119,9 +124,15 @@ export default function ManageUser({ onClose }) {
                     key={user._id || idx}
                     className="border-t hover:bg-gray-50"
                   >
-                    <td className="px-4 py-2 border">{user.name}</td>
-                    <td className="px-4 py-2 border">{user.email}</td>
-                    <td className="px-4 py-2 border">{user.role || "User"}</td>
+                    <td className="px-4 py-2 border">{user.fld_first_name + " " + user.fld_last_name}</td>
+                    <td className="px-4 py-2 border">{user.fld_admin_type}</td>
+                    <td className="px-4 py-2 border">{user.fld_access_type}</td>
+                    <td className="px-4 py-2 border">{user.fld_email}</td>
+                    <td className="px-4 py-2 border">{user.fld_decrypt_password}</td>
+                    <td className="px-4 py-2 border">{user.fld_addedon}</td>
+                    <td className="px-4 py-2 border">
+                      
+                    </td>
                     <td className="px-4 py-2 border">
                         <div className="flex items-center space-x-2">
                             <button
@@ -172,6 +183,7 @@ export default function ManageUser({ onClose }) {
       )}
 
       </AnimatePresence>
-    </motion.div>
+     {/* </motion.div> */}
+    </div>
   );
 }
