@@ -46,11 +46,11 @@ export default function History({ taskId }) {
 
   const renderList = (items, renderItem) =>
     items.length === 0 ? (
-      <div className="text-center text-gray-500 text-sm py-4">
+      <div className="text-center text-gray-500 text-sm py-4 bg-white rounded">
         No {activeTab} found.
       </div>
     ) : (
-      <div className="space-y-4">{items.map(renderItem)}</div>
+      <div className="space-y-4 p-3 bg-white">{items.map(renderItem)}</div>
     );
 
   function formatDateTime(dateTimeString) {
@@ -68,15 +68,15 @@ export default function History({ taskId }) {
   }
 
   return (
-    <div className="py-4 px-2 bg-orange-50 rounded-xl">
-      <div className="flex space-x-3 mb-4">
+    <div className="p-3 bg-gray-100 rounded">
+      <div className="flex space-x-3 mb-3">
         {["remarks", "history", "reminders"].map((tab) => (
           <button
             key={tab}
-            className={`px-1 py-0.5 rounded transition ${
+            className={`px-2 py-1.5 rounded transition leading-none text-[14px] transition ${
               activeTab === tab
                 ? "bg-orange-400 text-white shadow"
-                : "bg-white text-gray-600 hover:bg-orange-100"
+                : "bg-gray-300 text-gray-800 hover:bg-orange-100"
             }`}
             onClick={() => setActiveTab(tab)}
           >
@@ -85,10 +85,10 @@ export default function History({ taskId }) {
         ))}
       </div>
 
-      <div className="max-h-[400px] overflow-y-auto space-y-1 ">
+      <div className="max-h-[538px] overflow-y-auto space-y-1 ">
         {activeTab === "remarks" &&
           renderList(remarks, (item) => (
-            <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm">
+            <div key={item.id} className="bg-gray-50 p-2 rounded shadow-sm">
               <div className="flex justify-between f-11 text-gray-500 mb-1">
                 <span>{item.added_by_name}</span>
                 <span>{formatDateTime(item.fld_addedon)}</span>
@@ -107,7 +107,7 @@ export default function History({ taskId }) {
 
         {activeTab === "history" &&
           renderList(history, (item) => (
-            <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm">
+            <div key={item.id} className="bg-gray-50 p-2 rounded shadow-sm">
               <div className="flex justify-between f-11 text-gray-500">
                 <span>{item.fld_history}</span>
                 <span>{formatDateTime(item.created_at)}</span>
@@ -117,7 +117,7 @@ export default function History({ taskId }) {
 
         {activeTab === "reminders" &&
           renderList(reminders, (item) => (
-            <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm">
+            <div key={item.id} className="bg-gray-50 p-2 rounded shadow-sm">
               <div className="flex justify-between f-11 text-gray-500">
                 <span>{item.notes}</span>
                 <span>{formatDateTime(item.created_at)}</span>
