@@ -131,7 +131,7 @@ export default function ManageUser({ onClose }) {
                     <td className="px-4 py-2 border">{user.fld_decrypt_password}</td>
                     <td className="px-4 py-2 border">{user.fld_addedon}</td>
                     <td className="px-4 py-2 border">
-                      
+                      {user.status}
                     </td>
                     <td className="px-4 py-2 border">
                         <div className="flex items-center space-x-2">

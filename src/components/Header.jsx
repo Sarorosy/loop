@@ -101,7 +101,7 @@ export default function Header() {
                 className="flex items-center px-2 py-1 rounded  text-black"
               >
                 <CircleUserRound className="mr-1" size={15} />
-                <span>Welcome , {user.fld_first_name}</span>
+                <span>Welcome , {user.fld_first_name + " " +user?.fld_last_name}</span>
                 <ChevronDown className="mt-0.5" size={15} />
               </button>
 
@@ -109,8 +109,12 @@ export default function Header() {
                 {userDropdownOpen && (
                   <div className="absolute right-3 mt-1 w-52 bg-white border border-gray-300 rounded shadow text-sm z-50">
                     <div className="px-3 py-2">
-                      <p className="font-semibold text-gray-800 text-center">{user.fld_first_name}</p>
-                      <p className="text-xs text-gray-500 truncate w-full">{user.fld_email}</p>
+                      <p className="font-semibold text-gray-800 text-center">
+                        {user.fld_first_name}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate w-full">
+                        {user.fld_email}
+                      </p>
                     </div>
                     <ul>
                       <li
@@ -137,53 +141,116 @@ export default function Header() {
       {/* Tabs */}
       <div className="w-full bg-[#224d68] text-[13px]">
         <div className="max-w-[1250px] mx-auto flex items-center space-x-6">
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
-        >
-          <LayoutDashboard size={12} /> Dashboard
-        </button>
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
+          >
+            <LayoutDashboard size={12} /> Dashboard
+          </button>
 
-        <TabDropdown title="Team" icon={Users}>
-          <TabLink label="Manage Team" icon={Users} onClick={() => navigate("/team/manage")} />
-          <TabLink label="Manage Team Member" icon={UserPlus} onClick={() => navigate("/team/members")} />
-        </TabDropdown>
+          <TabDropdown title="Team" icon={Users}>
+            <TabLink
+              label="Manage Team"
+              icon={Users}
+              onClick={() => navigate("/team/manage")}
+            />
+            <TabLink
+              label="Manage Team Member"
+              icon={UserPlus}
+              onClick={() => navigate("/team/members")}
+            />
+          </TabDropdown>
 
-        <TabDropdown title="Additional" icon={Wrench}>
-          <TabLink label="Manage Tags" icon={Tag} onClick={() => navigate("/manage/tags")} />
-          <TabLink label="Manage Bucket" icon={Folder} onClick={() => navigate("/manage/bucket")} />
-          <TabLink label="Manage Milestone" icon={Flag} onClick={() => navigate("/manage/milestone")} />
-          <TabLink label="Manage Projects" icon={ClipboardList} onClick={() => navigate("/manage/projects")} />
-        </TabDropdown>
+          <TabDropdown title="Additional" icon={Wrench}>
+            <TabLink
+              label="Manage Tags"
+              icon={Tag}
+              onClick={() => navigate("/manage/tags")}
+            />
+            <TabLink
+              label="Manage Bucket"
+              icon={Folder}
+              onClick={() => navigate("/manage/bucket")}
+            />
+            <TabLink
+              label="Manage Milestone"
+              icon={Flag}
+              onClick={() => navigate("/manage/milestone")}
+            />
+            <TabLink
+              label="Manage Projects"
+              icon={ClipboardList}
+              onClick={() => navigate("/manage/projects")}
+            />
+          </TabDropdown>
 
-        <TabDropdown title="Tasks" icon={ListTodo}>
-          <TabLink label="Add Task" icon={ListTodo} onClick={() => navigate("/tasks/add")} />
-          <TabLink label="My Task" icon={ListTodo} onClick={() => navigate("/tasks/my")} />
-          <TabLink label="Team Task" icon={ListTodo} onClick={() => navigate("/tasks/team")} />
-          <TabLink label="Tasks by Me" icon={ListTodo} onClick={() => navigate("/tasks/created-by-me")} />
-          <TabLink label="Following" icon={ListTodo} onClick={() => navigate("/tasks/following")} />
-        </TabDropdown>
+          <TabDropdown title="Tasks" icon={ListTodo}>
+            <TabLink
+              label="Add Task"
+              icon={ListTodo}
+              onClick={() => navigate("/tasks/add")}
+            />
+            <TabLink
+              label="My Task"
+              icon={ListTodo}
+              onClick={() => navigate("/tasks/my")}
+            />
+            <TabLink
+              label="Team Task"
+              icon={ListTodo}
+              onClick={() => navigate("/tasks/team")}
+            />
+            <TabLink
+              label="Tasks by Me"
+              icon={ListTodo}
+              onClick={() => navigate("/tasks/created-by-me")}
+            />
+            <TabLink
+              label="Following"
+              icon={ListTodo}
+              onClick={() => navigate("/tasks/following")}
+            />
+          </TabDropdown>
 
-        <button
-          onClick={() => navigate("/manage/queries")}
-          className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
-        >
-          <MessageCircleQuestion size={12} /> Manage Query
-        </button>
+          <button
+            onClick={() => navigate("/manage/queries")}
+            className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
+          >
+            <MessageCircleQuestion size={12} /> Manage Query
+          </button>
 
-        <TabDropdown title="Others" icon={Wrench}>
-          <TabLink label="Requirement" icon={ClipboardList} onClick={() => navigate("/manage/requirement")} />
-          <TabLink label="Currency" icon={BadgeDollarSign} onClick={() => navigate("/manage/currency")} />
-          <TabLink label="Other Tags" icon={Tag} onClick={() => navigate("/manage/othertags")} />
-        </TabDropdown>
+          <TabDropdown title="Others" icon={Wrench}>
+            <TabLink
+              label="Requirement"
+              icon={ClipboardList}
+              onClick={() => navigate("/manage/requirement")}
+            />
+            <TabLink
+              label="Currency"
+              icon={BadgeDollarSign}
+              onClick={() => navigate("/manage/currency")}
+            />
+            <TabLink
+              label="Other Tags"
+              icon={Tag}
+              onClick={() => navigate("/manage/othertags")}
+            />
+          </TabDropdown>
 
-        <button
-          onClick={() => navigate("/ask-for-scope")}
-          className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
-        >
-          <FileQuestion size={12} /> Ask For Scope
-        </button>
-      </div>
+          <button
+            onClick={() =>
+              window.open(
+                `https://apacvault.com/askforscope/${encodeURIComponent(
+                  user?.fld_email
+                )}`,
+                "_blank"
+              )
+            }
+            className="flex items-center gap-1 text-white py-4 hover:text-[#ccc] rounded"
+          >
+            <FileQuestion size={12} /> Ask For Scope
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
