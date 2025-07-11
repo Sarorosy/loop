@@ -106,3 +106,6 @@ table.dataTable>thead>tr>th, table.dataTable>thead>tr>td {
 .react-tooltip{
   z-index: 99;
 }
+.inner-content p span {
+    font-size: 12px !important;
+}

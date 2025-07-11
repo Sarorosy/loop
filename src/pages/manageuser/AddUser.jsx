@@ -37,14 +37,13 @@ export default function AddUser({ onClose, after }) {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Something went wrong");
-      if(data.status){
-          setSuccessMsg("User added successfully!");
-          setForm({ name: "", email: "", user_type: "user", password: "" });
-          after();
-      }else{
+      if (data.status) {
+        setSuccessMsg("User added successfully!");
+        setForm({ name: "", email: "", user_type: "user", password: "" });
+        after();
+      } else {
         setError(data.message || "Error adding user");
       }
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -58,81 +57,86 @@ export default function AddUser({ onClose, after }) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 w-full max-w-lg h-full bg-white shadow-lg z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black/80 z-50 flex justify-center items-center"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-100">
-        <h2 className="text-lg font-semibold">Add New User</h2>
-        <button onClick={onClose}>
-          <X size={20} />
-        </button>
+      <div className="max-w-lg w-full bg-white shadow-lg z-50 overflow-y-auto h-full fixed top-0 right-0">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-[#224d68] text-white">
+          <h2 className="text-[15px] font-semibold">Add New User</h2>
+          <button onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Form */}
+        <form className="p-4 space-y-4 text-[13px]" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <div>
+            <label className="block  mb-1">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              className="w-full border rounded px-2 py-1 border-gray-400  "
+            />
+          </div>
+
+          <div>
+            <label className="block  mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              className="w-full border rounded px-2 py-1 border-gray-400  "
+            />
+          </div>
+
+          <div>
+            <label className="block  mb-1">Password</label>
+            <input
+              type="text"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              className="w-full border rounded px-2 py-1 border-gray-400  "
+            />
+          </div>
+
+          <div>
+            <label className="block  mb-1">User Type</label>
+            <select
+              name="user_type"
+              value={form.user_type}
+              onChange={handleChange}
+              className="w-full border rounded px-2 py-1 border-gray-400  "
+            >
+              <option value="user">User</option>
+              <option value="subadmin">Subadmin</option>
+              <option value="accountant">Accountant</option>
+            </select>
+          </div>
+          </div>
+
+          {/* Feedback */}
+          {error && <p className=" text-red-500">{error}</p>}
+          {successMsg && <p className=" text-green-600">{successMsg}</p>}
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 leading-none text-[12px]"
+            >
+              {loading ? "Adding..." : "Add User"}
+            </button>
+          </div>
+        </form>
       </div>
-
-      {/* Form */}
-      <form className="p-4 space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-sm mb-1">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">Password</label>
-          <input
-            type="text"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm mb-1">User Type</label>
-          <select
-            name="user_type"
-            value={form.user_type}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2 text-sm"
-          >
-            <option value="user">User</option>
-            <option value="subadmin">Subadmin</option>
-            <option value="accountant">Accountant</option>
-          </select>
-        </div>
-
-        
-        {/* Feedback */}
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
-        >
-          {loading ? "Adding..." : "Add User"}
-        </button>
-      </form>
     </motion.div>
   );
 }
