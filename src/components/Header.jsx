@@ -101,7 +101,9 @@ export default function Header() {
                 className="flex items-center px-2 py-1 rounded  text-black"
               >
                 <CircleUserRound className="mr-1" size={15} />
-                <span>Welcome , {user.fld_first_name + " " +user?.fld_last_name}</span>
+                <span>
+                  Welcome , {user.fld_first_name + " " + user?.fld_last_name}
+                </span>
                 <ChevronDown className="mt-0.5" size={15} />
               </button>
 
@@ -149,11 +151,14 @@ export default function Header() {
           </button>
 
           <TabDropdown title="Team" icon={Users}>
-            <TabLink
-              label="Manage Team"
-              icon={Users}
-              onClick={() => navigate("/team/manage")}
-            />
+            {(user?.fld_admin_type == "SUPERADMIN" ||
+              user?.fld_admin_type == "SUBADMIN") && (
+              <TabLink
+                label="Manage Team"
+                icon={Users}
+                onClick={() => navigate("/team/manage")}
+              />
+            )}
             <TabLink
               label="Manage Team Member"
               icon={UserPlus}
@@ -195,13 +200,16 @@ export default function Header() {
               icon={ListTodo}
               onClick={() => navigate("/tasks/my")}
             />
+            {(user?.fld_admin_type == "SUBADMIN" ||
+              user?.fld_admin_type == "SUPERADMIN") && (
+              <TabLink
+                label="Team Task"
+                icon={ListTodo}
+                onClick={() => navigate("/tasks/team")}
+              />
+            )}
             <TabLink
-              label="Team Task"
-              icon={ListTodo}
-              onClick={() => navigate("/tasks/team")}
-            />
-            <TabLink
-              label="Tasks by Me"
+              label="Tasks Created by Me"
               icon={ListTodo}
               onClick={() => navigate("/tasks/created-by-me")}
             />
@@ -211,13 +219,16 @@ export default function Header() {
               onClick={() => navigate("/tasks/following")}
             />
           </TabDropdown>
-
-          <button
-            onClick={() => navigate("/manage/queries")}
-            className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
-          >
-            <MessageCircleQuestion size={12} /> Manage Query
-          </button>
+          {(user?.fld_admin_type == "SUPERADMIN" ||
+            (user?.fld_admin_type == "SUBADMIN" &&
+              user?.fld_access_to_addquery == 1)) && (
+            <button
+              onClick={() => navigate("/manage/queries")}
+              className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
+            >
+              <MessageCircleQuestion size={12} /> Manage Query
+            </button>
+          )}
 
           <TabDropdown title="Others" icon={Wrench}>
             <TabLink

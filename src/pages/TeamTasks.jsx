@@ -6,30 +6,23 @@ import DT from "datatables.net-dt";
 import $ from "jquery";
 import TaskDetails from "./TaskDetails";
 import { AnimatePresence } from "framer-motion";
-import { Filter, Layers2, RefreshCcw, User2 } from "lucide-react";
+import { Filter, Layers2, RefreshCcw, User2, Users } from "lucide-react";
 import {
   Tag,
   User,
-  Flag,
-  CheckCircle,
   CalendarDays,
-  Layers,
   ClipboardList,
-  ShieldCheck,
-  Briefcase,
-  Info,
-  Wallet,
 } from "lucide-react";
 import Select from "react-select";
 import { formatDate } from "../helpers/CommonHelper";
 
-function Dashboard() {
+function TeamTasks() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const tableRef = useRef(null);
   const [buckets, setBuckets] = useState([]);
-  const [milestones, setMilestones] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
@@ -47,6 +40,8 @@ function Dashboard() {
     projectId: "",
     queryStatus: "",
     paymentRange: "",
+    team: "",
+    team_peoples: [],
   });
 
   DataTable.use(DT);
@@ -57,21 +52,18 @@ function Dashboard() {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/tasks/get",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: user?.id,
-            user_type: user?.fld_admin_type,
-            assigned_team: user?.fld_assigned_team,
-            filters: filters,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/tasks/getteamtasks", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_type: user?.fld_admin_type,
+          assigned_team: user?.fld_assigned_team,
+          filters: filters,
+        }),
+      });
       const data = await res.json();
       if (data.status) {
         setTasks(data?.data);
@@ -95,23 +87,38 @@ function Dashboard() {
   }, []);
 
   const fetchDropdownData = async () => {
-    try {
-      const [bucketsRes, milestonesRes, projectsRes, usersRes] =
-        await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
-        ]);
-      setBuckets((await bucketsRes.json())?.data || []);
-      setMilestones((await milestonesRes.json())?.data || []);
-      setProjects((await projectsRes.json())?.data || []);
-      setUsers((await usersRes.json())?.data || []);
-    } catch (error) {
-      console.error("Error loading dropdown data:", error);
-      toast.error("Failed to load dropdown data");
+  try {
+    const [bucketsRes, milestonesRes, projectsRes, usersRes] = await Promise.all([
+      fetch("http://localhost:5000/api/helper/allbuckets"),
+      fetch("http://localhost:5000/api/helper/allteams"),
+      fetch("http://localhost:5000/api/helper/allprojects"),
+      fetch("http://localhost:5000/api/users/allusers"),
+    ]);
+
+    const bucketsData = (await bucketsRes.json())?.data || [];
+    const teamsData = (await milestonesRes.json())?.data || [];
+    const projectsData = (await projectsRes.json())?.data || [];
+    const usersData = (await usersRes.json())?.data || [];
+
+    setBuckets(bucketsData);
+    setProjects(projectsData);
+    setUsers(usersData);
+
+    // ✅ Filter teams for SUBADMIN
+    if (user?.fld_admin_type === "SUBADMIN") {
+      const assignedTeamIds = (user.fld_assigned_team || "").split(",").map((id) => id.trim());
+      const filteredTeams = teamsData.filter((team) => assignedTeamIds.includes(String(team.id)));
+      setTeams(filteredTeams);
+    } else {
+      setTeams(teamsData);
     }
-  };
+
+  } catch (error) {
+    console.error("Error loading dropdown data:", error);
+    toast.error("Failed to load dropdown data");
+  }
+};
+
 
   // Columns Definition
   const columns = [
@@ -146,40 +153,25 @@ function Dashboard() {
       data: null,
       orderable: false,
       render: (data, type, row) => {
-        const dueDate = row.fld_due_date ? formatDate(row.fld_due_date) : "-";
+        const dueDate = row.fld_due_date || "-";
         const dueTime = row.fld_due_time || "";
-
-        if (dueDate === "-") return "-";
-
-        return `${dueDate} ${dueTime}`.trim();
+        return `${formatDate(dueDate)} ${dueTime}`.trim();
       },
     },
     {
       title: "Tag",
       data: "tag_names",
       orderable: false,
-      render: (data, type, rowData) => {
-        const tagsHtml = data
-          ? data
-              .split(",")
-              .map(
-                (tag) => `
-              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
-            `
-              )
-              .join("")
-          : "";
-
-        const buttonLabel = data ? "Edit Tags" : "Add Tag";
-
-        // Add a button with a data attribute to identify the row
-        const buttonHtml = `
-      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
-        ${buttonLabel}
-      </button>
-    `;
-
-        return `${tagsHtml}${buttonHtml}`;
+      render: (data) => {
+        if (!data) return "-";
+        return data
+          .split(",")
+          .map(
+            (tag) => `
+          <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+        `
+          )
+          .join("");
       },
     },
     {
@@ -189,8 +181,8 @@ function Dashboard() {
       render: (data) => {
         const status = data || "-";
         let color = "#6B7280"; // default gray
-        if (status === "Completed" || status === "Updated") color = "#10B981";
-        else if (status === "Pending" || status === "Late") color = "#EF4444";
+        if (status === "Completed") color = "#10B981";
+        else if (status === "Pending") color = "#EF4444";
         return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
       },
     },
@@ -214,9 +206,6 @@ function Dashboard() {
       `,
     },
   ];
-
-  const [selectedTags, setSelectedTags] = useState("");
-  const [updateTagModalOpen, setUpdateTagModalOpen] = useState(false);
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -260,6 +249,8 @@ function Dashboard() {
       projectId: "",
       queryStatus: "",
       paymentRange: "",
+      team: "",
+      team_peoples: [],
     });
     fetchTasks(user, setTasks, setLoading);
   };
@@ -269,7 +260,7 @@ function Dashboard() {
       <div className="max-w-[1250px] mx-auto py-5">
         <div className="bg-white py-4 px-4">
           <div className="text-xl font-bold mb-4 flex items-center justify-between">
-            Dashboard
+            Team Tasks
             <div className="flex gap-3">
               <button
                 onClick={resetFilters}
@@ -312,7 +303,6 @@ function Dashboard() {
                   }
                 />
               </div>
-
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
                   <User size={13} className="text-gray-500" />
@@ -346,65 +336,39 @@ function Dashboard() {
 
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Flag size={13} className="text-gray-500" />
-                  Milestone
+                  <Users size={13} className="text-gray-500" />
+                  Team
                 </label>
                 <Select
                   classNamePrefix="task-filter"
                   value={
-                    milestones
+                    teams
                       .map((m) => ({
                         value: m.id,
-                        label: m.fld_benchmark_name,
+                        label: m.team_name,
                       }))
-                      .find((o) => o.value === filters.milestone) || null
+                      .find((o) => o.value === filters.team) || null
                   }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestone: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Milestone" },
-                    ...milestones.map((m) => ({
-                      value: m.id,
-                      label: m.fld_benchmark_name,
-                    })),
-                  ]}
-                />
-              </div>
+                  onChange={(selectedOption) => {
+                    const selectedTeam = teams.find(
+                      (team) => team.id === selectedOption?.value
+                    );
+                    const teamMembers = selectedTeam?.team_members
+                      ? selectedTeam.team_members.split(",").filter(Boolean)
+                      : [];
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CheckCircle size={13} className="text-gray-500" />
-                  Milestone Completion Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Completion Status" },
-                      { value: "overdue1", label: "Overdue" },
-                      { value: "not_completed", label: "Not Completed" },
-                      { value: "on_time", label: "Completed on Time" },
-                      { value: "overdue", label: "Completed as Overdue" },
-                    ].find(
-                      (o) => o.value === filters.milestoneCompletionStatus
-                    ) || null
-                  }
-                  onChange={(selectedOption) =>
                     setFilters({
                       ...filters,
-                      milestoneCompletionStatus: selectedOption?.value || "",
-                    })
-                  }
+                      team: selectedOption?.value || "",
+                      team_peoples: teamMembers,
+                    });
+                  }}
                   options={[
-                    { value: "", label: "Select Completion Status" },
-                    { value: "overdue1", label: "Overdue" },
-                    { value: "not_completed", label: "Not Completed" },
-                    { value: "on_time", label: "Completed on Time" },
-                    { value: "overdue", label: "Completed as Overdue" },
+                    { value: "", label: "Team" },
+                    ...teams.map((m) => ({
+                      value: m.id,
+                      label: m.team_name,
+                    })),
                   ]}
                 />
               </div>
@@ -420,21 +384,6 @@ function Dashboard() {
                   value={filters.createdDate}
                   onChange={(e) =>
                     setFilters({ ...filters, createdDate: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Due Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.dueDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, dueDate: e.target.value })
                   }
                 />
               </div>
@@ -505,164 +454,6 @@ function Dashboard() {
                   ]}
                 />
               </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <User2 size={13} className="text-gray-500" />
-                  Assigned By
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    users
-                      .map((u) => ({
-                        value: u.id,
-                        label: `${u.fld_first_name} ${u.fld_last_name}`,
-                      }))
-                      .find((o) => o.value === filters.assignedBy) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      assignedBy: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Assigned By" },
-                    ...users.map((u) => ({
-                      value: u.id,
-                      label: `${u.fld_first_name} ${u.fld_last_name}`,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Briefcase size={13} className="text-gray-500" />
-                  Project
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    projects
-                      .map((p) => ({
-                        value: p.id,
-                        label: p.fld_project_name,
-                      }))
-                      .find((o) => o.value === filters.projectId) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      projectId: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select project" },
-                    ...projects.map((p) => ({
-                      value: p.id,
-                      label: p.fld_project_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Info size={13} className="text-gray-500" />
-                  Query Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Query Status" },
-                      { value: "Contact Made", label: "Contact Made" },
-                      { value: "Contact Not Made", label: "Contact Not Made" },
-                      {
-                        value: "Client Not Interested",
-                        label: "Client Not Interested",
-                      },
-                      { value: "In Discussion", label: "In Discussion" },
-                      { value: "Lost Deal", label: "Lost Deal" },
-                      { value: "Low Pricing", label: "Low Pricing" },
-                      { value: "Discount Given", label: "Discount Given" },
-                      { value: "Quoted", label: "Quoted" },
-                      { value: "Converted", label: "Converted" },
-                    ].find((o) => o.value === filters.queryStatus) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      queryStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Query Status" },
-                    { value: "Contact Made", label: "Contact Made" },
-                    { value: "Contact Not Made", label: "Contact Not Made" },
-                    {
-                      value: "Client Not Interested",
-                      label: "Client Not Interested",
-                    },
-                    { value: "In Discussion", label: "In Discussion" },
-                    { value: "Lost Deal", label: "Lost Deal" },
-                    { value: "Low Pricing", label: "Low Pricing" },
-                    { value: "Discount Given", label: "Discount Given" },
-                    { value: "Quoted", label: "Quoted" },
-                    { value: "Converted", label: "Converted" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Wallet size={13} className="text-gray-500" />
-                  Payment Range
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Payment Range" },
-                      { value: "0-40000", label: "INR 0 - 40k" },
-                      { value: "40000-80000", label: "INR 40k - 80k" },
-                      { value: "80000-100000", label: "INR 80k - 1 lakh" },
-                      {
-                        value: "100000-140000",
-                        label: "INR 1 lakh - 1.4 lakh",
-                      },
-                      {
-                        value: "140000-180000",
-                        label: "INR 1.4 lakh - 1.8 lakh",
-                      },
-                      {
-                        value: "180000-200000",
-                        label: "INR 1.8 lakh - 2 lakh",
-                      },
-                    ].find((o) => o.value === filters.paymentRange) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      paymentRange: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Payment Range" },
-                    { value: "0-40000", label: "INR 0 - 40k" },
-                    { value: "40000-80000", label: "INR 40k - 80k" },
-                    { value: "80000-100000", label: "INR 80k - 1 lakh" },
-                    { value: "100000-140000", label: "INR 1 lakh - 1.4 lakh" },
-                    {
-                      value: "140000-180000",
-                      label: "INR 1.4 lakh - 1.8 lakh",
-                    },
-                    { value: "180000-200000", label: "INR 1.8 lakh - 2 lakh" },
-                  ]}
-                />
-              </div>
             </div>
 
             <div className="w-full flex items-center justify-end">
@@ -688,6 +479,7 @@ function Dashboard() {
                   options={{
                     pageLength: 50,
                     ordering: false,
+                    
                     createdRow: (row, data) => {
                       if (data.fld_task_status === "Late") {
                         $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
@@ -695,17 +487,9 @@ function Dashboard() {
                       if (data.fld_task_status === "Completed") {
                         $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
                       }
-
                       $(row)
                         .find(".view-btn")
                         .on("click", () => handleViewButtonClick(data));
-
-                      $(row)
-                        .find(".tag-btn")
-                        .on("click", () => {
-                          setSelectedTags(data.tag_names || "");
-                          setUpdateTagModalOpen(true);
-                        });
                     },
                   }}
                 />
@@ -728,4 +512,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default TeamTasks;

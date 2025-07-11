@@ -21,9 +21,11 @@ import {
   Wallet,
 } from "lucide-react";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 import { formatDate } from "../helpers/CommonHelper";
 
-function Dashboard() {
+function TasksCreatedByMe() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ function Dashboard() {
     setLoading(true);
     try {
       const res = await fetch(
-        "http://localhost:5000/api/tasks/get",
+        "http://localhost:5000/api/tasks/getmycreatedtasks",
         {
           method: "POST",
           headers: {
@@ -146,40 +148,25 @@ function Dashboard() {
       data: null,
       orderable: false,
       render: (data, type, row) => {
-        const dueDate = row.fld_due_date ? formatDate(row.fld_due_date) : "-";
+        const dueDate = row.fld_due_date || "-";
         const dueTime = row.fld_due_time || "";
-
-        if (dueDate === "-") return "-";
-
-        return `${dueDate} ${dueTime}`.trim();
+        return `${formatDate(dueDate)} ${dueTime}`.trim();
       },
     },
     {
       title: "Tag",
       data: "tag_names",
       orderable: false,
-      render: (data, type, rowData) => {
-        const tagsHtml = data
-          ? data
-              .split(",")
-              .map(
-                (tag) => `
-              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
-            `
-              )
-              .join("")
-          : "";
-
-        const buttonLabel = data ? "Edit Tags" : "Add Tag";
-
-        // Add a button with a data attribute to identify the row
-        const buttonHtml = `
-      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
-        ${buttonLabel}
-      </button>
-    `;
-
-        return `${tagsHtml}${buttonHtml}`;
+      render: (data) => {
+        if (!data) return "-";
+        return data
+          .split(",")
+          .map(
+            (tag) => `
+          <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+        `
+          )
+          .join("");
       },
     },
     {
@@ -189,8 +176,8 @@ function Dashboard() {
       render: (data) => {
         const status = data || "-";
         let color = "#6B7280"; // default gray
-        if (status === "Completed" || status === "Updated") color = "#10B981";
-        else if (status === "Pending" || status === "Late") color = "#EF4444";
+        if (status === "Completed") color = "#10B981";
+        else if (status === "Pending") color = "#EF4444";
         return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
       },
     },
@@ -213,16 +200,66 @@ function Dashboard() {
         </div>
       `,
     },
+    {
+      title: "Actions",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => `
+      <div class="flex gap-2">
+        <button class="edit-btn text-blue-600 hover:underline">Edit</button>
+        <button class="delete-btn text-red-600 hover:underline">Delete</button>
+      </div>
+    `,
+    },
   ];
-
-  const [selectedTags, setSelectedTags] = useState("");
-  const [updateTagModalOpen, setUpdateTagModalOpen] = useState(false);
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const handleViewButtonClick = (task) => {
     setSelectedTask(task);
     setDetailsOpen(true);
+  };
+
+  const navigate = useNavigate();
+  const handleEditButtonClick = (task) => {
+    navigate(`/tasks/edit/${task.task_id}`);
+  };
+
+  const handleDeleteButtonClick = (task) => {
+    setSelectedTask(task);
+    setDeleteOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedTask) {
+      setDeleteOpen(false);
+      return;
+    }
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/tasks/delete",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            task_id: selectedTask?.task_id,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.status) {
+        toast.success(data.message || "Task Deleted Succesfully");
+        setDeleteOpen(false);
+        fetchTasks(user, setTasks, setLoading);
+      } else {
+        toast.error(data.message || "Error deleting task");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const [filtersVisible, setFiltersVisible] = useState(false);
@@ -269,7 +306,7 @@ function Dashboard() {
       <div className="max-w-[1250px] mx-auto py-5">
         <div className="bg-white py-4 px-4">
           <div className="text-xl font-bold mb-4 flex items-center justify-between">
-            Dashboard
+            Tasks Created By Me
             <div className="flex gap-3">
               <button
                 onClick={resetFilters}
@@ -310,102 +347,6 @@ function Dashboard() {
                   onChange={(e) =>
                     setFilters({ ...filters, taskNameOrId: e.target.value })
                   }
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <User size={13} className="text-gray-500" />
-                  Assigned To
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    users
-                      .map((u) => ({
-                        value: u.id,
-                        label: `${u.fld_first_name} ${u.fld_last_name}`,
-                      }))
-                      .find((o) => o.value === filters.assignedTo) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      assignedTo: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Assigned To" },
-                    ...users.map((u) => ({
-                      value: u.id,
-                      label: `${u.fld_first_name} ${u.fld_last_name}`,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Flag size={13} className="text-gray-500" />
-                  Milestone
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    milestones
-                      .map((m) => ({
-                        value: m.id,
-                        label: m.fld_benchmark_name,
-                      }))
-                      .find((o) => o.value === filters.milestone) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestone: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Milestone" },
-                    ...milestones.map((m) => ({
-                      value: m.id,
-                      label: m.fld_benchmark_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CheckCircle size={13} className="text-gray-500" />
-                  Milestone Completion Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Completion Status" },
-                      { value: "overdue1", label: "Overdue" },
-                      { value: "not_completed", label: "Not Completed" },
-                      { value: "on_time", label: "Completed on Time" },
-                      { value: "overdue", label: "Completed as Overdue" },
-                    ].find(
-                      (o) => o.value === filters.milestoneCompletionStatus
-                    ) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestoneCompletionStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Completion Status" },
-                    { value: "overdue1", label: "Overdue" },
-                    { value: "not_completed", label: "Not Completed" },
-                    { value: "on_time", label: "Completed on Time" },
-                    { value: "overdue", label: "Completed as Overdue" },
-                  ]}
                 />
               </div>
 
@@ -505,164 +446,6 @@ function Dashboard() {
                   ]}
                 />
               </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <User2 size={13} className="text-gray-500" />
-                  Assigned By
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    users
-                      .map((u) => ({
-                        value: u.id,
-                        label: `${u.fld_first_name} ${u.fld_last_name}`,
-                      }))
-                      .find((o) => o.value === filters.assignedBy) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      assignedBy: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Assigned By" },
-                    ...users.map((u) => ({
-                      value: u.id,
-                      label: `${u.fld_first_name} ${u.fld_last_name}`,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Briefcase size={13} className="text-gray-500" />
-                  Project
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    projects
-                      .map((p) => ({
-                        value: p.id,
-                        label: p.fld_project_name,
-                      }))
-                      .find((o) => o.value === filters.projectId) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      projectId: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select project" },
-                    ...projects.map((p) => ({
-                      value: p.id,
-                      label: p.fld_project_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Info size={13} className="text-gray-500" />
-                  Query Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Query Status" },
-                      { value: "Contact Made", label: "Contact Made" },
-                      { value: "Contact Not Made", label: "Contact Not Made" },
-                      {
-                        value: "Client Not Interested",
-                        label: "Client Not Interested",
-                      },
-                      { value: "In Discussion", label: "In Discussion" },
-                      { value: "Lost Deal", label: "Lost Deal" },
-                      { value: "Low Pricing", label: "Low Pricing" },
-                      { value: "Discount Given", label: "Discount Given" },
-                      { value: "Quoted", label: "Quoted" },
-                      { value: "Converted", label: "Converted" },
-                    ].find((o) => o.value === filters.queryStatus) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      queryStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Query Status" },
-                    { value: "Contact Made", label: "Contact Made" },
-                    { value: "Contact Not Made", label: "Contact Not Made" },
-                    {
-                      value: "Client Not Interested",
-                      label: "Client Not Interested",
-                    },
-                    { value: "In Discussion", label: "In Discussion" },
-                    { value: "Lost Deal", label: "Lost Deal" },
-                    { value: "Low Pricing", label: "Low Pricing" },
-                    { value: "Discount Given", label: "Discount Given" },
-                    { value: "Quoted", label: "Quoted" },
-                    { value: "Converted", label: "Converted" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Wallet size={13} className="text-gray-500" />
-                  Payment Range
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Payment Range" },
-                      { value: "0-40000", label: "INR 0 - 40k" },
-                      { value: "40000-80000", label: "INR 40k - 80k" },
-                      { value: "80000-100000", label: "INR 80k - 1 lakh" },
-                      {
-                        value: "100000-140000",
-                        label: "INR 1 lakh - 1.4 lakh",
-                      },
-                      {
-                        value: "140000-180000",
-                        label: "INR 1.4 lakh - 1.8 lakh",
-                      },
-                      {
-                        value: "180000-200000",
-                        label: "INR 1.8 lakh - 2 lakh",
-                      },
-                    ].find((o) => o.value === filters.paymentRange) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      paymentRange: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Payment Range" },
-                    { value: "0-40000", label: "INR 0 - 40k" },
-                    { value: "40000-80000", label: "INR 40k - 80k" },
-                    { value: "80000-100000", label: "INR 80k - 1 lakh" },
-                    { value: "100000-140000", label: "INR 1 lakh - 1.4 lakh" },
-                    {
-                      value: "140000-180000",
-                      label: "INR 1.4 lakh - 1.8 lakh",
-                    },
-                    { value: "180000-200000", label: "INR 1.8 lakh - 2 lakh" },
-                  ]}
-                />
-              </div>
             </div>
 
             <div className="w-full flex items-center justify-end">
@@ -695,17 +478,17 @@ function Dashboard() {
                       if (data.fld_task_status === "Completed") {
                         $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
                       }
-
                       $(row)
                         .find(".view-btn")
                         .on("click", () => handleViewButtonClick(data));
 
                       $(row)
-                        .find(".tag-btn")
-                        .on("click", () => {
-                          setSelectedTags(data.tag_names || "");
-                          setUpdateTagModalOpen(true);
-                        });
+                        .find(".edit-btn")
+                        .on("click", () => handleEditButtonClick(data)); // <-- Edit button
+
+                      $(row)
+                        .find(".delete-btn")
+                        .on("click", () => handleDeleteButtonClick(data));
                     },
                   }}
                 />
@@ -721,6 +504,17 @@ function Dashboard() {
                 }}
               />
             )}
+
+            {deleteOpen && selectedTask && (
+              <ConfirmationModal
+                title="Delete Task"
+                message={`Are you sure you want to delete? This action cannot be undone.`}
+                onYes={handleDelete}
+                onClose={() => {
+                  setDeleteOpen(false);
+                }}
+              />
+            )}
           </AnimatePresence>
         </div>
       </div>
@@ -728,4 +522,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default TasksCreatedByMe;

@@ -17,12 +17,17 @@ import Manageprojects from "../pages/project/ManageProjects";
 import ManageRequirement from "../pages/requirement/ManageRequirement";
 import ManageCurrency from "../pages/currency/ManageCurrency";
 import ManageOtherTags from "../pages/othertags/ManageOtherTags";
+import MyTasks from "../pages/MyTasks";
+import TeamTasks from "../pages/Teamtasks";
+import TasksCreatedByMe from "../pages/TasksCreatedByMe";
+import TasksFollowing from "../pages/TasksFollowing";
+import ManageQuery from "../pages/query/ManageQuery";
 
 
 
 export default function AppRouter() {
   return (
-    <Router>
+    <Router basename="/v2">
       <ScrollToTop />
       <Routes>
         {/* Public Restaurant Routes (NO layout) */}
@@ -31,6 +36,12 @@ export default function AppRouter() {
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/tasks/my" element={<MyTasks />} />
+            <Route path="/tasks/team" element={<TeamTasks />} />
+            <Route path="/tasks/created-by-me" element={<TasksCreatedByMe />} />
+            <Route path="/tasks/following" element={<TasksFollowing />} />
+
+
             <Route path="/tasks/add" element={<AddTask />} />
             <Route path="/tasks/edit/:taskId" element={<EditTask />} />
 
@@ -45,6 +56,8 @@ export default function AppRouter() {
             <Route path="/manage/requirement" element={<ManageRequirement />} />
             <Route path="/manage/currency" element={<ManageCurrency />} />
             <Route path="/manage/othertags" element={<ManageOtherTags />} />
+
+            <Route path="/manage/queries" element={<ManageQuery />} />
 
           </Route>
         </Route>

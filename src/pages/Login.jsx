@@ -66,7 +66,7 @@ const Login = () => {
       if (data.status) {
         toast.success("Login success");
         login(data.user);
-        navigate("/");
+        navigate("/tasks/my");
       } else {
         toast.error("Invalid Email or Password" || data.message);
       }
