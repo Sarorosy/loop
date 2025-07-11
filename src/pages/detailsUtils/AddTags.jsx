@@ -9,11 +9,11 @@ export default function AddTags({ taskId, tags = [], onClose, after }) {
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const {user} = useAuth();
-
+  // console.log(tags)
   // Fetch all tags from the server
   const fetchTags = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/helper/alltags", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/helper/alltags", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export default function AddTags({ taskId, tags = [], onClose, after }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/updateTags", 
+        "https://loopback-r9kf.onrender.com/api/helper/updateTags", 
         {
           method: "POST",
           headers: {
@@ -67,7 +67,7 @@ export default function AddTags({ taskId, tags = [], onClose, after }) {
       const data = await response.json();
       if (data.status) {
         toast.success("Tags saved");
-        after();
+        after(data);
         onClose();
       } else {
         toast.error(data.message || "Error while saving tags");

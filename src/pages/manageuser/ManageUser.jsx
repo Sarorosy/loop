@@ -6,6 +6,7 @@ import EditUser from "./EditUser";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import { useAuth } from "../../utils/idb";
+import DeleteOrTransferModal from "./DeleteOrTransferModal";
 
 export default function ManageUser({ onClose }) {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,7 @@ export default function ManageUser({ onClose }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteUserName, setDeleteUserName] = useState("");
   const { user } = useAuth();
 
   // Fetch all users
@@ -21,15 +23,12 @@ export default function ManageUser({ onClose }) {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "http://localhost:5000/api/users/all",
-        {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json",
-          },
-        }
-      );
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/users/all", {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
       const data = await response.json();
       if (data.status) {
         const sortedUsers = data.data.sort((a, b) =>
@@ -47,14 +46,16 @@ export default function ManageUser({ onClose }) {
     fetchUsers();
   }, []);
 
+  const [transferring, setTransferring] = useState(false);
   const handleDelete = async () => {
     if (!selectedUser) {
       toast.error("Please select a user to delete");
       return;
     }
     try {
+      setTransferring(true)
       const response = await fetch(
-        `http://localhost:5000/api/users/delete/${selectedUser?.id}`,
+        `https://loopback-r9kf.onrender.com/api/users/delete/${selectedUser?.id}`,
         {
           method: "DELETE",
           headers: {
@@ -72,6 +73,38 @@ export default function ManageUser({ onClose }) {
       }
     } catch (e) {
       console.log(e);
+    }finally{
+      setTransferring(false)
+    }
+  };
+
+  
+  const handleTransferTasks = async (transferUserId) => {
+    try {
+      setTransferring(true)
+      const response = await fetch(
+        `https://loopback-r9kf.onrender.com/api/helper/transfer-tasks`,
+        {
+          method: "POST",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({
+            fromUserId: selectedUser.id,
+            toUserId: transferUserId,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.status) {
+        toast.success("Tasks transferred!");
+        fetchUsers();
+        setDeleteOpen(false);
+      } else {
+        toast.error(data.message || "Failed to transfer tasks");
+      }
+    } catch (e) {
+      console.error(e);
+    }finally{
+      setTransferring(false)
     }
   };
 
@@ -134,10 +167,7 @@ export default function ManageUser({ onClose }) {
               </thead>
               <tbody>
                 {users.map((u, idx) => (
-                  <tr
-                    key={u._id || idx}
-                    className="border-t hover:bg-gray-50"
-                  >
+                  <tr key={u._id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border">
                       {u.fld_first_name + " " + u.fld_last_name}
                     </td>
@@ -170,6 +200,9 @@ export default function ManageUser({ onClose }) {
                             onClick={() => {
                               setSelectedUser(u);
                               setDeleteOpen(true);
+                              setDeleteUserName(
+                                u.fld_first_name + " " + u.fld_last_name
+                              );
                             }}
                           >
                             Delete
@@ -203,13 +236,14 @@ export default function ManageUser({ onClose }) {
           />
         )}
         {deleteOpen && (
-          <ConfirmationModal
-            title="Are you sure want to delete?"
-            message="This action is irreversible."
-            onYes={handleDelete}
-            onClose={() => {
-              setDeleteOpen(false);
-            }}
+          <DeleteOrTransferModal
+          transferring={transferring}
+            userName={deleteUserName}
+            allUsers={users}
+            currentUserId={selectedUser.id}
+            onClose={() => setDeleteOpen(false)}
+            onDelete={handleDelete}
+            onTransfer={handleTransferTasks}
           />
         )}
       </AnimatePresence>

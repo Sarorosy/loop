@@ -21,7 +21,8 @@ import {
   Wallet,
 } from "lucide-react";
 import Select from "react-select";
-import { formatDate } from "../helpers/CommonHelper";
+import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
+import AddTags from "./detailsUtils/AddTags";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -33,45 +34,44 @@ function Dashboard() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
-    taskNameOrId: "",
-    assignedTo: "",
-    milestone: "",
-    milestoneStatus: "",
-    milestoneCompletionStatus: "",
-    createdDate: "",
-    days: "",
-    dueDate: "",
-    bucketName: "",
-    taskStatus: "",
-    assignedBy: "",
-    projectId: "",
-    queryStatus: "",
-    paymentRange: "",
-  });
+  taskNameOrId: "",
+  assignedTo: "",
+  milestone: "",
+  milestoneStatus: "",
+  milestoneCompletionStatus: "",
+  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
+  fromDate: "",      // for custom filter
+  toDate: "",
+  days: "",
+  dueDate: "",
+  bucketName: "",
+  taskStatus: "",
+  assignedBy: "",
+  projectId: "",
+  queryStatus: "",
+  paymentRange: "",
+});
 
   DataTable.use(DT);
 
   // Separate function outside the component
-  const fetchTasks = async (user, setTasks, setLoading) => {
+  const fetchTasks = async (user, setTasks, setLoading, filterParam) => {
     //if (!user) return;
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/tasks/get",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: user?.id,
-            user_type: user?.fld_admin_type,
-            assigned_team: user?.fld_assigned_team,
-            filters: filters,
-          }),
-        }
-      );
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/get", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_type: user?.fld_admin_type,
+          assigned_team: user?.fld_assigned_team,
+          filters: filterParam,
+        }),
+      });
       const data = await res.json();
       if (data.status) {
         setTasks(data?.data);
@@ -87,7 +87,7 @@ function Dashboard() {
 
   // Usage inside the component
   useEffect(() => {
-    fetchTasks(user, setTasks, setLoading);
+    fetchTasks(user, setTasks, setLoading, filters);
   }, [user]);
 
   useEffect(() => {
@@ -98,10 +98,10 @@ function Dashboard() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -112,6 +112,7 @@ function Dashboard() {
       toast.error("Failed to load dropdown data");
     }
   };
+
 
   // Columns Definition
   const columns = [
@@ -139,8 +140,74 @@ function Dashboard() {
       title: "Bucket Name",
       data: "bucket_display_name",
       orderable: false,
-      render: (data) => data || "-",
+      render: (data) => {
+        if (!data) return "-";
+
+        return `
+      <button class="bucket-btn cursor-pointer" style="font-size: 11px; color: #2563EB;text-align:left;">
+        ${data}
+      </button>
+    `;
+      },
     },
+    {
+      title: "Progress",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => {
+        const progress = calculateTaskProgress(row);
+        const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
+
+        const size = 28; // Circle size
+        const strokeWidth = 3;
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius;
+        const progressOffset = circumference * (1 - progress / 100);
+
+        return `
+      <div style="position: relative; width: ${size}px; height: ${size}px;">
+        <svg width="${size}" height="${size}" >
+          <circle
+            cx="${size / 2}"
+            cy="${size / 2}"
+            r="${radius}"
+            stroke="${displayText == "0%" ? "#FF0000FF"  : "#FFFFFFFF"}"
+            stroke-width="${strokeWidth}"
+            fill="none"
+          />
+          <circle
+            cx="${size / 2}"
+            cy="${size / 2}"
+            r="${radius}"
+            stroke="#0C7733FF"
+            stroke-width="${strokeWidth}"
+            fill="none"
+            stroke-linecap="round"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${progressOffset}"
+            transform="rotate(-90 ${size / 2} ${size / 2})"
+          />
+        </svg>
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: ${size}px;
+          height: ${size}px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          color: ${displayText == "0%" ? "#FF0000FF"  : "#0C7733FF"};
+          font-weight: bold;
+        ">
+          ${displayText}
+        </div>
+      </div>
+    `;
+      },
+    },
+
     {
       title: "Due Date & Time",
       data: null,
@@ -246,22 +313,41 @@ function Dashboard() {
 
   const resetFilters = () => {
     setFilters({
-      taskNameOrId: "",
-      assignedTo: "",
-      milestone: "",
-      milestoneStatus: "",
-      milestoneCompletionStatus: "",
-      createdDate: "",
-      days: "",
-      dueDate: "",
-      bucketName: "",
-      taskStatus: "",
-      assignedBy: "",
-      projectId: "",
-      queryStatus: "",
-      paymentRange: "",
-    });
-    fetchTasks(user, setTasks, setLoading);
+  taskNameOrId: "",
+  assignedTo: "",
+  milestone: "",
+  milestoneStatus: "",
+  milestoneCompletionStatus: "",
+  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
+  fromDate: "",      // for custom filter
+  toDate: "",
+  days: "",
+  dueDate: "",
+  bucketName: "",
+  taskStatus: "",
+  assignedBy: "",
+  projectId: "",
+  queryStatus: "",
+  paymentRange: "",
+});
+    fetchTasks(user, setTasks, setLoading, {
+  taskNameOrId: "",
+  assignedTo: "",
+  milestone: "",
+  milestoneStatus: "",
+  milestoneCompletionStatus: "",
+  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
+  fromDate: "",      // for custom filter
+  toDate: "",
+  days: "",
+  dueDate: "",
+  bucketName: "",
+  taskStatus: "",
+  assignedBy: "",
+  projectId: "",
+  queryStatus: "",
+  paymentRange: "",
+});
   };
 
   return (
@@ -410,19 +496,63 @@ function Dashboard() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Created Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.createdDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, createdDate: e.target.value })
-                  }
-                />
-              </div>
+  <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+    <CalendarDays size={13} className="text-gray-500" />
+    Created Date
+  </label>
+  <Select
+    classNamePrefix="task-filter"
+    value={[
+      { value: "", label: "Select Date Range" },
+      { value: "today", label: "Today" },
+      { value: "yesterday", label: "Yesterday" },
+      { value: "7days", label: "Last 7 Days" },
+      { value: "30days", label: "Last 30 Days" },
+      { value: "90days", label: "Last 90 Days" },
+      { value: "custom", label: "Custom" },
+    ].find((o) => o.value === filters.createdDate) || null}
+    onChange={(selectedOption) =>
+      setFilters({
+        ...filters,
+        createdDate: selectedOption?.value || "",
+        fromDate: "", // reset when option changes
+        toDate: "",
+      })
+    }
+    options={[
+      { value: "", label: "Select Date Range" },
+      { value: "today", label: "Today" },
+      { value: "yesterday", label: "Yesterday" },
+      { value: "7days", label: "Last 7 Days" },
+      { value: "30days", label: "Last 30 Days" },
+      { value: "90days", label: "Last 90 Days" },
+      { value: "custom", label: "Custom" },
+    ]}
+  />
+</div>
+{filters.createdDate === "custom" && (
+  <div className="flex flex-col gap-2 mt-2">
+    <div className="flex flex-col">
+      <label className="text-[11px] font-medium text-gray-600 mb-1">From Date</label>
+      <input
+        type="date"
+        className="px-2 py-2.5 border rounded bg-white border-gray-300"
+        value={filters.fromDate}
+        onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+      />
+    </div>
+    <div className="flex flex-col">
+      <label className="text-[11px] font-medium text-gray-600 mb-1">To Date</label>
+      <input
+        type="date"
+        className="px-2 py-2.5 border rounded bg-white border-gray-300"
+        value={filters.toDate}
+        onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+      />
+    </div>
+  </div>
+)}
+
 
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
@@ -703,8 +833,24 @@ function Dashboard() {
                       $(row)
                         .find(".tag-btn")
                         .on("click", () => {
-                          setSelectedTags(data.tag_names || "");
+                          setSelectedTags(data.task_tag || "");
+                          setSelectedTask(data);
                           setUpdateTagModalOpen(true);
+                        });
+
+                      $(row)
+                        .find(".bucket-btn")
+                        .on("click", () => {
+                          setFilters({
+                            ...filters,
+                            bucketName: data?.fld_bucket_name || "",
+                          });
+                          setTimeout(() => {
+                            fetchTasks(user, setTasks, setLoading, {
+                              ...filters,
+                              bucketName: data?.fld_bucket_name || "",
+                            });
+                          }, 300);
                         });
                     },
                   }}
@@ -718,6 +864,26 @@ function Dashboard() {
                 taskId={selectedTask?.task_id}
                 onClose={() => {
                   setDetailsOpen(false);
+                }}
+              />
+            )}
+
+            {updateTagModalOpen && selectedTask && (
+              <AddTags
+                taskId={selectedTask.task_id}
+                tags={selectedTags?.split(",") ?? []}
+                onClose={() => {
+                  setUpdateTagModalOpen(false);
+                }}
+                after={(response) => {
+                  // response.tag_names contains the updated tag names
+                  setTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                      task.task_id == selectedTask.task_id
+                        ? { ...task, tag_names: response.tag_names }
+                        : task
+                    )
+                  );
                 }}
               />
             )}

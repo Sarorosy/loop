@@ -24,7 +24,7 @@ export default function AddUser({ onClose, after }) {
 
   // Fetch teams
   useEffect(() => {
-    fetch("http://localhost:5000/api/helper/allteams")
+    fetch("https://loopback-r9kf.onrender.com/api/helper/allteams")
       .then((res) => res.json())
       .then((data) => setTeams(data.data || []))
       .catch((err) => console.error("Error fetching teams:", err));
@@ -94,7 +94,7 @@ export default function AddUser({ onClose, after }) {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/add", {
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/users/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

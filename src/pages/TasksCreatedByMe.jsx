@@ -23,7 +23,8 @@ import {
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
-import { formatDate } from "../helpers/CommonHelper";
+import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
+import AddTags from "./detailsUtils/AddTags";
 
 function TasksCreatedByMe() {
   const { user } = useAuth();
@@ -40,7 +41,9 @@ function TasksCreatedByMe() {
     milestone: "",
     milestoneStatus: "",
     milestoneCompletionStatus: "",
-    createdDate: "",
+    createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+    fromDate: "", // for custom filter
+    toDate: "",
     days: "",
     dueDate: "",
     bucketName: "",
@@ -54,13 +57,13 @@ function TasksCreatedByMe() {
   DataTable.use(DT);
 
   // Separate function outside the component
-  const fetchTasks = async (user, setTasks, setLoading) => {
+  const fetchTasks = async (user, setTasks, setLoading, filterParam) => {
     //if (!user) return;
 
     setLoading(true);
     try {
       const res = await fetch(
-        "http://localhost:5000/api/tasks/getmycreatedtasks",
+        "https://loopback-r9kf.onrender.com/api/tasks/getmycreatedtasks",
         {
           method: "POST",
           headers: {
@@ -70,7 +73,7 @@ function TasksCreatedByMe() {
             user_id: user?.id,
             user_type: user?.fld_admin_type,
             assigned_team: user?.fld_assigned_team,
-            filters: filters,
+            filters: filterParam,
           }),
         }
       );
@@ -89,7 +92,7 @@ function TasksCreatedByMe() {
 
   // Usage inside the component
   useEffect(() => {
-    fetchTasks(user, setTasks, setLoading);
+    fetchTasks(user, setTasks, setLoading, filters);
   }, [user]);
 
   useEffect(() => {
@@ -100,10 +103,10 @@ function TasksCreatedByMe() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -141,7 +144,72 @@ function TasksCreatedByMe() {
       title: "Bucket Name",
       data: "bucket_display_name",
       orderable: false,
-      render: (data) => data || "-",
+      render: (data) => {
+        if (!data) return "-";
+
+        return `
+      <button class="bucket-btn cursor-pointer" style="font-size: 11px; color: #2563EB;text-align:left;">
+        ${data}
+      </button>
+    `;
+      },
+    },
+    {
+      title: "Progress",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => {
+        const progress = calculateTaskProgress(row);
+        const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
+
+        const size = 28; // Circle size
+        const strokeWidth = 3;
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius;
+        const progressOffset = circumference * (1 - progress / 100);
+
+        return `
+          <div style="position: relative; width: ${size}px; height: ${size}px;">
+            <svg width="${size}" height="${size}" >
+              <circle
+                cx="${size / 2}"
+                cy="${size / 2}"
+                r="${radius}"
+                stroke="${displayText == "0%" ? "#FF0000FF" : "#FFFFFFFF"}"
+                stroke-width="${strokeWidth}"
+                fill="none"
+              />
+              <circle
+                cx="${size / 2}"
+                cy="${size / 2}"
+                r="${radius}"
+                stroke="#0C7733FF"
+                stroke-width="${strokeWidth}"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${progressOffset}"
+                transform="rotate(-90 ${size / 2} ${size / 2})"
+              />
+            </svg>
+            <div style="
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: ${size}px;
+              height: ${size}px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 10px;
+              color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
+              font-weight: bold;
+            ">
+              ${displayText}
+            </div>
+          </div>
+        `;
+      },
     },
     {
       title: "Due Date & Time",
@@ -157,16 +225,28 @@ function TasksCreatedByMe() {
       title: "Tag",
       data: "tag_names",
       orderable: false,
-      render: (data) => {
-        if (!data) return "-";
-        return data
-          .split(",")
-          .map(
-            (tag) => `
-          <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
-        `
-          )
-          .join("");
+      render: (data, type, rowData) => {
+        const tagsHtml = data
+          ? data
+              .split(",")
+              .map(
+                (tag) => `
+              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+            `
+              )
+              .join("")
+          : "";
+
+        const buttonLabel = data ? "Edit Tags" : "Add Tag";
+
+        // Add a button with a data attribute to identify the row
+        const buttonHtml = `
+      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+        ${buttonLabel}
+      </button>
+    `;
+
+        return `${tagsHtml}${buttonHtml}`;
       },
     },
     {
@@ -213,6 +293,9 @@ function TasksCreatedByMe() {
     },
   ];
 
+  const [selectedTags, setSelectedTags] = useState("");
+  const [updateTagModalOpen, setUpdateTagModalOpen] = useState(false);
+
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -237,23 +320,20 @@ function TasksCreatedByMe() {
       return;
     }
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/tasks/delete",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            task_id: selectedTask?.task_id,
-          }),
-        }
-      );
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/delete", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          task_id: selectedTask?.task_id,
+        }),
+      });
       const data = await response.json();
       if (data.status) {
         toast.success(data.message || "Task Deleted Succesfully");
         setDeleteOpen(false);
-        fetchTasks(user, setTasks, setLoading);
+        fetchTasks(user, setTasks, setLoading, filters);
       } else {
         toast.error(data.message || "Error deleting task");
       }
@@ -288,7 +368,9 @@ function TasksCreatedByMe() {
       milestone: "",
       milestoneStatus: "",
       milestoneCompletionStatus: "",
-      createdDate: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
       days: "",
       dueDate: "",
       bucketName: "",
@@ -298,7 +380,24 @@ function TasksCreatedByMe() {
       queryStatus: "",
       paymentRange: "",
     });
-    fetchTasks(user, setTasks, setLoading);
+    fetchTasks(user, setTasks, setLoading, {
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
   };
 
   return (
@@ -355,15 +454,68 @@ function TasksCreatedByMe() {
                   <CalendarDays size={13} className="text-gray-500" />
                   Created Date
                 </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.createdDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, createdDate: e.target.value })
+                <Select
+                  classNamePrefix="task-filter"
+                  value={
+                    [
+                      { value: "", label: "Select Date Range" },
+                      { value: "today", label: "Today" },
+                      { value: "yesterday", label: "Yesterday" },
+                      { value: "7days", label: "Last 7 Days" },
+                      { value: "30days", label: "Last 30 Days" },
+                      { value: "90days", label: "Last 90 Days" },
+                      { value: "custom", label: "Custom" },
+                    ].find((o) => o.value === filters.createdDate) || null
                   }
+                  onChange={(selectedOption) =>
+                    setFilters({
+                      ...filters,
+                      createdDate: selectedOption?.value || "",
+                      fromDate: "", // reset when option changes
+                      toDate: "",
+                    })
+                  }
+                  options={[
+                    { value: "", label: "Select Date Range" },
+                    { value: "today", label: "Today" },
+                    { value: "yesterday", label: "Yesterday" },
+                    { value: "7days", label: "Last 7 Days" },
+                    { value: "30days", label: "Last 30 Days" },
+                    { value: "90days", label: "Last 90 Days" },
+                    { value: "custom", label: "Custom" },
+                  ]}
                 />
               </div>
+              {filters.createdDate === "custom" && (
+                <div className="flex flex-col gap-2 mt-2">
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-medium text-gray-600 mb-1">
+                      From Date
+                    </label>
+                    <input
+                      type="date"
+                      className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                      value={filters.fromDate}
+                      onChange={(e) =>
+                        setFilters({ ...filters, fromDate: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[11px] font-medium text-gray-600 mb-1">
+                      To Date
+                    </label>
+                    <input
+                      type="date"
+                      className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                      value={filters.toDate}
+                      onChange={(e) =>
+                        setFilters({ ...filters, toDate: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
@@ -489,6 +641,29 @@ function TasksCreatedByMe() {
                       $(row)
                         .find(".delete-btn")
                         .on("click", () => handleDeleteButtonClick(data));
+
+                      $(row)
+                        .find(".tag-btn")
+                        .on("click", () => {
+                          setSelectedTags(data.task_tag || "");
+                          setSelectedTask(data);
+                          setUpdateTagModalOpen(true);
+                        });
+
+                      $(row)
+                        .find(".bucket-btn")
+                        .on("click", () => {
+                          setFilters({
+                            ...filters,
+                            bucketName: data?.fld_bucket_name || "",
+                          });
+                          setTimeout(() => {
+                            fetchTasks(user, setTasks, setLoading, {
+                              ...filters,
+                              bucketName: data?.fld_bucket_name || "",
+                            });
+                          }, 300);
+                        });
                     },
                   }}
                 />
@@ -512,6 +687,25 @@ function TasksCreatedByMe() {
                 onYes={handleDelete}
                 onClose={() => {
                   setDeleteOpen(false);
+                }}
+              />
+            )}
+            {updateTagModalOpen && selectedTask && (
+              <AddTags
+                taskId={selectedTask.task_id}
+                tags={selectedTags?.split(",") ?? []}
+                onClose={() => {
+                  setUpdateTagModalOpen(false);
+                }}
+                after={(response) => {
+                  // response.tag_names contains the updated tag names
+                  setTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                      task.task_id == selectedTask.task_id
+                        ? { ...task, tag_names: response.tag_names }
+                        : task
+                    )
+                  );
                 }}
               />
             )}

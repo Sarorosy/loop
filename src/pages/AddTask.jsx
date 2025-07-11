@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
+import { useNavigate } from "react-router-dom";
 
 export default function AddTask() {
   const [buckets, setBuckets] = useState([]);
@@ -10,6 +11,7 @@ export default function AddTask() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const {user} = useAuth();
+  const navigate = useNavigate();
 
   const todayDateTime = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 
@@ -40,10 +42,10 @@ export default function AddTask() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestonesList((await milestonesRes.json())?.data || []);
@@ -87,6 +89,7 @@ export default function AddTask() {
     setFiles(updated);
   };
 
+  const [creatingTask, setCreatingTask] = useState(false)
   const handleSubmit = async (e) => {
   e.preventDefault();
   
@@ -112,7 +115,7 @@ export default function AddTask() {
     }
     
     if (!formData.dueDate) {
-      errors.push("Due date is required");
+      //errors.push("Due date is required");
     }
     
     // Validate due date is not in the past
@@ -199,6 +202,7 @@ export default function AddTask() {
   }
   
   try {
+    setCreatingTask(true)
     // Show loading state
     const loadingToast = toast.loading("Creating task...");
     
@@ -246,7 +250,7 @@ export default function AddTask() {
     });
     
     // Make API call
-    const response = await fetch('http://localhost:5000/api/tasks/create', {
+    const response = await fetch('https://loopback-r9kf.onrender.com/api/tasks/create', {
       method: 'POST',
       body: formDataToSend,
       // Don't set Content-Type header - let browser set it with boundary for FormData
@@ -259,6 +263,7 @@ export default function AddTask() {
     
     if (response.ok) {
       toast.success('Task created successfully!');
+      navigate('/tasks/created-by-me');
       
       // Reset form after successful submission
       // setFormData({
@@ -304,6 +309,8 @@ export default function AddTask() {
     }
     
     console.error('Task creation error:', error);
+  }finally{
+    setCreatingTask(false)
   }
 };
 
@@ -358,7 +365,7 @@ export default function AddTask() {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6">
+          <form className="p-6">
             {/* Basic Information */}
             <div className="mb-8">
               <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -836,10 +843,11 @@ export default function AddTask() {
             {/* Submit Button */}
             <div className="flex justify-end pt-4 border-t border-gray-200">
               <button
-                type="submit"
-                className="inline-flex items-center px-2 py-1 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                type="button"
+                onClick={handleSubmit}
+                className="inline-flex items-center px-2 py-1 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
               >
-                Create Task
+                {creatingTask ? "Creating..." : "Create Task"}
               </button>
             </div>
           </form>

@@ -8,7 +8,8 @@ import TaskDetails from "./TaskDetails";
 import { AnimatePresence } from "framer-motion";
 import { Filter, Layers2, RefreshCcw, User2 } from "lucide-react";
 
-import { formatDate } from "../helpers/CommonHelper";
+import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
+import AddTags from "./detailsUtils/AddTags";
 
 function TasksFollowing() {
   const { user } = useAuth();
@@ -20,45 +21,44 @@ function TasksFollowing() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
-    taskNameOrId: "",
-    assignedTo: "",
-    milestone: "",
-    milestoneStatus: "",
-    milestoneCompletionStatus: "",
-    createdDate: "",
-    days: "",
-    dueDate: "",
-    bucketName: "",
-    taskStatus: "",
-    assignedBy: "",
-    projectId: "",
-    queryStatus: "",
-    paymentRange: "",
-  });
+  taskNameOrId: "",
+  assignedTo: "",
+  milestone: "",
+  milestoneStatus: "",
+  milestoneCompletionStatus: "",
+  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
+  fromDate: "",      // for custom filter
+  toDate: "",
+  days: "",
+  dueDate: "",
+  bucketName: "",
+  taskStatus: "",
+  assignedBy: "",
+  projectId: "",
+  queryStatus: "",
+  paymentRange: "",
+});
 
   DataTable.use(DT);
 
   // Separate function outside the component
-  const fetchTasks = async (user, setTasks, setLoading) => {
+  const fetchTasks = async (user, setTasks, setLoading, filterParam) => {
     //if (!user) return;
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/tasks/following",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: user?.id,
-            user_type: user?.fld_admin_type,
-            assigned_team: user?.fld_assigned_team,
-            filters: filters,
-          }),
-        }
-      );
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/following", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_type: user?.fld_admin_type,
+          assigned_team: user?.fld_assigned_team,
+          filters: filterParam,
+        }),
+      });
       const data = await res.json();
       if (data.status) {
         setTasks(data?.data);
@@ -74,7 +74,7 @@ function TasksFollowing() {
 
   // Usage inside the component
   useEffect(() => {
-    fetchTasks(user, setTasks, setLoading);
+    fetchTasks(user, setTasks, setLoading, filters);
   }, [user]);
 
   useEffect(() => {
@@ -85,10 +85,10 @@ function TasksFollowing() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -126,7 +126,72 @@ function TasksFollowing() {
       title: "Bucket Name",
       data: "bucket_display_name",
       orderable: false,
-      render: (data) => data || "-",
+      render: (data) => {
+        if (!data) return "-";
+
+        return `
+      <button class="bucket-btn cursor-pointer" style="font-size: 11px; color: #2563EB;text-align:left;">
+        ${data}
+      </button>
+    `;
+      },
+    },
+    {
+      title: "Progress",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => {
+        const progress = calculateTaskProgress(row);
+        const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
+
+        const size = 28; // Circle size
+        const strokeWidth = 3;
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius;
+        const progressOffset = circumference * (1 - progress / 100);
+
+        return `
+          <div style="position: relative; width: ${size}px; height: ${size}px;">
+            <svg width="${size}" height="${size}" >
+              <circle
+                cx="${size / 2}"
+                cy="${size / 2}"
+                r="${radius}"
+                stroke="${displayText == "0%" ? "#FF0000FF" : "#FFFFFFFF"}"
+                stroke-width="${strokeWidth}"
+                fill="none"
+              />
+              <circle
+                cx="${size / 2}"
+                cy="${size / 2}"
+                r="${radius}"
+                stroke="#0C7733FF"
+                stroke-width="${strokeWidth}"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${progressOffset}"
+                transform="rotate(-90 ${size / 2} ${size / 2})"
+              />
+            </svg>
+            <div style="
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: ${size}px;
+              height: ${size}px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 10px;
+              color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
+              font-weight: bold;
+            ">
+              ${displayText}
+            </div>
+          </div>
+        `;
+      },
     },
     {
       title: "Due Date & Time",
@@ -142,16 +207,28 @@ function TasksFollowing() {
       title: "Tag",
       data: "tag_names",
       orderable: false,
-      render: (data) => {
-        if (!data) return "-";
-        return data
-          .split(",")
-          .map(
-            (tag) => `
-          <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
-        `
-          )
-          .join("");
+      render: (data, type, rowData) => {
+        const tagsHtml = data
+          ? data
+              .split(",")
+              .map(
+                (tag) => `
+              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+            `
+              )
+              .join("")
+          : "";
+
+        const buttonLabel = data ? "Edit Tags" : "Add Tag";
+
+        // Add a button with a data attribute to identify the row
+        const buttonHtml = `
+      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+        ${buttonLabel}
+      </button>
+    `;
+
+        return `${tagsHtml}${buttonHtml}`;
       },
     },
     {
@@ -187,6 +264,9 @@ function TasksFollowing() {
     },
   ];
 
+  const [selectedTags, setSelectedTags] = useState("");
+  const [updateTagModalOpen, setUpdateTagModalOpen] = useState(false);
+
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const handleViewButtonClick = (task) => {
@@ -215,22 +295,41 @@ function TasksFollowing() {
 
   const resetFilters = () => {
     setFilters({
-      taskNameOrId: "",
-      assignedTo: "",
-      milestone: "",
-      milestoneStatus: "",
-      milestoneCompletionStatus: "",
-      createdDate: "",
-      days: "",
-      dueDate: "",
-      bucketName: "",
-      taskStatus: "",
-      assignedBy: "",
-      projectId: "",
-      queryStatus: "",
-      paymentRange: "",
-    });
-    fetchTasks(user, setTasks, setLoading);
+  taskNameOrId: "",
+  assignedTo: "",
+  milestone: "",
+  milestoneStatus: "",
+  milestoneCompletionStatus: "",
+  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
+  fromDate: "",      // for custom filter
+  toDate: "",
+  days: "",
+  dueDate: "",
+  bucketName: "",
+  taskStatus: "",
+  assignedBy: "",
+  projectId: "",
+  queryStatus: "",
+  paymentRange: "",
+});
+    fetchTasks(user, setTasks, setLoading, {
+  taskNameOrId: "",
+  assignedTo: "",
+  milestone: "",
+  milestoneStatus: "",
+  milestoneCompletionStatus: "",
+  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
+  fromDate: "",      // for custom filter
+  toDate: "",
+  days: "",
+  dueDate: "",
+  bucketName: "",
+  taskStatus: "",
+  assignedBy: "",
+  projectId: "",
+  queryStatus: "",
+  paymentRange: "",
+});
   };
 
   return (
@@ -273,6 +372,29 @@ function TasksFollowing() {
                       $(row)
                         .find(".view-btn")
                         .on("click", () => handleViewButtonClick(data));
+
+                      $(row)
+                        .find(".tag-btn")
+                        .on("click", () => {
+                          setSelectedTags(data.task_tag || "");
+                          setSelectedTask(data);
+                          setUpdateTagModalOpen(true);
+                        });
+
+                      $(row)
+                        .find(".bucket-btn")
+                        .on("click", () => {
+                          setFilters({
+                            ...filters,
+                            bucketName: data?.fld_bucket_name || "",
+                          });
+                          setTimeout(() => {
+                            fetchTasks(user, setTasks, setLoading, {
+                              ...filters,
+                              bucketName: data?.fld_bucket_name || "",
+                            });
+                          }, 300);
+                        });
                     },
                   }}
                 />
@@ -285,6 +407,26 @@ function TasksFollowing() {
                 taskId={selectedTask?.task_id}
                 onClose={() => {
                   setDetailsOpen(false);
+                }}
+              />
+            )}
+
+            {updateTagModalOpen && selectedTask && (
+              <AddTags
+                taskId={selectedTask.task_id}
+                tags={selectedTags?.split(",") ?? []}
+                onClose={() => {
+                  setUpdateTagModalOpen(false);
+                }}
+                after={(response) => {
+                  // response.tag_names contains the updated tag names
+                  setTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                      task.task_id == selectedTask.task_id
+                        ? { ...task, tag_names: response.tag_names }
+                        : task
+                    )
+                  );
                 }}
               />
             )}

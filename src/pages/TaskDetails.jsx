@@ -39,18 +39,48 @@ export default function TaskDetails({ taskId, onClose }) {
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [updateTaskModalOpen, setUpdateTaskModalOpen] = useState(false);
 
+  const [showRemarksInput, setShowRemarksInput] = useState(false);
+  const [taskRemarks, setTaskRemarks] = useState("");
+
+  // Example submit handler
+  const submitRemarks = async () => {
+    if (!taskRemarks) {
+      toast.error("Pls enter Comments");
+      return;
+    }
+    try {
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/addremarks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task_id: taskId,
+          remarks: taskRemarks,
+          user_id: user?.id,
+        }),
+      });
+      const data = await res.json();
+      if (data.status) {
+        fetchTaskDetails();
+        toast.success("Added!");
+        setShowRemarksInput(false);
+        setTaskRemarks("");
+      } else {
+        toast.error(data.message || "Error adding remarks");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const [showFollowers, setShowFollowers] = useState(true);
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "http://localhost:5000/api/tasks/details",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task_id: taskId }),
-        }
-      );
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_id: taskId }),
+      });
       const data = await res.json();
       if (data.status) setTask(data.data);
       else console.error("Error fetching task:", data.message);
@@ -67,7 +97,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsOnGoing = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/markAsOngoing",
+        "https://loopback-r9kf.onrender.com/api/helper/markAsOngoing",
         {
           method: "POST",
           headers: {
@@ -96,7 +126,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsCompleted = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/markAsCompleted",
+        "https://loopback-r9kf.onrender.com/api/helper/markAsCompleted",
         {
           method: "POST",
           headers: {
@@ -121,6 +151,8 @@ export default function TaskDetails({ taskId, onClose }) {
       toast.error("Error while completing task");
     }
   };
+
+
 
   if (!task) {
     return (
@@ -201,9 +233,37 @@ export default function TaskDetails({ taskId, onClose }) {
   };
 
   const progress = calculateTaskProgress(task);
-  console.log(task.fld_benchmark_name);
   const progressLabel =
     progress >= 100 ? "Completed" : `${Math.round(progress)}% Completed`;
+  // console.log(task.fld_benchmark_name);
+
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+
+    const date = new Date(dateString);
+
+    const hasTime =
+        dateString.includes(' ') || dateString.includes('T'); // detect if time part exists
+
+    if (hasTime) {
+        return date.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        }).replace(',', '');
+    } else {
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+    }
+}
+
 
   return (
     <motion.div
@@ -381,10 +441,9 @@ export default function TaskDetails({ taskId, onClose }) {
                         Created :
                       </span>
                       <span className="text-gray-900 ml-1 leading-none">
-                        {task.fld_addedon}
+                        {formatDate(task.fld_addedon)}
                       </span>
                     </div>
-
                   </div>
                 </div>
 
@@ -404,6 +463,50 @@ export default function TaskDetails({ taskId, onClose }) {
                         "<p class='text-gray-500 italic'>No description provided</p>",
                     }}
                   />
+                </div>
+                <div className="gap-3">
+                  {task.fld_task_status !== "updated" &&
+                    task.fld_task_status !== "Completed" &&
+                    (task.fld_assign_to == user?.id ||
+                      task.fld_follower?.split(",").includes(user?.id)) && (
+                      <>
+                        {!showRemarksInput ? (
+                          <button
+                            className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
+                            onClick={() => setShowRemarksInput(true)}
+                          >
+                            Add Remarks
+                          </button>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <textarea
+                              rows={4}
+                              className="border border-gray-300 rounded p-2 text-sm bg-white"
+                              placeholder="Enter your remarks here..."
+                              value={taskRemarks}
+                              onChange={(e) => setTaskRemarks(e.target.value)}
+                            ></textarea>
+                            <div className="flex gap-2">
+                              <button
+                                className="bg-green-500 text-white text-xs py-1 px-3 rounded hover:bg-green-600"
+                                onClick={submitRemarks}
+                              >
+                                Submit
+                              </button>
+                              <button
+                                className="bg-gray-300 text-gray-800 text-xs py-1 px-3 rounded hover:bg-gray-400"
+                                onClick={() => {
+                                  setShowRemarksInput(false);
+                                  setTaskRemarks("");
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                 </div>
 
                 <div className="flex gap-3">
@@ -559,7 +662,7 @@ export default function TaskDetails({ taskId, onClose }) {
                     </div>
                     <div className="flex text-[13px] text-gray-900 ">
                       <span className="leading-none">
-                        {task.fld_due_date || "No due date"}
+                        {formatDate(task.fld_due_date) || "No due date"}
                       </span>
                     </div>
                   </div>

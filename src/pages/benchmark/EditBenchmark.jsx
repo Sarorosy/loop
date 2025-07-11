@@ -22,7 +22,7 @@ export default function EditBenchmark({ onClose, benchmarkData, onUpdate }) {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`http://localhost:5000/api/helper/benchmark/update/${benchmarkData.id}`, {
+      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/benchmark/update/${benchmarkData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

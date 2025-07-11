@@ -32,7 +32,7 @@ export default function AddOtherTags({ onClose, after }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/helper/othertags/create`, {
+      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/othertags/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tag_name : name, category, tag_type : tagType, user_id: user?.id }),

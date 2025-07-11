@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function EditTask() {
   const [buckets, setBuckets] = useState([]);
@@ -14,6 +14,7 @@ export default function EditTask() {
   const [taskData, setTaskData] = useState(null);
   const { user } = useAuth();
   const { taskId } = useParams();
+  const navigate = useNavigate();
 
   const todayDateTime = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 
@@ -50,7 +51,7 @@ export default function EditTask() {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/tasks/details", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,10 +126,10 @@ export default function EditTask() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestonesList((await milestonesRes.json())?.data || []);
@@ -189,7 +190,7 @@ export default function EditTask() {
       }
 
       if (!formData.projectId) {
-        errors.push("Please select a project");
+        //errors.push("Please select a project");
       }
 
       if (!formData.assignedTo) {
@@ -204,7 +205,7 @@ export default function EditTask() {
       if (formData.dueDate) {
         const today = new Date().toISOString().split("T")[0];
         if (formData.dueDate < today) {
-          errors.push("Due date cannot be in the past");
+         // errors.push("Due date cannot be in the past");
         }
       }
 
@@ -353,7 +354,7 @@ export default function EditTask() {
       });
 
       // Make API call
-      const response = await fetch("http://localhost:5000/api/tasks/update", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/update", {
         method: "POST",
         body: formDataToSend,
         // Don't set Content-Type header - let browser set it with boundary for FormData
@@ -385,6 +386,7 @@ export default function EditTask() {
         });
         setMilestones([]);
         setFiles([]);
+        navigate(-1)
 
         // Optional: Redirect to task list or task detail page
         // window.location.href = '/tasks';

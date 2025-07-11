@@ -44,7 +44,7 @@ export default function EditProject({ onClose, projectData, onUpdate }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/helper/project/update/${projectData.id}`, {
+      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/project/update/${projectData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

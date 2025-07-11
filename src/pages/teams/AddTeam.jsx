@@ -18,7 +18,7 @@ export default function AddTeam({ onClose, after }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/users/all", {
+        const response = await fetch("https://loopback-r9kf.onrender.com/api/users/all", {
           method: "GET",
           headers: { "Content-type": "application/json" },
         });
@@ -59,7 +59,7 @@ export default function AddTeam({ onClose, after }) {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/helper/team/create`, {
+      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/team/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
