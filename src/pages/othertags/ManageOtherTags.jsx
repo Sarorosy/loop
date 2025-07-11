@@ -70,26 +70,27 @@ export default function ManageOtherTags({ onClose }) {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">Manage Other Tags</h2>
+      <div className="flex items-end justify-between gap-2">
+        <h2 className="text-[16px] font-semibold">Manage Other Tags</h2>
+        <div className="flex items-center gap-2">
+          <button
+            className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+            onClick={fetchTags}
+          >
+            <RefreshCcw size={13} className="" /> Refresh
+          </button>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+            onClick={() => setAddOpen(true)}
+          >
+            <Plus size={13} className="" /> Add
+          </button>
+        </div>
       </div>
 
       {/* Actions */}
-      <div className="p-4">
-        <div className="flex items-center justify-end space-x-2 my-2">
-          <button
-            className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
-            onClick={fetchTags}
-          >
-            <RefreshCcw size={14} className="mr-1" /> Refresh
-          </button>
-          <button
-            className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
-            onClick={() => setAddOpen(true)}
-          >
-            <Plus size={14} className="mr-1" /> Add
-          </button>
-        </div>
+      <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1 pt-5">
+        
 
         {/* Table */}
         {loading ? (
@@ -116,7 +117,7 @@ export default function ManageOtherTags({ onClose }) {
                     <td className="px-4 py-2 border">
                       <div className="flex items-center space-x-2">
                         <button
-                          className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
+                          className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
                           onClick={() => {
                             setSelectedTag(tag);
                             setEditOpen(true);
@@ -125,7 +126,7 @@ export default function ManageOtherTags({ onClose }) {
                           Edit
                         </button>
                         <button
-                          className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
+                          className="delete-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
                           onClick={() => {
                             setSelectedTag(tag);
                             setDeleteOpen(true);

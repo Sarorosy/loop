@@ -15,7 +15,13 @@ export default function Layout() {
         id="scroll-container"
       >
         <div className="container m-0 max-w-[100%]">
-          <Outlet />
+          <div className="bg-[#F3F3F3]">
+          <div className="max-w-[1250px] mx-auto py-5">
+          <div className="bg-white py-4 px-4">
+            <Outlet />
+          </div>
+          </div>
+          </div>
         </div>
         <div className="border-t  bg-black text-white px-4 py-1 flex items-center justify-center">
           <p className="text-sm ">

@@ -8,18 +8,20 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     task.completedBenchmarks || []
   );
   const [remarks, setRemarks] = useState("");
-   const [benchmarks, setBenchmarks] = useState([]); 
+  const [benchmarks, setBenchmarks] = useState([]);
   const [files, setFiles] = useState([]);
   const [fileError, setFileError] = useState("");
-  const {user} = useAuth();
+  const { user } = useAuth();
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchBenchmarks = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/helper/allbenchmarks"); // replace with your API endpoint
+        const res = await fetch(
+          "http://localhost:5000/api/helper/allbenchmarks"
+        ); // replace with your API endpoint
         const data = await res.json();
-        if(data.status){
-            setBenchmarks(data.data); // assuming API returns [{id: 16, name: "Initial Review"}, ...]
+        if (data.status) {
+          setBenchmarks(data.data); // assuming API returns [{id: 16, name: "Initial Review"}, ...]
         }
       } catch (err) {
         console.error("Error fetching benchmarks", err);
@@ -29,20 +31,17 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     fetchBenchmarks();
   }, []);
 
-    const getBenchmarkName = (benchmarkId) => {
+  const getBenchmarkName = (benchmarkId) => {
     return (
       benchmarks.find((b) => b.id == benchmarkId)?.fld_benchmark_name ||
       `Benchmark ${benchmarkId}`
     );
   };
 
-
   const handleCheckboxChange = (benchmark) => {
-    if(task && task.task_tag == null){
-
+    if (task && task.task_tag == null) {
       toast.error("Please add at least one tag before selecting.");
       return;
-
     }
     if (selectedBenchmarks.includes(benchmark)) {
       setSelectedBenchmarks(
@@ -77,6 +76,14 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     setFiles([...files, null]);
   };
 
+  const removeFileInput = (index) => {
+    const updatedFiles = [...files];
+    updatedFiles.splice(index, 1);
+    setFiles(updatedFiles);
+    setFileError(""); // Clear any previous error
+  };
+
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,8 +94,8 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     formData.append("task_type", task.task_type);
     formData.append("is_marked_as_ongoing", task.is_marked_as_ongoing);
     formData.append("remarks", remarks);
-    if(!task.fld_benchmark_name && task.fld_benchmark_name == ""){
-      formData.append("hidden_milestones", 'No');
+    if (!task.fld_benchmark_name && task.fld_benchmark_name == "") {
+      formData.append("hidden_milestones", "No");
     }
     selectedBenchmarks.forEach((b) => formData.append("benchmark[]", b));
     files.forEach((f) => {
@@ -96,20 +103,25 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     });
 
     try {
-      const response = await fetch("http://localhost:5000/api/tasks/closetask", {
-        method: "POST",
-        body: formData,
-      });
+      setSubmitting(true);
+      const response = await fetch(
+        "http://localhost:5000/api/tasks/closetask",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await response.json();
-      if(data.status){
+      if (data.status) {
         onClose();
         after();
-      }else{
-        toast.error(data.message || "Error while updating")
+      } else {
+        toast.error(data.message || "Error while updating");
       }
-      
     } catch (error) {
       console.error("Error updating task progress:", error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -170,8 +182,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
                   uncheckedBenchmarks.includes(72);
 
                 return benchmarkNameArray.map((benchmark, index) => {
-                  const benchmarkName =
-                    getBenchmarkName(benchmark);
+                  const benchmarkName = getBenchmarkName(benchmark);
 
                   const isChecked =
                     completedBenchmarksArray.includes(benchmark);
@@ -203,7 +214,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
                         checked={
                           selectedBenchmarks.includes(benchmark) || isChecked
                         }
-                        disabled={isChecked } //|| !canSelect || isDisabled
+                        disabled={isChecked} //|| !canSelect || isDisabled
                         onChange={() => handleCheckboxChange(benchmark)}
                       />
                       <label htmlFor={`checkbox_${index}`} className="ml-2">
@@ -226,28 +237,43 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           </div>
 
           <div className="mb-4">
-            <label className="font-medium">
-              File Upload (Max 25MB per file, Max 3 files)
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              File Upload{" "}
+              <span className="text-xs text-gray-500">
+                (Max 25MB per file, Max 3 files)
+              </span>
             </label>
-            {files.map((file, index) => (
-              <div className="flex items-center mb-2" key={index}>
-                <input
-                  type="file"
-                  accept=".doc, .docx, .pdf, .gif, .jpeg, .jpg, .png, .xlsx, .csv, .rar, .zip, .odt"
-                  onChange={(e) => handleFileChange(e, index)}
-                  className="w-full"
-                />
-              </div>
-            ))}
+
+            <div className="space-y-2">
+              {files.map((file, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept=".doc, .docx, .pdf, .gif, .jpeg, .jpg, .png, .xlsx, .csv, .rar, .zip, .odt"
+                    onChange={(e) => handleFileChange(e, index)}
+                    className="flex-1 text-sm border rounded p-1 "
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFileInput(index)}
+                    className="text-red-500 hover:text-red-700 text-lg font-bold border border-red-500 px-2 rounded"
+                  >
+                    &minus;
+                  </button>
+                </div>
+              ))}
+            </div>
+
             <button
               type="button"
               onClick={addFileInput}
-              className="mt-1 text-blue-500 underline"
+              className="mt-2 text-blue-600 text-sm hover:underline"
             >
-              Add another file
+              {files.length > 0 ? "+ Add Another File" : "+ Add File"}
             </button>
+
             {fileError && (
-              <div className="text-red-500 text-sm mt-1">{fileError}</div>
+              <div className="text-red-500 text-xs mt-2">{fileError}</div>
             )}
           </div>
 
@@ -261,9 +287,10 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             </button>
             <button
               type="submit"
+              disabled={submitting}
               className="px-4 py-2 bg-blue-600 text-white rounded"
             >
-              Submit
+              {submitting ? "Submitting" : "Submit"}
             </button>
           </div>
         </form>

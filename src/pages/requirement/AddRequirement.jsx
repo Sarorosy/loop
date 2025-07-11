@@ -57,8 +57,8 @@ export default function AddRequirement({ onClose, after }) {
       transition={{ duration: 0.3 }}
       className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto"
     >
-      <div className="bg-gray-100 flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">Add Requirement</h2>
+      <div className="flex items-center justify-between p-4 bg-[#224d68] text-white">
+        <h2 className="text-[16px] font-semibold">Add Requirement</h2>
         <button onClick={onClose}>
           <X size={20} />
         </button>
@@ -70,7 +70,10 @@ export default function AddRequirement({ onClose, after }) {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           >
             <option value="PhD">PhD</option>
             <option value="Sales">Sales</option>
@@ -83,21 +86,25 @@ export default function AddRequirement({ onClose, after }) {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
             placeholder="Requirement Name"
           />
         </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
-
-        <button
-          type="button"
-          disabled={loading}
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
-        >
-          {loading ? "Adding..." : "Add Requirement"}
-        </button>
+        <div className="text-end">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={handleSubmit}
+            className="bg-blue-600 text-white py-2 px-2 rounded hover:bg-blue-700 text-[13px] leading-none"
+          >
+            {loading ? "Adding..." : "Add Requirement"}
+          </button>
+        </div>
       </form>
     </motion.div>
   );

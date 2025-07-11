@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, RefreshCcw, X } from "lucide-react";
+import { Plus, RefreshCcw, X, Users, User, Calendar, Settings } from "lucide-react";
+import DataTable from "datatables.net-react";
+import DT from "datatables.net-dt";
+import $ from "jquery";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
-import AddTeam from './AddTeam';
-import EditTeam from './EditTeam';
+import AddTeam from "./AddTeam";
+import EditTeam from "./EditTeam";
 
 export default function ManageTeams({ onClose }) {
   const [teams, setTeams] = useState([]);
@@ -13,12 +16,20 @@ export default function ManageTeams({ onClose }) {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const tableRef = useRef(null);
 
-  // Fetch all users
+  // Initialize DataTable
+  DataTable.use(DT);
 
-  const fetchUsers = async () => {
+  // Memoized fetch function
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
+
+      if (tableRef.current && $.fn.dataTable.isDataTable(tableRef.current)) {
+      $(tableRef.current).DataTable().destroy();
+    }
+
       const response = await fetch(
         "http://localhost:5000/api/helper/allteams",
         {
@@ -31,15 +42,147 @@ export default function ManageTeams({ onClose }) {
       const data = await response.json();
       if (data.status) {
         setTeams(data.data);
+      } else {
+        toast.error(data.message || "Failed to fetch teams");
       }
     } catch (e) {
-      console.log(e);
+      console.error("Error fetching teams:", e);
+      toast.error("Failed to fetch teams");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
   useEffect(() => {
     fetchUsers();
+  }, []);
+
+  // DataTable columns definition
+  const columns = [
+    {
+      title: "Team Name",
+      data: "team_name",
+      orderable: true,
+      render: (data) => `
+        <div class="flex items-center gap-2">
+          
+          <span class="font-medium">${data || "-"}</span>
+        </div>
+      `,
+    },
+    {
+      title: "Team Members",
+      data: "team_members_details",
+      orderable: false,
+      render: (data) => {
+        if (!data || data.length === 0) {
+          return '<span class="text-gray-500 italic">No Members</span>';
+        }
+        const members = Array.isArray(data) ? data : [data];
+        const displayMembers = members.join(", ");
+        
+        return `
+          <div class="max-w-xs">
+            <span class="text-sm">${displayMembers}</span>}
+          </div>
+        `;
+      },
+    },
+    {
+      title: "Created By",
+      data: "created_by_name",
+      orderable: true,
+      render: (data) => `
+        <div class="flex items-center gap-2">
+          
+          <span class="text-sm">${data || "-"}</span>
+        </div>
+      `,
+    },
+    {
+      title: "Created On",
+      data: "created_on",
+      orderable: true,
+      render: (data) => {
+        if (!data) return "-";
+        const date = new Date(data);
+        return `
+          <div class="flex items-center gap-2">
+           
+            <span class="text-sm">${date.toLocaleDateString()}</span>
+          </div>
+        `;
+      },
+    },
+    {
+      title: "Actions",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => `
+        <div class="flex items-center gap-2">
+          <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+            
+            Edit
+          </button>
+          <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+            
+            Delete
+          </button>
+        </div>
+      `,
+    },
+  ];
+
+  // Initialize DataTable when teams data changes
+  useEffect(() => {
+    if (!teams.length) return;
+
+    const table = $(tableRef.current).DataTable({
+      destroy: true,
+      responsive: true,
+      data: teams,
+      columns: columns,
+      order: [[3, "desc"]], // Sort by created date descending
+      pageLength: 25,
+      language: {
+        emptyTable: "No teams found",
+        info: "Showing _START_ to _END_ of _TOTAL_ teams",
+        infoEmpty: "Showing 0 to 0 of 0 teams",
+        search: "Search teams:",
+        lengthMenu: "Show _MENU_ teams per page",
+      },
+      createdRow: (row, data) => {
+        // Add event listeners for action buttons
+        $(row)
+          .find(".edit-btn")
+          .on("click", (e) => {
+            e.stopPropagation();
+            handleEditClick(data);
+          });
+
+        $(row)
+          .find(".delete-btn")
+          .on("click", (e) => {
+            e.stopPropagation();
+            handleDeleteClick(data);
+          });
+      },
+    });
+
+    return () => {
+      table.destroy();
+    };
+  }, [teams]);
+
+  // Action handlers
+  const handleEditClick = useCallback((team) => {
+    setSelectedTeam(team);
+    setEditOpen(true);
+  }, []);
+
+  const handleDeleteClick = useCallback((team) => {
+    setSelectedTeam(team);
+    setDeleteOpen(true);
   }, []);
 
   const handleDelete = async () => {
@@ -47,6 +190,7 @@ export default function ManageTeams({ onClose }) {
       toast.error("Please select a team to delete");
       return;
     }
+    
     try {
       const response = await fetch(
         `http://localhost:5000/api/helper/team/delete/${selectedTeam?.id}`,
@@ -58,135 +202,169 @@ export default function ManageTeams({ onClose }) {
         }
       );
       const data = await response.json();
+      
       if (data.status) {
-        toast.success("Deleted!");
+        toast.success("Team deleted successfully!");
         fetchUsers();
         setDeleteOpen(false);
+        setSelectedTeam(null);
       } else {
-        toast.error(data.message || "failed to delete");
+        toast.error(data.message || "Failed to delete team");
       }
     } catch (e) {
-      console.log(e);
+      console.error("Error deleting team:", e);
+      toast.error("Failed to delete team");
     }
   };
 
+  // Close handlers
+  const handleAddClose = useCallback(() => {
+    setAddopen(false);
+  }, []);
+
+  const handleEditClose = useCallback(() => {
+    setEditOpen(false);
+    setSelectedTeam(null);
+  }, []);
+
+  const handleDeleteClose = useCallback(() => {
+    setDeleteOpen(false);
+    setSelectedTeam(null);
+  }, []);
+
   return (
-    // <motion.div
-    //   initial={{ x: "100%" }}
-    //   animate={{ x: 0 }}
-    //   exit={{ x: "100%" }}
-    //   transition={{ duration: 0.3 }}
-    //   className="fixed top-0 right-0 w-full h-full bg-white shadow-lg z-50 overflow-y-auto"
-    // >
-    <div>
+
+    <div className="">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">Manage Teams</h2>
+      <div className="">
+        <div className="flex items-center justify-between">
+          <div className="flex items-end gap-2">
+            <Users size={20} className="text-blue-600" />
+            <h2 className="text-lg font-semibold text-gray-800 leading-none">Manage Teams</h2>
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 leading-none">
+                  {teams.length} team{teams.length !== 1 ? 's' : ''} found
+                </span>
+              </div>
+              
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-sm font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+              onClick={fetchUsers}
+              disabled={loading}
+            >
+              <RefreshCcw size={13} className={` ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+              onClick={() => setAddopen(true)}
+            >
+              <Plus size={13}  className="" />
+              Add Team
+            </button>
+          </div>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
+        )}
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <div className="flex items-center justify-end space-x-2 my-2">
-          <button
-            className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
-            onClick={fetchUsers}
-          >
-            <RefreshCcw size={14} className="mr-1" /> Refresh
-          </button>
-          <button
-            className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
-            onClick={() => {
-              setAddopen(true);
-            }}
-          >
-            <Plus size={14} className="mr-1" /> Add
-          </button>
-        </div>
+      <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+        
+
+        {/* DataTable */}
         {loading ? (
-          <p className="text-center text-sm text-gray-500">Loading teams...</p>
+          <div className="flex items-center justify-center py-8">
+            <div className="flex items-center gap-2">
+              <RefreshCcw className="w-5 h-5 animate-spin text-blue-600" />
+              <span className="text-sm text-gray-600">Loading teams...</span>
+            </div>
+          </div>
         ) : teams.length === 0 ? (
-          <p className="text-center text-sm text-gray-500">No teams found.</p>
-        ) : (
-          <div className="overflow-x-auto">
-           <table className="min-w-full text-sm border border-gray-200">
-  <thead className="bg-gray-100">
-    <tr>
-      <th className="px-4 py-2 text-left border">Team Name</th>
-      <th className="px-4 py-2 text-left border">Team Members</th>
-      <th className="px-4 py-2 text-left border">Created By</th>
-      <th className="px-4 py-2 text-left border">Added On</th>
-      <th className="px-4 py-2 text-left border">Actions</th>
-    </tr>
-  </thead>
-  <tbody className="f-12">
-    {teams.map((team, idx) => (
-      <tr key={team.id || idx} className="border-t hover:bg-gray-50">
-        <td className="px-4 py-2 border">{team.team_name}</td>
-        <td className="px-4 py-2 border">
-          {team.team_members_details?.join(", ") || "No Members"}
-        </td>
-        <td className="px-4 py-2 border">{team.created_by_name}</td>
-        <td className="px-4 py-2 border">{team.created_on}</td>
-        <td className="px-4 py-2 border">
-          <div className="flex items-center space-x-2">
+          <div className="text-center py-8">
+            <Users className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+            <p className="text-gray-500">No teams found.</p>
             <button
-              className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
-              onClick={() => {
-                setSelectedTeam(team);
-                setEditOpen(true);
-              }}
+              className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+              onClick={() => setAddopen(true)}
             >
-              Edit
-            </button>
-            <button
-              className="bg-gray-300 rounded px-1 py-0.5 flex items-center"
-              onClick={() => {
-                setSelectedTeam(team);
-                setDeleteOpen(true);
-              }}
-            >
-              Delete
+              Create +
             </button>
           </div>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+        ) : (
+          <div className="bg-white rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table ref={tableRef} className="w-full text-sm">
+                <thead>
+                  <tr>
+                    <th>Team Name</th>
+                    <th>Team Members</th>
+                    <th>Created By</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* DataTable will populate this */}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Modals */}
       <AnimatePresence>
         {addOpen && (
-          <AddTeam
-            onClose={() => {
-              setAddopen(false);
-            }}
-            after={fetchUsers}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
+          >
+            <AddTeam
+              onClose={handleAddClose}
+              after={fetchUsers}
+            />
+          </motion.div>
         )}
-        {editOpen && (
-          <EditTeam
-            onClose={() => {
-              setEditOpen(false);
-            }}
-            teamData={selectedTeam}
-            onUpdate={fetchUsers}
-          />
+        
+        {editOpen && selectedTeam && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
+          >
+            <EditTeam
+              onClose={handleEditClose}
+              teamData={selectedTeam}
+              onUpdate={fetchUsers}
+            />
+          </motion.div>
         )}
-        {deleteOpen && (
+        
+        {deleteOpen && selectedTeam && (
           <ConfirmationModal
-            title="Are you sure want to delete?"
-            message="This action is irreversible."
+            title="Delete Team"
+            message={`Are you sure you want to delete "${selectedTeam.team_name}"? This action cannot be undone.`}
             onYes={handleDelete}
-            onClose={() => {
-              setDeleteOpen(false);
-            }}
+            onClose={handleDeleteClose}
           />
         )}
       </AnimatePresence>
-      {/* </motion.div> */}
     </div>
+
   );
 }

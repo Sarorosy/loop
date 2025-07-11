@@ -87,10 +87,10 @@ export default function AddBucket({ onClose, after }) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 w-full max-w-md h-full bg-white shadow-lg z-50 overflow-y-auto"
+      className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto"
     >
-      <div className="bg-gray-100 flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">Add Bucket</h2>
+      <div className="flex items-center justify-between p-4 bg-[#224d68] text-white">
+        <h2 className="text-[16px] font-semibold">Add Bucket</h2>
         <button onClick={onClose}><X size={20} /></button>
       </div>
 
@@ -102,7 +102,10 @@ export default function AddBucket({ onClose, after }) {
             type="text"
             value={bucketName}
             onChange={(e) => setBucketName(e.target.value)}
-            className="w-full border rounded px-3 py-2 text-sm mt-1"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600 mt-1"
           />
         </div>
 
@@ -121,7 +124,10 @@ export default function AddBucket({ onClose, after }) {
               value={bucketDescription}
               onChange={(e) => setBucketDescription(e.target.value)}
               rows={4}
-              className="w-full border rounded px-3 py-2 text-sm mt-1"
+              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600 mt-1"
             />
           )}
         </div>
@@ -165,15 +171,16 @@ export default function AddBucket({ onClose, after }) {
         {/* Error & Success */}
         {error && <p className="text-sm text-red-500">{error}</p>}
         {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
-
+        <div className="text-end">
         <button
           type="button"
           disabled={loading}
           onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
+          className="bg-blue-600 text-white py-2 px-2 rounded hover:bg-blue-700 text-[13px] leading-none"
         >
           {loading ? "Adding..." : "Add Bucket"}
         </button>
+        </div>
       </form>
     </motion.div>
   );

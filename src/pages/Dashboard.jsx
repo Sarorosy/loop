@@ -21,6 +21,7 @@ import {
   Wallet,
 } from "lucide-react";
 import Select from "react-select";
+import { formatDate } from "../helpers/CommonHelper";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -142,8 +143,11 @@ function Dashboard() {
       data: null,
       orderable: false,
       render: (data, type, row) => {
-        const dueDate = row.fld_due_date || "-";
+        const dueDate = row.fld_due_date ? formatDate(row.fld_due_date) : "-";
         const dueTime = row.fld_due_time || "";
+
+        if (dueDate === "-") return "-";
+
         return `${dueDate} ${dueTime}`.trim();
       },
     },
@@ -151,16 +155,28 @@ function Dashboard() {
       title: "Tag",
       data: "tag_names",
       orderable: false,
-      render: (data) => {
-        if (!data) return "-";
-        return data
-          .split(",")
-          .map(
-            (tag) => `
-          <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
-        `
-          )
-          .join("");
+      render: (data, type, rowData) => {
+        const tagsHtml = data
+          ? data
+              .split(",")
+              .map(
+                (tag) => `
+              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+            `
+              )
+              .join("")
+          : "";
+
+        const buttonLabel = data ? "Edit Tags" : "Add Tag";
+
+        // Add a button with a data attribute to identify the row
+        const buttonHtml = `
+      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+        ${buttonLabel}
+      </button>
+    `;
+
+        return `${tagsHtml}${buttonHtml}`;
       },
     },
     {
@@ -170,8 +186,8 @@ function Dashboard() {
       render: (data) => {
         const status = data || "-";
         let color = "#6B7280"; // default gray
-        if (status === "Completed") color = "#10B981";
-        else if (status === "Pending") color = "#EF4444";
+        if (status === "Completed" || status === "Updated") color = "#10B981";
+        else if (status === "Pending" || status === "Late") color = "#EF4444";
         return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
       },
     },
@@ -195,6 +211,9 @@ function Dashboard() {
       `,
     },
   ];
+
+  const [selectedTags, setSelectedTags] = useState("");
+  const [updateTagModalOpen, setUpdateTagModalOpen] = useState(false);
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -243,452 +262,460 @@ function Dashboard() {
   };
 
   return (
-    <div className=" bg-[#F3F3F3]">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="bg-white py-4 px-4">
-          <div
-           className="text-xl font-bold mb-4 flex items-center justify-between">
-            Dashboard
-            <div className="flex gap-3">
-              <button
-                onClick={resetFilters}
-                className="p-1 rounded hover:bg-gray-100"
-              >
-                <RefreshCcw size={14} className="text-gray-700" />
-              </button>
-
-              <p
-                onClick={() => {
-                  setFiltersVisible(!filtersVisible);
-                }}
-                className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
-              >
-                <Filter size={11} /> Filter
-              </p>
-            </div>
-          </div>
-
-          <div
-            className={`${
-              filtersVisible
-                ? "block bg-gray-100 rounded   border-blue-400 p-3"
-                : "hidden"
-            }`}
+    <div className="">
+      <div className="text-xl font-bold mb-4 flex items-center justify-between">
+        Dashboard
+        <div className="flex gap-3">
+          <button
+            onClick={resetFilters}
+            className="p-1 rounded hover:bg-gray-100"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Tag size={13} className="text-gray-500" />
-                  Task Title / ID
-                </label>
-                <input
-                  type="text"
-                  placeholder="Task Title / ID"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.taskNameOrId}
-                  onChange={(e) =>
-                    setFilters({ ...filters, taskNameOrId: e.target.value })
-                  }
-                />
-              </div>
+            <RefreshCcw size={14} className="text-gray-700" />
+          </button>
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <User size={13} className="text-gray-500" />
-                  Assigned To
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    users
-                      .map((u) => ({
-                        value: u.id,
-                        label: `${u.fld_first_name} ${u.fld_last_name}`,
-                      }))
-                      .find((o) => o.value === filters.assignedTo) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      assignedTo: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Assigned To" },
-                    ...users.map((u) => ({
-                      value: u.id,
-                      label: `${u.fld_first_name} ${u.fld_last_name}`,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Flag size={13} className="text-gray-500" />
-                  Milestone
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    milestones
-                      .map((m) => ({
-                        value: m.id,
-                        label: m.fld_benchmark_name,
-                      }))
-                      .find((o) => o.value === filters.milestone) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestone: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Milestone" },
-                    ...milestones.map((m) => ({
-                      value: m.id,
-                      label: m.fld_benchmark_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CheckCircle size={13} className="text-gray-500" />
-                  Milestone Completion Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Completion Status" },
-                      { value: "overdue1", label: "Overdue" },
-                      { value: "not_completed", label: "Not Completed" },
-                      { value: "on_time", label: "Completed on Time" },
-                      { value: "overdue", label: "Completed as Overdue" },
-                    ].find(
-                      (o) => o.value === filters.milestoneCompletionStatus
-                    ) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestoneCompletionStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Completion Status" },
-                    { value: "overdue1", label: "Overdue" },
-                    { value: "not_completed", label: "Not Completed" },
-                    { value: "on_time", label: "Completed on Time" },
-                    { value: "overdue", label: "Completed as Overdue" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Created Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.createdDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, createdDate: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Due Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.dueDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, dueDate: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Layers2 size={13} className="text-gray-500" />
-                  Bucket Name
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    buckets
-                      .map((b) => ({
-                        value: b.id,
-                        label: b.fld_bucket_name,
-                      }))
-                      .find((o) => o.value === filters.bucketName) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      bucketName: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Bucket Name" },
-                    ...buckets.map((b) => ({
-                      value: b.id,
-                      label: b.fld_bucket_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <ClipboardList size={13} className="text-gray-500" />
-                  Task Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Status" },
-                      { value: "Open", label: "Open" },
-                      { value: "Updated", label: "Updated" },
-                      { value: "Overdue", label: "Overdue" },
-                      { value: "Today", label: "Today" },
-                      { value: "Late but closed", label: "Late but closed" },
-                      { value: "Completed", label: "Completed" },
-                    ].find((o) => o.value === filters.taskStatus) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      taskStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Status" },
-                    { value: "Open", label: "Open" },
-                    { value: "Updated", label: "Updated" },
-                    { value: "Overdue", label: "Overdue" },
-                    { value: "Today", label: "Today" },
-                    { value: "Late but closed", label: "Late but closed" },
-                    { value: "Completed", label: "Completed" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <User2 size={13} className="text-gray-500" />
-                  Assigned By
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    users
-                      .map((u) => ({
-                        value: u.id,
-                        label: `${u.fld_first_name} ${u.fld_last_name}`,
-                      }))
-                      .find((o) => o.value === filters.assignedBy) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      assignedBy: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Assigned By" },
-                    ...users.map((u) => ({
-                      value: u.id,
-                      label: `${u.fld_first_name} ${u.fld_last_name}`,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Briefcase size={13} className="text-gray-500" />
-                  Project
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    projects
-                      .map((p) => ({
-                        value: p.id,
-                        label: p.fld_project_name,
-                      }))
-                      .find((o) => o.value === filters.projectId) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      projectId: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select project" },
-                    ...projects.map((p) => ({
-                      value: p.id,
-                      label: p.fld_project_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Info size={13} className="text-gray-500" />
-                  Query Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Query Status" },
-                      { value: "Contact Made", label: "Contact Made" },
-                      { value: "Contact Not Made", label: "Contact Not Made" },
-                      {
-                        value: "Client Not Interested",
-                        label: "Client Not Interested",
-                      },
-                      { value: "In Discussion", label: "In Discussion" },
-                      { value: "Lost Deal", label: "Lost Deal" },
-                      { value: "Low Pricing", label: "Low Pricing" },
-                      { value: "Discount Given", label: "Discount Given" },
-                      { value: "Quoted", label: "Quoted" },
-                      { value: "Converted", label: "Converted" },
-                    ].find((o) => o.value === filters.queryStatus) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      queryStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Query Status" },
-                    { value: "Contact Made", label: "Contact Made" },
-                    { value: "Contact Not Made", label: "Contact Not Made" },
-                    {
-                      value: "Client Not Interested",
-                      label: "Client Not Interested",
-                    },
-                    { value: "In Discussion", label: "In Discussion" },
-                    { value: "Lost Deal", label: "Lost Deal" },
-                    { value: "Low Pricing", label: "Low Pricing" },
-                    { value: "Discount Given", label: "Discount Given" },
-                    { value: "Quoted", label: "Quoted" },
-                    { value: "Converted", label: "Converted" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Wallet size={13} className="text-gray-500" />
-                  Payment Range
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Payment Range" },
-                      { value: "0-40000", label: "INR 0 - 40k" },
-                      { value: "40000-80000", label: "INR 40k - 80k" },
-                      { value: "80000-100000", label: "INR 80k - 1 lakh" },
-                      {
-                        value: "100000-140000",
-                        label: "INR 1 lakh - 1.4 lakh",
-                      },
-                      {
-                        value: "140000-180000",
-                        label: "INR 1.4 lakh - 1.8 lakh",
-                      },
-                      {
-                        value: "180000-200000",
-                        label: "INR 1.8 lakh - 2 lakh",
-                      },
-                    ].find((o) => o.value === filters.paymentRange) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      paymentRange: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Payment Range" },
-                    { value: "0-40000", label: "INR 0 - 40k" },
-                    { value: "40000-80000", label: "INR 40k - 80k" },
-                    { value: "80000-100000", label: "INR 80k - 1 lakh" },
-                    { value: "100000-140000", label: "INR 1 lakh - 1.4 lakh" },
-                    {
-                      value: "140000-180000",
-                      label: "INR 1.4 lakh - 1.8 lakh",
-                    },
-                    { value: "180000-200000", label: "INR 1.8 lakh - 2 lakh" },
-                  ]}
-                />
-              </div>
-            </div>
-
-            <div className="w-full flex items-center justify-end">
-              <button
-                onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
-                className="px-2 py-1 bg-blue-600 text-white rounded f-11"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-
-          {loading ? (
-            <div>Loading tasks...</div>
-          ) : tasks.length === 0 ? (
-            <div>No tasks found.</div>
-          ) : (
-            <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
-              <div className="table-scrollable">
-                <DataTable
-                  data={tasks}
-                  columns={columns}
-                  options={{
-                    pageLength: 50,
-                    ordering: false,
-                    createdRow: (row, data) => {
-                      $(row)
-                        .find(".view-btn")
-                        .on("click", () => handleViewButtonClick(data));
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <AnimatePresence>
-            {detailsOpen && selectedTask && (
-              <TaskDetails
-                taskId={selectedTask?.task_id}
-                onClose={() => {
-                  setDetailsOpen(false);
-                }}
-              />
-            )}
-          </AnimatePresence>
+          <p
+            onClick={() => {
+              setFiltersVisible(!filtersVisible);
+            }}
+            className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
+          >
+            <Filter size={11} /> Filter
+          </p>
         </div>
       </div>
+
+      <div
+        className={`${
+          filtersVisible
+            ? "block bg-gray-100 rounded   border-blue-400 p-3"
+            : "hidden"
+        }`}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Tag size={13} className="text-gray-500" />
+              Task Title / ID
+            </label>
+            <input
+              type="text"
+              placeholder="Task Title / ID"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.taskNameOrId}
+              onChange={(e) =>
+                setFilters({ ...filters, taskNameOrId: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <User size={13} className="text-gray-500" />
+              Assigned To
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                users
+                  .map((u) => ({
+                    value: u.id,
+                    label: `${u.fld_first_name} ${u.fld_last_name}`,
+                  }))
+                  .find((o) => o.value === filters.assignedTo) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  assignedTo: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Assigned To" },
+                ...users.map((u) => ({
+                  value: u.id,
+                  label: `${u.fld_first_name} ${u.fld_last_name}`,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Flag size={13} className="text-gray-500" />
+              Milestone
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                milestones
+                  .map((m) => ({
+                    value: m.id,
+                    label: m.fld_benchmark_name,
+                  }))
+                  .find((o) => o.value === filters.milestone) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  milestone: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Milestone" },
+                ...milestones.map((m) => ({
+                  value: m.id,
+                  label: m.fld_benchmark_name,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CheckCircle size={13} className="text-gray-500" />
+              Milestone Completion Status
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Completion Status" },
+                  { value: "overdue1", label: "Overdue" },
+                  { value: "not_completed", label: "Not Completed" },
+                  { value: "on_time", label: "Completed on Time" },
+                  { value: "overdue", label: "Completed as Overdue" },
+                ].find((o) => o.value === filters.milestoneCompletionStatus) ||
+                null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  milestoneCompletionStatus: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Completion Status" },
+                { value: "overdue1", label: "Overdue" },
+                { value: "not_completed", label: "Not Completed" },
+                { value: "on_time", label: "Completed on Time" },
+                { value: "overdue", label: "Completed as Overdue" },
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CalendarDays size={13} className="text-gray-500" />
+              Created Date
+            </label>
+            <input
+              type="date"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.createdDate}
+              onChange={(e) =>
+                setFilters({ ...filters, createdDate: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CalendarDays size={13} className="text-gray-500" />
+              Due Date
+            </label>
+            <input
+              type="date"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.dueDate}
+              onChange={(e) =>
+                setFilters({ ...filters, dueDate: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Layers2 size={13} className="text-gray-500" />
+              Bucket Name
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                buckets
+                  .map((b) => ({
+                    value: b.id,
+                    label: b.fld_bucket_name,
+                  }))
+                  .find((o) => o.value === filters.bucketName) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  bucketName: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Bucket Name" },
+                ...buckets.map((b) => ({
+                  value: b.id,
+                  label: b.fld_bucket_name,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <ClipboardList size={13} className="text-gray-500" />
+              Task Status
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Status" },
+                  { value: "Open", label: "Open" },
+                  { value: "Updated", label: "Updated" },
+                  { value: "Overdue", label: "Overdue" },
+                  { value: "Today", label: "Today" },
+                  { value: "Late but closed", label: "Late but closed" },
+                  { value: "Completed", label: "Completed" },
+                ].find((o) => o.value === filters.taskStatus) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  taskStatus: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Status" },
+                { value: "Open", label: "Open" },
+                { value: "Updated", label: "Updated" },
+                { value: "Overdue", label: "Overdue" },
+                { value: "Today", label: "Today" },
+                { value: "Late but closed", label: "Late but closed" },
+                { value: "Completed", label: "Completed" },
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <User2 size={13} className="text-gray-500" />
+              Assigned By
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                users
+                  .map((u) => ({
+                    value: u.id,
+                    label: `${u.fld_first_name} ${u.fld_last_name}`,
+                  }))
+                  .find((o) => o.value === filters.assignedBy) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  assignedBy: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Assigned By" },
+                ...users.map((u) => ({
+                  value: u.id,
+                  label: `${u.fld_first_name} ${u.fld_last_name}`,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Briefcase size={13} className="text-gray-500" />
+              Project
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                projects
+                  .map((p) => ({
+                    value: p.id,
+                    label: p.fld_project_name,
+                  }))
+                  .find((o) => o.value === filters.projectId) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  projectId: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select project" },
+                ...projects.map((p) => ({
+                  value: p.id,
+                  label: p.fld_project_name,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Info size={13} className="text-gray-500" />
+              Query Status
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Query Status" },
+                  { value: "Contact Made", label: "Contact Made" },
+                  { value: "Contact Not Made", label: "Contact Not Made" },
+                  {
+                    value: "Client Not Interested",
+                    label: "Client Not Interested",
+                  },
+                  { value: "In Discussion", label: "In Discussion" },
+                  { value: "Lost Deal", label: "Lost Deal" },
+                  { value: "Low Pricing", label: "Low Pricing" },
+                  { value: "Discount Given", label: "Discount Given" },
+                  { value: "Quoted", label: "Quoted" },
+                  { value: "Converted", label: "Converted" },
+                ].find((o) => o.value === filters.queryStatus) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  queryStatus: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Query Status" },
+                { value: "Contact Made", label: "Contact Made" },
+                { value: "Contact Not Made", label: "Contact Not Made" },
+                {
+                  value: "Client Not Interested",
+                  label: "Client Not Interested",
+                },
+                { value: "In Discussion", label: "In Discussion" },
+                { value: "Lost Deal", label: "Lost Deal" },
+                { value: "Low Pricing", label: "Low Pricing" },
+                { value: "Discount Given", label: "Discount Given" },
+                { value: "Quoted", label: "Quoted" },
+                { value: "Converted", label: "Converted" },
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Wallet size={13} className="text-gray-500" />
+              Payment Range
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Payment Range" },
+                  { value: "0-40000", label: "INR 0 - 40k" },
+                  { value: "40000-80000", label: "INR 40k - 80k" },
+                  { value: "80000-100000", label: "INR 80k - 1 lakh" },
+                  {
+                    value: "100000-140000",
+                    label: "INR 1 lakh - 1.4 lakh",
+                  },
+                  {
+                    value: "140000-180000",
+                    label: "INR 1.4 lakh - 1.8 lakh",
+                  },
+                  {
+                    value: "180000-200000",
+                    label: "INR 1.8 lakh - 2 lakh",
+                  },
+                ].find((o) => o.value === filters.paymentRange) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  paymentRange: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Payment Range" },
+                { value: "0-40000", label: "INR 0 - 40k" },
+                { value: "40000-80000", label: "INR 40k - 80k" },
+                { value: "80000-100000", label: "INR 80k - 1 lakh" },
+                { value: "100000-140000", label: "INR 1 lakh - 1.4 lakh" },
+                {
+                  value: "140000-180000",
+                  label: "INR 1.4 lakh - 1.8 lakh",
+                },
+                { value: "180000-200000", label: "INR 1.8 lakh - 2 lakh" },
+              ]}
+            />
+          </div>
+        </div>
+
+        <div className="w-full flex items-center justify-end">
+          <button
+            onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
+            className="px-2 py-1 bg-blue-600 text-white rounded f-11"
+          >
+            Apply Filters
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div>Loading tasks...</div>
+      ) : tasks.length === 0 ? (
+        <div>No tasks found.</div>
+      ) : (
+        <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+          <div className="table-scrollable">
+            <DataTable
+              data={tasks}
+              columns={columns}
+              options={{
+                pageLength: 50,
+                ordering: false,
+                createdRow: (row, data) => {
+                  if (data.fld_task_status === "Late") {
+                    $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
+                  }
+                  if (data.fld_task_status === "Completed") {
+                    $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
+                  }
+
+                  $(row)
+                    .find(".view-btn")
+                    .on("click", () => handleViewButtonClick(data));
+
+                  $(row)
+                    .find(".tag-btn")
+                    .on("click", () => {
+                      setSelectedTags(data.tag_names || "");
+                      setUpdateTagModalOpen(true);
+                    });
+                },
+              }}
+            />
+          </div>
+        </div>
+      )}
+      <AnimatePresence>
+        {detailsOpen && selectedTask && (
+          <TaskDetails
+            taskId={selectedTask?.task_id}
+            onClose={() => {
+              setDetailsOpen(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

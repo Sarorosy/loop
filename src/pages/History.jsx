@@ -68,7 +68,7 @@ export default function History({ taskId }) {
   }
 
   return (
-    <div className="p-3 bg-gray-100 rounded">
+    <div className="p-3 bg-gray-100 rounded w-full">
       <div className="flex space-x-3 mb-3">
         {["remarks", "history", "reminders"].map((tab) => (
           <button
@@ -99,6 +99,31 @@ export default function History({ taskId }) {
                 className="f-12 text-gray-600 inner-content"
                 dangerouslySetInnerHTML={{ __html: item.fld_remark }}
               />
+              {item.fld_file && (
+                <div className="mt-2 space-y-1">
+                  {item.fld_file.split(",").map((file, index) => {
+                    const isFullUrl = file.startsWith("http");
+                    const fileUrl = isFullUrl
+                      ? file
+                      : `https://www.apacvault.com/assets/closedtaskfileuploads/${file}`;
+                    const fileName = file.split("/").pop(); // Just show the file name
+
+                    return (
+                      <div key={index}>
+                        <a
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 text-xs underline break-all"
+                        >
+                          {fileName}
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {item.fld_benchmarks && (
                 <div className="mt-1 f-11 text-green-600">
                   Benchmark: {item.fld_benchmarks}

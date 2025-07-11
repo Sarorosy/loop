@@ -104,7 +104,7 @@ export default function AddTask() {
     }
     
     if (!formData.projectId) {
-      errors.push("Please select a project");
+      //errors.push("Please select a project");
     }
     
     if (formData.assignedTo.length === 0) {
@@ -230,7 +230,7 @@ export default function AddTask() {
     
     // Append arrays as JSON strings
     formDataToSend.append('assigned_to', JSON.stringify(formData.assignedTo));
-    formDataToSend.append('follower', JSON.stringify(formData.followers));
+    formDataToSend.append('follower', formData.followers.join(","));
     
     // Append milestones
     if (milestones.length > 0) {
@@ -240,8 +240,8 @@ export default function AddTask() {
     // Append files
     files.forEach((fileObj, index) => {
       if (fileObj.file) {
-        formDataToSend.append(`file_upload`, fileObj.file);
-        formDataToSend.append(`file_names`, fileObj.fileName);
+        formDataToSend.append(`file_upload[]`, fileObj.file);
+        formDataToSend.append(`file_names[]`, fileObj.fileName);
       }
     });
     
@@ -261,23 +261,23 @@ export default function AddTask() {
       toast.success('Task created successfully!');
       
       // Reset form after successful submission
-      setFormData({
-        bucketId: "",
-        assignedTo: [],
-        projectId: "",
-        dueTime: "",
-        dueDate: "",
-        recurring: "No",
-        recurringDuration: "",
-        recurringType: "",
-        followers: [],
-        title: "",
-        description: "",
-        googleLink: "",
-        additionalLink: "",
-      });
-      setMilestones([]);
-      setFiles([]);
+      // setFormData({
+      //   bucketId: "",
+      //   assignedTo: [],
+      //   projectId: "",
+      //   dueTime: "",
+      //   dueDate: "",
+      //   recurring: "No",
+      //   recurringDuration: "",
+      //   recurringType: "",
+      //   followers: [],
+      //   title: "",
+      //   description: "",
+      //   googleLink: "",
+      //   additionalLink: "",
+      // });
+      // setMilestones([]);
+      // setFiles([]);
       
       // Optional: Redirect to task list or task detail page
       // window.location.href = '/tasks';
