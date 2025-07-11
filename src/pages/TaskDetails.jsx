@@ -771,7 +771,7 @@ function formatDate(dateString) {
             </div>
 
             <div className="w-full flex p-3 gap-2">
-              <div className="w-1/2">
+              <div className="w-1/2 flex">
                 <History taskId={taskId} />
               </div>
               <div className="w-1/2">

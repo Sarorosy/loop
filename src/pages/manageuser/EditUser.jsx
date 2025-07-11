@@ -178,14 +178,17 @@ export default function EditUser({ onClose, userData, onUpdate }) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 w-full max-w-lg h-full bg-white shadow-lg z-50 overflow-y-auto"
+      className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
+      
     >
-      <div className="flex items-center justify-between p-4 border-b bg-gray-100">
-        <h2 className="text-lg font-semibold">Edit User</h2>
+      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto">
+      <div className="flex items-center justify-between p-4 bg-[#224d68] text-white">
+        <h2 className="text-[16px] font-semibold">Edit User</h2>
         <button onClick={onClose}>
           <X size={20} />
         </button>
       </div>
+      
 
       <form className="p-4 space-y-4">
         {/* Basic Details */}
@@ -197,7 +200,10 @@ export default function EditUser({ onClose, userData, onUpdate }) {
         {/* Role Selection */}
         <div>
           <label className="block text-sm mb-1">Role</label>
-          <select name="role" value={form.role} onChange={handleChange} className="w-full border rounded px-3 py-2 text-sm">
+          <select name="role" value={form.role} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600">
             <option value="TEAM MEMBER">TEAM MEMBER</option>
             <option value="SUBADMIN">SUBADMIN</option>
           </select>
@@ -260,15 +266,18 @@ export default function EditUser({ onClose, userData, onUpdate }) {
         {error && <p className="text-sm text-red-500">{error}</p>}
         {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
 
-        <button
-          type="button"
-          disabled={loading}
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
-        >
-          {loading ? "Updating..." : "Update User"}
-        </button>
+        <div className="text-end">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={handleSubmit}
+            className="bg-blue-600 text-white py-2 px-2 rounded hover:bg-blue-700 text-[13px] leading-none"
+          >
+            {loading ? "Updating..." : "Update User"}
+          </button>
+        </div>
       </form>
+      </div>
     </motion.div>
   );
 }
@@ -277,7 +286,10 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 const InputField = ({ label, ...props }) => (
   <div>
     <label className="block text-sm mb-1">{label}</label>
-    <input {...props} className="w-full border rounded px-3 py-2 text-sm" />
+    <input {...props} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600" />
   </div>
 );
 
@@ -298,7 +310,10 @@ const RadioButton = ({ label, ...props }) => (
 const SelectTeam = ({ teams, form, handleChange }) => (
   <div>
     <label className="block text-sm mb-1">Select Team</label>
-    <select name="team" value={form.team} onChange={handleChange} className="w-full border rounded px-3 py-2 text-sm">
+    <select name="team" value={form.team} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600">
       <option value="">Select a Team</option>
       {teams.map((team) => (
         <option key={team.id} value={team.id}>
@@ -313,7 +328,10 @@ const TeamAccess = ({ form, handleChange, teamOptions }) => (
   <>
     <div>
       <label className="block text-sm mb-1">Team Access Type</label>
-      <select name="team_access_type" value={form.team_access_type} onChange={handleChange} className="w-full border rounded px-3 py-2 text-sm">
+      <select name="team_access_type" value={form.team_access_type} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600">
         <option value="">Select Access Type</option>
         <option value="All team access">All team access</option>
         <option value="Specific team access">Specific team access</option>

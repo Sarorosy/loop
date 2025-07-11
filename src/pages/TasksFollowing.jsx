@@ -333,9 +333,7 @@ function TasksFollowing() {
   };
 
   return (
-    <div className=" bg-[#F3F3F3]">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="bg-white py-4 px-4">
+        <div className="">
           <div className="text-xl font-bold mb-4 flex items-center justify-between">
             Following Tasks
             <div className="flex gap-3">
@@ -432,8 +430,6 @@ function TasksFollowing() {
             )}
           </AnimatePresence>
         </div>
-      </div>
-    </div>
   );
 }
 

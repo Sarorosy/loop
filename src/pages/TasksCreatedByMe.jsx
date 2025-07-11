@@ -401,53 +401,51 @@ function TasksCreatedByMe() {
   };
 
   return (
-    <div className=" bg-[#F3F3F3]">
-      <div className="max-w-[1250px] mx-auto py-5">
-        <div className="bg-white py-4 px-4">
-          <div className="text-xl font-bold mb-4 flex items-center justify-between">
-            Tasks Created By Me
-            <div className="flex gap-3">
-              <button
-                onClick={resetFilters}
-                className="p-1 rounded hover:bg-gray-100"
-              >
-                <RefreshCcw size={14} className="text-gray-700" />
-              </button>
+      <div className="">
+        <div className="text-xl font-bold mb-4 flex items-center justify-between">
+          Tasks Created By Me
+          <div className="flex gap-3">
+            <button
+              onClick={resetFilters}
+              className="p-1 rounded hover:bg-gray-100"
+            >
+              <RefreshCcw size={14} className="text-gray-700" />
+            </button>
 
-              <p
-                onClick={() => {
-                  setFiltersVisible(!filtersVisible);
-                }}
-                className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
-              >
-                <Filter size={11} /> Filter
-              </p>
-            </div>
+            <p
+              onClick={() => {
+                setFiltersVisible(!filtersVisible);
+              }}
+              className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
+            >
+              <Filter size={11} /> Filter
+            </p>
           </div>
+        </div>
 
-          <div
-            className={`${
-              filtersVisible
-                ? "block bg-gray-100 rounded   border-blue-400 p-3"
-                : "hidden"
-            }`}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Tag size={13} className="text-gray-500" />
-                  Task Title / ID
-                </label>
-                <input
-                  type="text"
-                  placeholder="Task Title / ID"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.taskNameOrId}
-                  onChange={(e) =>
-                    setFilters({ ...filters, taskNameOrId: e.target.value })
-                  }
-                />
-              </div>
+        <div
+          className={`${
+            filtersVisible
+              ? "block bg-gray-100 rounded   border-blue-400 p-3"
+              : "hidden"
+          }`}
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+                <Tag size={13} className="text-gray-500" />
+                Task Title / ID
+              </label>
+              <input
+                type="text"
+                placeholder="Task Title / ID"
+                className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                value={filters.taskNameOrId}
+                onChange={(e) =>
+                  setFilters({ ...filters, taskNameOrId: e.target.value })
+                }
+              />
+            </div>
 
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
@@ -517,77 +515,61 @@ function TasksCreatedByMe() {
                 </div>
               )}
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Due Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.dueDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, dueDate: e.target.value })
-                  }
-                />
-              </div>
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+                <CalendarDays size={13} className="text-gray-500" />
+                Due Date
+              </label>
+              <input
+                type="date"
+                className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                value={filters.dueDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, dueDate: e.target.value })
+                }
+              />
+            </div>
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Layers2 size={13} className="text-gray-500" />
-                  Bucket Name
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    buckets
-                      .map((b) => ({
-                        value: b.id,
-                        label: b.fld_bucket_name,
-                      }))
-                      .find((o) => o.value === filters.bucketName) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      bucketName: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Bucket Name" },
-                    ...buckets.map((b) => ({
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+                <Layers2 size={13} className="text-gray-500" />
+                Bucket Name
+              </label>
+              <Select
+                classNamePrefix="task-filter"
+                value={
+                  buckets
+                    .map((b) => ({
                       value: b.id,
                       label: b.fld_bucket_name,
-                    })),
-                  ]}
-                />
-              </div>
+                    }))
+                    .find((o) => o.value === filters.bucketName) || null
+                }
+                onChange={(selectedOption) =>
+                  setFilters({
+                    ...filters,
+                    bucketName: selectedOption?.value || "",
+                  })
+                }
+                options={[
+                  { value: "", label: "Bucket Name" },
+                  ...buckets.map((b) => ({
+                    value: b.id,
+                    label: b.fld_bucket_name,
+                  })),
+                ]}
+              />
+            </div>
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <ClipboardList size={13} className="text-gray-500" />
-                  Task Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Status" },
-                      { value: "Open", label: "Open" },
-                      { value: "Updated", label: "Updated" },
-                      { value: "Overdue", label: "Overdue" },
-                      { value: "Today", label: "Today" },
-                      { value: "Late but closed", label: "Late but closed" },
-                      { value: "Completed", label: "Completed" },
-                    ].find((o) => o.value === filters.taskStatus) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      taskStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+                <ClipboardList size={13} className="text-gray-500" />
+                Task Status
+              </label>
+              <Select
+                classNamePrefix="task-filter"
+                value={
+                  [
                     { value: "", label: "Select Status" },
                     { value: "Open", label: "Open" },
                     { value: "Updated", label: "Updated" },
@@ -595,18 +577,24 @@ function TasksCreatedByMe() {
                     { value: "Today", label: "Today" },
                     { value: "Late but closed", label: "Late but closed" },
                     { value: "Completed", label: "Completed" },
-                  ]}
-                />
-              </div>
-            </div>
-
-            <div className="w-full flex items-center justify-end">
-              <button
-                onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
-                className="px-2 py-1 bg-blue-600 text-white rounded f-11"
-              >
-                Apply Filters
-              </button>
+                  ].find((o) => o.value === filters.taskStatus) || null
+                }
+                onChange={(selectedOption) =>
+                  setFilters({
+                    ...filters,
+                    taskStatus: selectedOption?.value || "",
+                  })
+                }
+                options={[
+                  { value: "", label: "Select Status" },
+                  { value: "Open", label: "Open" },
+                  { value: "Updated", label: "Updated" },
+                  { value: "Overdue", label: "Overdue" },
+                  { value: "Today", label: "Today" },
+                  { value: "Late but closed", label: "Late but closed" },
+                  { value: "Completed", label: "Completed" },
+                ]}
+              />
             </div>
           </div>
 
@@ -711,8 +699,66 @@ function TasksCreatedByMe() {
             )}
           </AnimatePresence>
         </div>
+
+        {loading ? (
+          <div>Loading tasks...</div>
+        ) : tasks.length === 0 ? (
+          <div>No tasks found.</div>
+        ) : (
+          <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+            <div className="table-scrollable">
+              <DataTable
+                data={tasks}
+                columns={columns}
+                options={{
+                  pageLength: 50,
+                  ordering: false,
+                  createdRow: (row, data) => {
+                    if (data.fld_task_status === "Late") {
+                      $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
+                    }
+                    if (data.fld_task_status === "Completed") {
+                      $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
+                    }
+                    $(row)
+                      .find(".view-btn")
+                      .on("click", () => handleViewButtonClick(data));
+
+                    $(row)
+                      .find(".edit-btn")
+                      .on("click", () => handleEditButtonClick(data)); // <-- Edit button
+
+                    $(row)
+                      .find(".delete-btn")
+                      .on("click", () => handleDeleteButtonClick(data));
+                  },
+                }}
+              />
+            </div>
+          </div>
+        )}
+        <AnimatePresence>
+          {detailsOpen && selectedTask && (
+            <TaskDetails
+              taskId={selectedTask?.task_id}
+              onClose={() => {
+                setDetailsOpen(false);
+              }}
+            />
+          )}
+
+          {deleteOpen && selectedTask && (
+            <ConfirmationModal
+              title="Delete Task"
+              message={`Are you sure you want to delete? This action cannot be undone.`}
+              onYes={handleDelete}
+              onClose={() => {
+                setDeleteOpen(false);
+              }}
+            />
+          )}
+        </AnimatePresence>
       </div>
-    </div>
   );
 }
 

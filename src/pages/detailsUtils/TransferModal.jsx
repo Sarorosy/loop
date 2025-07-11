@@ -75,29 +75,33 @@ export default function TransferModal({ taskId, onClose, after }) {
   }));
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black/80 z-50 flex justify-center items-center">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
-        className="bg-white rounded-lg p-6 w-full max-w-md relative"
+        className="bg-white rounded-lg p-3 w-full max-w-md relative"
       >
-        {/* Close Button */}
-        <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-black"
-          onClick={onClose}
-        >
-          <X className="w-5 h-5" />
-        </button>
+       
 
-        <h2 className="text-lg font-semibold mb-4">Transfer Task</h2>
+        <div className="flex justify-between mb-3">
+          <h2 className="text-[16px] font-semibold">Transfer Task</h2>
+
+          {/* Close Button */}
+          <button
+            className="text-gray-500 hover:text-black"
+            onClick={onClose}
+          >
+            <X size={16} className="text-red-600 hover:text-red-800" />
+          </button>
+        </div>
 
         {/* Single Select */}
         <Select
           value={selectedUser}
           onChange={(selected) => setSelectedUser(selected)}
           options={options}
-          className="mb-4"
+          className="mb-4 text-[13px]"
           placeholder="Select user..."
         />
 
@@ -105,7 +109,7 @@ export default function TransferModal({ taskId, onClose, after }) {
         <div className="flex justify-end gap-2">
           <button
             onClick={handleSave}
-            className="px-4 py-2 text-sm rounded bg-green-600 text-white hover:bg-green-700"
+            className="px-2 py-1 text-[13px] rounded bg-green-600 text-white hover:bg-green-700 leading-none"
           >
             Transfer
           </button>

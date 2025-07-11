@@ -50,7 +50,7 @@ export default function History({ taskId }) {
         No {activeTab} found.
       </div>
     ) : (
-      <div className="space-y-4 p-3 bg-white">{items.map(renderItem)}</div>
+      <div className="p-3 bg-white">{items.map(renderItem)}</div>
     );
 
   function formatDateTime(dateTimeString) {
@@ -68,7 +68,7 @@ export default function History({ taskId }) {
   }
 
   return (
-    <div className="p-3 bg-gray-100 rounded">
+    <div className="p-3 bg-gray-100 rounded w-full">
       <div className="flex space-x-3 mb-3">
         {["remarks", "history", "reminders"].map((tab) => (
           <button
@@ -85,16 +85,18 @@ export default function History({ taskId }) {
         ))}
       </div>
 
-      <div className="max-h-[538px] overflow-y-auto space-y-1 ">
+      <div className="max-h-[538px] overflow-y-auto ">
         {activeTab === "remarks" &&
           renderList(remarks, (item) => (
-            <div key={item.id} className="bg-gray-50 p-2 rounded shadow-sm">
-              <div className="flex justify-between f-11 text-gray-500 mb-1">
-                <span>{item.added_by_name}</span>
-                <span>{formatDateTime(item.fld_addedon)}</span>
+            <div key={item.id} className="relative pl-5 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-1.5 before:w-px before:bg-gray-300">
+              <span class="absolute left-[0px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
+              <div className="bg-gray-100 p-2 rounded">
+                <div className="flex justify-between f-11 text-gray-500 mb-1">
+                <span>Added by : {item.added_by_name}</span>
+                <span className="text-[10px]">{formatDateTime(item.fld_addedon)}</span>
               </div>
               <div
-                className="f-12 text-gray-800"
+                className="f-12 text-gray-600 inner-content"
                 dangerouslySetInnerHTML={{ __html: item.fld_remark }}
               />
               {item.fld_file && (
@@ -123,19 +125,23 @@ export default function History({ taskId }) {
               )}
 
               {item.fld_benchmarks && (
-                <div className="mt-2 f-11 text-green-600">
+                <div className="mt-1 f-11 text-green-600">
                   Benchmark: {item.fld_benchmarks}
                 </div>
               )}
             </div>
+              </div>
           ))}
 
         {activeTab === "history" &&
           renderList(history, (item) => (
-            <div key={item.id} className="bg-gray-50 p-2 rounded shadow-sm">
-              <div className="flex justify-between f-11 text-gray-500">
-                <span>{item.fld_history}</span>
-                <span>{formatDateTime(item.created_at)}</span>
+            <div key={item.id} className="relative pl-5 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-1.5 before:w-px before:bg-gray-300">
+              <span class="absolute left-[0px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
+              <div className="bg-gray-100 p-2 rounded">
+                <div className="flex justify-between f-11 text-gray-500">
+                  <span>{item.fld_history}</span>
+                  <span className="text-[10px]">{formatDateTime(item.created_at)}</span>
+                </div>
               </div>
             </div>
           ))}
@@ -145,7 +151,7 @@ export default function History({ taskId }) {
             <div key={item.id} className="bg-gray-50 p-2 rounded shadow-sm">
               <div className="flex justify-between f-11 text-gray-500">
                 <span>{item.notes}</span>
-                <span>{formatDateTime(item.created_at)}</span>
+                <span className="text-[10px]">{formatDateTime(item.created_at)}</span>
               </div>
             </div>
           ))}

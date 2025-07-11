@@ -131,71 +131,87 @@ export default function AddUser({ onClose, after }) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 w-full max-w-lg h-full bg-white shadow-lg z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black/80 z-50 flex justify-center items-center"
     >
-      <div className="flex items-center justify-between p-4 border-b bg-gray-100">
-        <h2 className="text-lg font-semibold">Add New User</h2>
+      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg ">
+      <div className="flex items-center justify-between p-4 bg-[#224d68] text-white">
+        <h2 className="text-[16px] font-semibold">Add New User</h2>
         <button onClick={onClose}>
           <X size={20} />
         </button>
       </div>
 
-      <form className="p-4 space-y-4">
+      <form className="p-4 space-y-4 grid grid-cols-1 md:grid-cols-2 gap-x-3">
         <div>
-          <label className="block text-sm mb-1">First Name</label>
+          <label className="block text-[13px] mb-1">First Name</label>
           <input
             type="text"
             name="first_name"
             value={form.first_name}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Last Name</label>
+          <label className="block text-[13px] mb-1">Last Name</label>
           <input
             type="text"
             name="last_name"
             value={form.last_name}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Email</label>
+          <label className="block text-[13px] mb-1">Email</label>
           <input
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Password</label>
+          <label className="block text-[13px] mb-1">Password</label>
           <input
             type="text"
             name="password"
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           />
         </div>
 
-        <div>
-          <label className="block text-sm mb-1">Role</label>
+        <div className="md:col-span-2">
+          <label className="block text-[13px] mb-1">Role</label>
           <select
             name="role"
             value={form.role}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           >
             <option value="TEAM MEMBER">TEAM MEMBER</option>
             <option value="SUBADMIN">SUBADMIN</option>
@@ -204,14 +220,17 @@ export default function AddUser({ onClose, after }) {
 
         {/* TEAM MEMBER specific fields */}
         {form.role === "TEAM MEMBER" && (
-          <>
-            <div>
-              <label className="block text-sm mb-1">Select Team</label>
+          <div className="md:col-span-2">
+            <div >
+              <label className="block text-[13px] mb-1">Select Team</label>
               <select
                 name="team"
                 value={form.team}
                 onChange={handleChange}
-                className="w-full border rounded px-3 py-2 text-sm"
+                className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
                 required
               >
                 <option value="">Select a Team</option>
@@ -223,30 +242,33 @@ export default function AddUser({ onClose, after }) {
               </select>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 my-3">
               <input
                 type="checkbox"
                 name="addprojectaccess"
                 checked={form.addprojectaccess}
                 onChange={handleChange}
               />
-              <label className="text-sm">
+              <label className="text-[13px]">
                 Assign Project Management Access
               </label>
             </div>
-          </>
+          </div>
         )}
 
         {/* SUBADMIN specific fields */}
         {form.role === "SUBADMIN" && (
           <>
             <div>
-              <label className="block text-sm mb-1">Team Access Type</label>
+              <label className="block text-[13px] mb-1">Team Access Type</label>
               <select
                 name="team_access_type"
                 value={form.team_access_type}
                 onChange={handleChange}
-                className="w-full border rounded px-3 py-2 text-sm"
+                className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
                 required
               >
                 <option value="">Select Access Type</option>
@@ -259,7 +281,7 @@ export default function AddUser({ onClose, after }) {
 
             {form.team_access_type === "Specific team access" && (
               <div>
-                <label className="block text-sm mb-1">Select Teams</label>
+                <label className="block text-[13px] mb-1">Select Teams</label>
                 <Select
                   isMulti
                   options={teamOptions}
@@ -275,19 +297,22 @@ export default function AddUser({ onClose, after }) {
                       selectedTeams: selectedValues,
                     }));
                   }}
-                  className="text-sm"
+                  className="text-[13px]"
                   classNamePrefix="react-select"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm mb-1">Add Query Access</label>
+              <label className="block text-[13px] mb-1">Add Query Access</label>
               <select
                 name="addquery_access"
                 value={form.addquery_access}
                 onChange={handleChange}
-                className="w-full border rounded px-3 py-2 text-sm"
+                className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
                 required
               >
                 <option value="">Select Access</option>
@@ -298,18 +323,21 @@ export default function AddUser({ onClose, after }) {
           </>
         )}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
+        {successMsg && <p className="text-[13px] text-green-600">{successMsg}</p>}
 
-        <button
-          type="button"
-          disabled={loading}
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
-        >
-          {loading ? "Adding..." : "Add User"}
-        </button>
+        <div className="text-end md:col-span-2">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={handleSubmit}
+            className="bg-blue-600 text-white py-2 px-2 rounded hover:bg-blue-700 text-[13px] leading-none"
+          >
+            {loading ? "Adding..." : "Add User"}
+          </button>
+        </div>
       </form>
+      </div>
     </motion.div>
   );
 }

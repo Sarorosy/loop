@@ -45,14 +45,20 @@ export default function EditBenchmark({ onClose, benchmarkData, onUpdate }) {
 
   return (
     <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
+    >
+    <motion.div
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.3 }}
       className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto"
     >
-      <div className="bg-gray-100 flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">Edit Milestone</h2>
+      <div className="flex items-center justify-between p-4 bg-[#224d68] text-white">
+        <h2 className="text-[16px] font-semibold">Edit Milestone</h2>
         <button onClick={onClose}>
           <X size={20} />
         </button>
@@ -66,22 +72,27 @@ export default function EditBenchmark({ onClose, benchmarkData, onUpdate }) {
             value={benchmarkName}
             onChange={(e) => setbenchmarkName(e.target.value)}
             required
-            className="w-full border rounded px-3 py-2 text-sm"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           />
         </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
         {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
-
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
-        >
-          {loading ? "Updating..." : "Update Milestone"}
-        </button>
+        <div className="text-end">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading}
+            className="bg-blue-600 text-white py-2 px-2 rounded hover:bg-blue-700 text-[13px] leading-none"
+          >
+            {loading ? "Updating..." : "Update Milestone"}
+          </button>
+        </div>
       </form>
+    </motion.div>
     </motion.div>
   );
 }
