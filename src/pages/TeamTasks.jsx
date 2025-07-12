@@ -293,8 +293,7 @@ function TeamTasks() {
       orderable: false,
       render: (data, type, row) => `
         <div>
-          ${row.added_by_name || "-"}<br>
-          <small>${row.added_by_email || "-"}</small>
+          ${row.added_by_name || "-"}
         </div>
       `,
     },
