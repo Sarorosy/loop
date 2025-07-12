@@ -355,8 +355,8 @@ export default function AddTask() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="">
+      <div className="">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           {/* Header */}
           <div className="bg-orange-600 px-6 py-2">
