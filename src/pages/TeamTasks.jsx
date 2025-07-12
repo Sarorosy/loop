@@ -293,8 +293,7 @@ function TeamTasks() {
       orderable: false,
       render: (data, type, row) => `
         <div>
-          ${row.added_by_name || "-"}<br>
-          <small>${row.added_by_email || "-"}</small>
+          ${row.added_by_name || "-"}
         </div>
       `,
     },
@@ -710,7 +709,7 @@ function TeamTasks() {
               setTasks((prevTasks) =>
                 prevTasks.map((task) =>
                   task.task_id == selectedTask.task_id
-                    ? { ...task, tag_names: response.tag_names }
+                    ? { ...task, tag_names: response.tag_names, task_tag : response.tag_ids }
                     : task
                 )
               );

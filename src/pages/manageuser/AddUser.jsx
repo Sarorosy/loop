@@ -63,7 +63,6 @@ export default function AddUser({ onClose, after }) {
     if (!form.email.trim()) return setError("Email is required");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
       return setError("Please enter a valid email address");
-    if (!form.password.trim()) return setError("Password is required");
 
     if (form.role === "TEAM MEMBER") {
       if (!form.team) return setError("Please select a team");
@@ -187,20 +186,6 @@ export default function AddUser({ onClose, after }) {
           />
         </div>
 
-        <div>
-          <label className="block text-[13px] mb-1">Password</label>
-          <input
-            type="text"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
-         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-         hover:border-gray-400 
-         active:border-blue-600"
-          />
-        </div>
 
         <div className="md:col-span-2">
           <label className="block text-[13px] mb-1">Role</label>

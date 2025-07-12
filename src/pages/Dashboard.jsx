@@ -289,8 +289,7 @@ function Dashboard() {
       orderable: false,
       render: (data, type, row) => `
         <div>
-          ${row.added_by_name || "-"}<br>
-          <small>${row.added_by_email || "-"}</small>
+          ${row.added_by_name || "-"}
         </div>
       `,
     },
@@ -826,7 +825,9 @@ function Dashboard() {
       </div>
 
       {loading ? (
-        <div><TaskLoader rows={10} /></div>
+        <div>
+          <TaskLoader rows={10} />
+        </div>
       ) : tasks.length === 0 ? (
         <div>No tasks found.</div>
       ) : (
@@ -869,6 +870,7 @@ function Dashboard() {
                     .find(".tag-btn")
                     .on("click", () => {
                       setSelectedTags(data.tag_names || "");
+                      setSelectedTask(data);
                       setUpdateTagModalOpen(true);
                     });
                 },
@@ -883,6 +885,25 @@ function Dashboard() {
             taskId={selectedTask?.task_id}
             onClose={() => {
               setDetailsOpen(false);
+            }}
+          />
+        )}
+        {selectedTask && updateTagModalOpen && (
+          <AddTags
+            taskId={selectedTask?.task_id}
+            tags={selectedTask?.task_tag?.split(",") ?? []}
+            onClose={() => {
+              setUpdateTagModalOpen(false);
+            }}
+            after={(response) => {
+              // response.tag_names contains the updated tag names
+              setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                  task.task_id === selectedTask.task_id
+                    ? { ...task, tag_names: response.tag_names, task_tag : response.tag_ids }
+                    : task
+                )
+              );
             }}
           />
         )}

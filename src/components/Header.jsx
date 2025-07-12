@@ -1,4 +1,5 @@
 import { useAuth } from "../utils/idb.jsx";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import {
@@ -39,7 +40,7 @@ function TabDropdown({ title, icon: Icon, children }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-1 text-white  py-4 hover:text-[#ccc] rounded"
+        className="flex items-center gap-1 text-white py-4 hover:text-[#ccc] rounded"
       >
         <Icon size={12} />
         <span>{title}</span>
@@ -47,8 +48,12 @@ function TabDropdown({ title, icon: Icon, children }) {
       </button>
       <AnimatePresence>
         {open && (
-          <div className="absolute left-0  w-56 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
-            <ul className="py-1 text-gray-700">{children}</ul>
+          <div className="absolute left-0 w-56 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
+            <ul className="py-1 text-gray-700">
+              {React.Children.map(children, (child) =>
+                React.cloneElement(child, { closeDropdown: () => setOpen(false) })
+              )}
+            </ul>
           </div>
         )}
       </AnimatePresence>
@@ -56,18 +61,25 @@ function TabDropdown({ title, icon: Icon, children }) {
   );
 }
 
+
 // Dropdown Tab Link
-function TabLink({ label, icon: Icon, onClick }) {
+function TabLink({ label, icon: Icon, onClick, closeDropdown }) {
+  const handleClick = () => {
+    if (onClick) onClick();
+    if (closeDropdown) closeDropdown(); // Close dropdown on click
+  };
+
   return (
     <li
       className="flex items-center px-3 py-1 hover:bg-gray-100 cursor-pointer"
-      onClick={onClick}
+      onClick={handleClick}
     >
       <Icon size={13} className="mr-2" />
       {label}
     </li>
   );
 }
+
 
 export default function Header() {
   const { user, logout } = useAuth();
