@@ -613,7 +613,9 @@ function TasksCreatedByMe() {
         </div>
 
         {loading ? (
-          <div><TaskLoader rows={10} /></div>
+          <div>
+            <TaskLoader rows={10} />
+          </div>
         ) : tasks.length === 0 ? (
           <div>No tasks found.</div>
         ) : (
@@ -715,7 +717,9 @@ function TasksCreatedByMe() {
       </div>
 
       {loading ? (
-        <div><TaskLoader rows={10} /></div>
+        <div>
+          <TaskLoader rows={10} />
+        </div>
       ) : tasks.length === 0 ? (
         <div>No tasks found.</div>
       ) : (
@@ -745,6 +749,14 @@ function TasksCreatedByMe() {
                   $(row)
                     .find(".delete-btn")
                     .on("click", () => handleDeleteButtonClick(data));
+
+                  $(row)
+                    .find(".tag-btn")
+                    .on("click", () => {
+                      setSelectedTags(data.task_tag || "");
+                      setSelectedTask(data);
+                      setUpdateTagModalOpen(true);
+                    });
                 },
               }}
             />
@@ -771,6 +783,26 @@ function TasksCreatedByMe() {
             }}
           />
         )}
+
+        {updateTagModalOpen && selectedTask && (
+                  <AddTags
+                    taskId={selectedTask.task_id}
+                    tags={selectedTags?.split(",") ?? []}
+                    onClose={() => {
+                      setUpdateTagModalOpen(false);
+                    }}
+                    after={(response) => {
+                      // response.tag_names contains the updated tag names
+                      setTasks((prevTasks) =>
+                        prevTasks.map((task) =>
+                          task.task_id == selectedTask.task_id
+                            ? { ...task, tag_names: response.tag_names, task_tag : response.tag_ids }
+                            : task
+                        )
+                      );
+                    }}
+                  />
+                )}
       </AnimatePresence>
     </div>
   );

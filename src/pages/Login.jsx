@@ -122,9 +122,9 @@ const Login = () => {
           </button>
         </div>
 
-        <div className="text-center text-sm text-gray-500">or</div>
+        {/* <div className="text-center text-sm text-gray-500">or</div>
 
-        <div id="googleSignInDiv" className="flex justify-center" />
+        <div id="googleSignInDiv" className="flex justify-center" /> */}
       </form>
     </div>
   );
