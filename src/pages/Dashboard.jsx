@@ -23,6 +23,7 @@ import {
 import Select from "react-select";
 import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
 import AddTags from "./detailsUtils/AddTags";
+import TaskLoader from "../utils/TaskLoader";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -60,21 +61,18 @@ function Dashboard() {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/tasks/get",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: user?.id,
-            user_type: user?.fld_admin_type,
-            assigned_team: user?.fld_assigned_team,
-            filters: filterParam,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/tasks/get", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_type: user?.fld_admin_type,
+          assigned_team: user?.fld_assigned_team,
+          filters: filterParam,
+        }),
+      });
       const data = await res.json();
       if (data.status) {
         setTasks(data?.data);
@@ -220,7 +218,7 @@ function Dashboard() {
 
         if (dueDate === "-") return "-";
 
-        return `${dueDate} ${dueTime}`.trim();
+        return `<div class="text-[11px]">${dueDate} ${dueTime}</div>`.trim();
       },
     },
     {
@@ -264,27 +262,27 @@ function Dashboard() {
       },
     },
     {
-  title: "Created Date",
-  data: "fld_addedon",
-  orderable: true,
-  render: (data) => {
-    if (!data) return "-";
+      title: "Created Date",
+      data: "fld_addedon",
+      orderable: true,
+      render: (data) => {
+        if (!data) return "-";
 
-    const date = new Date(data);
-    if (isNaN(date)) return "-";
+        const date = new Date(data);
+        if (isNaN(date)) return "-";
 
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const year = date.getFullYear();
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = date.toLocaleString("en-US", { month: "short" });
+        const year = date.getFullYear();
 
-    const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const displayHours = (hours % 12 || 12).toString();
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const displayHours = (hours % 12 || 12).toString();
 
-    return `${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}`;
-  },
-},
+        return `<div class="text-[11px]">${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}</div>`;
+      },
+    },
     {
       title: "Assigned By",
       data: null,
@@ -828,7 +826,7 @@ function Dashboard() {
       </div>
 
       {loading ? (
-        <div>Loading tasks...</div>
+        <div><TaskLoader rows={10} /></div>
       ) : tasks.length === 0 ? (
         <div>No tasks found.</div>
       ) : (

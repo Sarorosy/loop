@@ -66,7 +66,7 @@ export default function AddRequirement({ onClose, after }) {
 
       <form className="p-4 space-y-4">
         <div>
-          <label className="block text-sm mb-1">Category</label>
+          <label className="block text-[13px] mb-1">Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -81,7 +81,7 @@ export default function AddRequirement({ onClose, after }) {
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Name</label>
+          <label className="block text-[13px] mb-1">Name</label>
           <input
             type="text"
             value={name}
@@ -94,7 +94,7 @@ export default function AddRequirement({ onClose, after }) {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
         <div className="text-end">
           <button
             type="button"

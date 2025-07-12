@@ -97,7 +97,7 @@ export default function AddBucket({ onClose, after }) {
       <form className="p-4 space-y-4">
         {/* Bucket Name */}
         <div>
-          <label className="block text-sm font-medium">Bucket Name</label>
+          <label className="block text-[13px] font-medium">Bucket Name</label>
           <input
             type="text"
             value={bucketName}
@@ -117,7 +117,7 @@ export default function AddBucket({ onClose, after }) {
               checked={fixedDescription}
               onChange={() => setFixedDescription(!fixedDescription)}
             />
-            <span className="text-sm">Fixed Description</span>
+            <span className="text-[13px]">Fixed Description</span>
           </label>
           {fixedDescription && (
             <textarea
@@ -140,7 +140,7 @@ export default function AddBucket({ onClose, after }) {
               checked={fixedMilestones}
               onChange={() => setFixedMilestones(!fixedMilestones)}
             />
-            <span className="text-sm">Fixed Milestones</span>
+            <span className="text-[13px]">Fixed Milestones</span>
           </label>
           {fixedMilestones && (
             <div className="mt-2">
@@ -150,7 +150,7 @@ export default function AddBucket({ onClose, after }) {
                 onChange={setSelectedMilestones}
                 isMulti
                 placeholder="Select Milestones..."
-                className="text-sm"
+                className="text-[13px]"
               />
             </div>
           )}
@@ -164,13 +164,13 @@ export default function AddBucket({ onClose, after }) {
               checked={needComments}
               onChange={() => setNeedComments(!needComments)}
             />
-            <span className="text-sm">Need Comments</span>
+            <span className="text-[13px]">Need Comments</span>
           </label>
         </div>
 
         {/* Error & Success */}
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
+        {successMsg && <p className="text-[13px] text-green-600">{successMsg}</p>}
         <div className="text-end">
         <button
           type="button"

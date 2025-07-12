@@ -237,7 +237,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-[13px] font-medium text-gray-700 mb-1">
               File Upload{" "}
               <span className="text-xs text-gray-500">
                 (Max 25MB per file, Max 3 files)
@@ -251,7 +251,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
                     type="file"
                     accept=".doc, .docx, .pdf, .gif, .jpeg, .jpg, .png, .xlsx, .csv, .rar, .zip, .odt"
                     onChange={(e) => handleFileChange(e, index)}
-                    className="flex-1 text-sm border rounded p-1 "
+                    className="flex-1 text-[13px] border rounded p-1 "
                   />
                   <button
                     type="button"
@@ -267,7 +267,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             <button
               type="button"
               onClick={addFileInput}
-              className="mt-2 text-blue-600 text-sm hover:underline"
+              className="mt-2 text-blue-600 text-[13px] hover:underline"
             >
               {files.length > 0 ? "+ Add Another File" : "+ Add File"}
             </button>

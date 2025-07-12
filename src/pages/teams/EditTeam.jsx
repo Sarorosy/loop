@@ -97,7 +97,7 @@ export default function EditTeam({ onClose, teamData, onUpdate }) {
 
       <form className="p-4 space-y-4" >
         <div>
-          <label className="block text-sm mb-1">Team Name</label>
+          <label className="block text-[13px] mb-1">Team Name</label>
           <input
             type="text"
             value={teamName}
@@ -111,18 +111,18 @@ export default function EditTeam({ onClose, teamData, onUpdate }) {
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Team Members</label>
+          <label className="block text-[13px] mb-1">Team Members</label>
           <Select
             isMulti
             options={allUsers}
             value={allUsers.filter((user) => members.includes(user.value))}
             onChange={(selected) => setMembers(selected.map((u) => u.value))}
-            className="text-sm"
+            className="text-[13px]"
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
+        {successMsg && <p className="text-[13px] text-green-600">{successMsg}</p>}
 
         <div className="text-end">
           <button

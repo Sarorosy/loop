@@ -481,7 +481,7 @@ function formatDate(dateString) {
                           <div className="flex flex-col gap-2">
                             <textarea
                               rows={4}
-                              className="border border-gray-300 rounded p-2 text-sm bg-white"
+                              className="border border-gray-300 rounded p-2 text-[13px] bg-white"
                               placeholder="Enter your remarks here..."
                               value={taskRemarks}
                               onChange={(e) => setTaskRemarks(e.target.value)}
@@ -556,7 +556,7 @@ function formatDate(dateString) {
                 <div className="mt-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Paperclip className="w-4 h-4 text-gray-500" />
-                    <h3 className="text-sm font-semibold text-gray-800">
+                    <h3 className="text-[13px] font-semibold text-gray-800">
                       Attachments
                     </h3>
                     <div className="flex-grow border-t border-gray-200" />

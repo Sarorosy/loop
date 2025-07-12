@@ -155,7 +155,7 @@ const AssignMultipleQuery = ({ queries, onClose, after }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Assign To</label>
+            <label className="block text-[13px] font-medium mb-1">Assign To</label>
             <Select
               options={users}
               value={selectedUser}
@@ -165,7 +165,7 @@ const AssignMultipleQuery = ({ queries, onClose, after }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Team (optional)
             </label>
             <Select
@@ -187,7 +187,7 @@ const AssignMultipleQuery = ({ queries, onClose, after }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Due Date</label>
+            <label className="block text-[13px] font-medium mb-1">Due Date</label>
             <input
               type="date"
               value={dueDate}

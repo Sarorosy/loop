@@ -10,6 +10,7 @@ import { Filter, Layers2, RefreshCcw, User2 } from "lucide-react";
 
 import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
 import AddTags from "./detailsUtils/AddTags";
+import TaskLoader from "../utils/TaskLoader";
 
 function TasksFollowing() {
   const { user } = useAuth();
@@ -361,7 +362,7 @@ function TasksFollowing() {
           </div>
 
           {loading ? (
-            <div>Loading tasks...</div>
+            <div><TaskLoader rows={10} /></div>
           ) : tasks.length === 0 ? (
             <div>No tasks found.</div>
           ) : (

@@ -199,7 +199,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
         {/* Role Selection */}
         <div>
-          <label className="block text-sm mb-1">Role</label>
+          <label className="block text-[13px] mb-1">Role</label>
           <select name="role" value={form.role} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
@@ -234,7 +234,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
         {/* TL Type Radio Buttons */}
         {form.tl && (
           <div>
-            <label className="block text-sm mb-1">Team Leader Type</label>
+            <label className="block text-[13px] mb-1">Team Leader Type</label>
             <div className="flex space-x-3">
               <RadioButton name="tl_type" value="1" checked={form.tl_type === "1"} onChange={handleChange} label="CRM Team Leader" />
               <RadioButton name="tl_type" value="2" checked={form.tl_type === "2"} onChange={handleChange} label="Ops Team Leader" />
@@ -246,7 +246,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
         {/* Select TL Users */}
         {shouldShowTlUsers && (
           <div>
-            <label className="block text-sm mb-1">Select TL Users</label>
+            <label className="block text-[13px] mb-1">Select TL Users</label>
             <Select
               isMulti
               options={tlUserOptions}
@@ -257,14 +257,14 @@ export default function EditUser({ onClose, userData, onUpdate }) {
                   selectedTlUsers: selected.map((u) => u.value),
                 }));
               }}
-              className="text-sm"
+              className="text-[13px]"
               classNamePrefix="react-select"
             />
           </div>
         )}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
+        {successMsg && <p className="text-[13px] text-green-600">{successMsg}</p>}
 
         <div className="text-end">
           <button
@@ -285,7 +285,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 // Reusable Components
 const InputField = ({ label, ...props }) => (
   <div>
-    <label className="block text-sm mb-1">{label}</label>
+    <label className="block text-[13px] mb-1">{label}</label>
     <input {...props} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
@@ -296,12 +296,12 @@ const InputField = ({ label, ...props }) => (
 const Checkbox = ({ label, ...props }) => (
   <div className="flex items-center space-x-2">
     <input type="checkbox" {...props} />
-    <label className="text-sm">{label}</label>
+    <label className="text-[13px]">{label}</label>
   </div>
 );
 
 const RadioButton = ({ label, ...props }) => (
-  <label className="text-sm flex items-center space-x-1">
+  <label className="text-[13px] flex items-center space-x-1">
     <input type="radio" {...props} />
     <span>{label}</span>
   </label>
@@ -309,7 +309,7 @@ const RadioButton = ({ label, ...props }) => (
 
 const SelectTeam = ({ teams, form, handleChange }) => (
   <div>
-    <label className="block text-sm mb-1">Select Team</label>
+    <label className="block text-[13px] mb-1">Select Team</label>
     <select name="team" value={form.team} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
@@ -327,7 +327,7 @@ const SelectTeam = ({ teams, form, handleChange }) => (
 const TeamAccess = ({ form, handleChange, teamOptions }) => (
   <>
     <div>
-      <label className="block text-sm mb-1">Team Access Type</label>
+      <label className="block text-[13px] mb-1">Team Access Type</label>
       <select name="team_access_type" value={form.team_access_type} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
@@ -340,7 +340,7 @@ const TeamAccess = ({ form, handleChange, teamOptions }) => (
 
     {form.team_access_type === "Specific team access" && (
       <div>
-        <label className="block text-sm mb-1">Select Teams</label>
+        <label className="block text-[13px] mb-1">Select Teams</label>
         <Select
           isMulti
           options={teamOptions}
@@ -349,7 +349,7 @@ const TeamAccess = ({ form, handleChange, teamOptions }) => (
             const selectedValues = selected.map((option) => option.value);
             handleChange({ target: { name: "selectedTeams", value: selectedValues } });
           }}
-          className="text-sm"
+          className="text-[13px]"
           classNamePrefix="react-select"
         />
       </div>

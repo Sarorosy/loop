@@ -94,7 +94,7 @@ export default function Header() {
         </div>
 
         {user ? (
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-4 text-[13px]">
             <div className="relative" ref={userRef}>
               <button
                 onClick={() => setUserDropdownOpen((prev) => !prev)}
@@ -109,7 +109,7 @@ export default function Header() {
 
               <AnimatePresence>
                 {userDropdownOpen && (
-                  <div className="absolute right-3 mt-1 w-52 bg-white border border-gray-300 rounded shadow text-sm z-50">
+                  <div className="absolute right-3 mt-1 w-52 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
                     <div className="px-3 py-2">
                       <p className="font-semibold text-gray-800 text-center">
                         {user.fld_first_name}

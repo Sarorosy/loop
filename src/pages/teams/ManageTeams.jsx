@@ -83,7 +83,7 @@ export default function ManageTeams({ onClose }) {
         
         return `
           <div class="max-w-xs">
-            <span class="text-sm">${displayMembers}</span>}
+            <span class="text-[13px]">${displayMembers}</span>}
           </div>
         `;
       },
@@ -95,7 +95,7 @@ export default function ManageTeams({ onClose }) {
       render: (data) => `
         <div class="flex items-center gap-2">
           
-          <span class="text-sm">${data || "-"}</span>
+          <span class="text-[13px]">${data || "-"}</span>
         </div>
       `,
     },
@@ -109,7 +109,7 @@ export default function ManageTeams({ onClose }) {
         return `
           <div class="flex items-center gap-2">
            
-            <span class="text-sm">${date.toLocaleDateString()}</span>
+            <span class="text-[13px]">${date.toLocaleDateString()}</span>
           </div>
         `;
       },
@@ -244,7 +244,7 @@ export default function ManageTeams({ onClose }) {
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 leading-none">
+                <span className="text-[13px] text-gray-600 leading-none">
                   {teams.length} team{teams.length !== 1 ? 's' : ''} found
                 </span>
               </div>
@@ -253,7 +253,7 @@ export default function ManageTeams({ onClose }) {
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-sm font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+              className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
               onClick={fetchUsers}
               disabled={loading}
             >
@@ -261,7 +261,7 @@ export default function ManageTeams({ onClose }) {
               Refresh
             </button>
             <button
-              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
               onClick={() => setAddopen(true)}
             >
               <Plus size={13}  className="" />
@@ -288,7 +288,7 @@ export default function ManageTeams({ onClose }) {
           <div className="flex items-center justify-center py-8">
             <div className="flex items-center gap-2">
               <RefreshCcw className="w-5 h-5 animate-spin text-blue-600" />
-              <span className="text-sm text-gray-600">Loading teams...</span>
+              <span className="text-[13px] text-gray-600">Loading teams...</span>
             </div>
           </div>
         ) : teams.length === 0 ? (
@@ -296,7 +296,7 @@ export default function ManageTeams({ onClose }) {
             <Users className="w-12 h-12 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-500">No teams found.</p>
             <button
-              className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="mt-2 text-blue-600 hover:text-blue-800 text-[13px] font-medium"
               onClick={() => setAddopen(true)}
             >
               Create +
@@ -305,7 +305,7 @@ export default function ManageTeams({ onClose }) {
         ) : (
           <div className="bg-white rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table ref={tableRef} className="w-full text-sm">
+              <table ref={tableRef} className="w-full text-[13px]">
                 <thead>
                   <tr>
                     <th>Team Name</th>

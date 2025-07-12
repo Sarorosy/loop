@@ -71,7 +71,7 @@ export default function DeleteOrTransferModal({
               placeholder="Select a user"
               value={selectedUser}
               onChange={(selected) => setSelectedUser(selected)}
-              className="text-sm"
+              className="text-[13px]"
             />
           )}
         </div>

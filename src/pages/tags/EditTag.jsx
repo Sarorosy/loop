@@ -60,7 +60,7 @@ export default function EditTag({ onClose, tagData, onUpdate }) {
 
       <form className="p-4 space-y-4" o>
         <div>
-          <label className="block text-sm mb-1">Tag Name</label>
+          <label className="block text-[13px] mb-1">Tag Name</label>
           <input
             type="text"
             value={tagName}
@@ -73,8 +73,8 @@ export default function EditTag({ onClose, tagData, onUpdate }) {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
+        {successMsg && <p className="text-[13px] text-green-600">{successMsg}</p>}
         <div className="text-end">
         <button
           type="button"

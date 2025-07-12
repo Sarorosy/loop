@@ -109,3 +109,16 @@ table.dataTable>thead>tr>th, table.dataTable>thead>tr>td {
 .inner-content p span {
     font-size: 12px !important;
 }
+
+button.dt-paging-button.current {
+    padding: 0px 8px !important;
+}
+button.dt-paging-button {
+    padding: 0px 8px !important;
+}
+div.dt-container .dt-paging .dt-paging-button:hover{
+  padding: 0px 8px !important;
+}
+.dt-layout-row {
+    margin-top: 20px !important;
+}

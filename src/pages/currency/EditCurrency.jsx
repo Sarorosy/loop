@@ -71,7 +71,7 @@ export default function EditCurrency({ onClose, currencyData, onUpdate }) {
        
 
         <div>
-          <label className="block text-sm mb-1">Name</label>
+          <label className="block text-[13px] mb-1">Name</label>
           <input
             type="text"
             value={name}
@@ -84,7 +84,7 @@ export default function EditCurrency({ onClose, currencyData, onUpdate }) {
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
         <div className="text-end">
           <button
             type="button"

@@ -82,7 +82,7 @@ export default function AddProject({ onClose, after }) {
 
       <form  className="p-4 space-y-4">
         <div>
-          <label className="block text-sm mb-1">Project Name</label>
+          <label className="block text-[13px] mb-1">Project Name</label>
           <input
             type="text"
             value={projectName}
@@ -101,12 +101,12 @@ export default function AddProject({ onClose, after }) {
             checked={requireEmail}
             onChange={(e) => setRequireEmail(e.target.checked)}
           />
-          <label className="text-sm">Require Email</label>
+          <label className="text-[13px]">Require Email</label>
         </div>
 
         {requireEmail && (
           <div>
-            <label className="block text-sm mb-1">Email</label>
+            <label className="block text-[13px] mb-1">Email</label>
             <input
               type="email"
               value={emailId}
@@ -120,7 +120,7 @@ export default function AddProject({ onClose, after }) {
           </div>
         )}
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
         <div className="text-end">
         <button
           type="button"

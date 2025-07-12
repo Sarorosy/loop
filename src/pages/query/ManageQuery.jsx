@@ -131,7 +131,7 @@ function ManageQuery() {
         <p className="text-xs">
           Displaying {startRow} - {endRow} out of {totalRows} rows
         </p>
-        <div className="flex items-center text-sm">
+        <div className="flex items-center text-[13px]">
           <button
             className={`px-2 py-1 mx-1 ${
               page === 1 ? "opacity-50 cursor-not-allowed" : "bg-white border"
@@ -311,7 +311,7 @@ function ManageQuery() {
       data: null,
       orderable: false,
       render: (data, type, row) => `
-      <button class="assign-btn px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm" data-id="${row.id}">
+      <button class="assign-btn px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-[13px]" data-id="${row.id}">
         Assign
       </button>
     `,

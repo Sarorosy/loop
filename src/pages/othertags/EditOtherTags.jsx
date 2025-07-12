@@ -74,7 +74,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
 
       <form  className="p-4 space-y-4">
         <div>
-          <label className="block text-sm mb-1">Category</label>
+          <label className="block text-[13px] mb-1">Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -89,7 +89,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Tag Name</label>
+          <label className="block text-[13px] mb-1">Tag Name</label>
           <input
             type="text"
             value={name}
@@ -103,7 +103,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Tag Type</label>
+          <label className="block text-[13px] mb-1">Tag Type</label>
           <select
             value={tagType}
             onChange={(e) => setTagType(e.target.value)}
@@ -117,7 +117,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
           </select>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-[13px] text-red-500">{error}</p>}
         <div className="text-end">
           <button
             type="button"

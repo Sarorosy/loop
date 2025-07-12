@@ -374,7 +374,7 @@ export default function AddTask() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Bucket
                   </label>
                   <Select
@@ -397,7 +397,7 @@ export default function AddTask() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Assign To
                   </label>
                   <Select
@@ -429,7 +429,7 @@ export default function AddTask() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Project
                   </label>
                   <Select
@@ -452,7 +452,7 @@ export default function AddTask() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Followers
                   </label>
                   <Select
@@ -483,7 +483,7 @@ export default function AddTask() {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Task Title
                   </label>
                   <input
@@ -494,12 +494,12 @@ export default function AddTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Description
                   </label>
                   <textarea
@@ -510,7 +510,7 @@ export default function AddTask() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
                   />
                 </div>
               </div>
@@ -524,7 +524,7 @@ export default function AddTask() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Due Date
                   </label>
                   <input
@@ -534,12 +534,12 @@ export default function AddTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, dueDate: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Due Time
                   </label>
                   <input
@@ -549,13 +549,13 @@ export default function AddTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, dueTime: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-[13px] font-medium text-gray-700 mb-3">
                   Recurring Task
                 </label>
                 <div className="flex gap-6 mb-4">
@@ -570,7 +570,7 @@ export default function AddTask() {
                       }
                       className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
                     />
-                    <span className="ml-2 text-sm text-gray-700">Yes</span>
+                    <span className="ml-2 text-[13px] text-gray-700">Yes</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -583,19 +583,19 @@ export default function AddTask() {
                       }
                       className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
                     />
-                    <span className="ml-2 text-sm text-gray-700">No</span>
+                    <span className="ml-2 text-[13px] text-gray-700">No</span>
                   </label>
                 </div>
 
                 {formData.recurring === "Yes" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-medium text-gray-700 mb-1">
                         Frequency
                       </label>
                       <select
                         name="recurring_duration"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         required
                         onChange={(e) =>
                           setFormData({
@@ -612,12 +612,12 @@ export default function AddTask() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-[13px] font-medium text-gray-700 mb-1">
                         Recurring Type
                       </label>
                       <select
                         name="recurring_type"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         required
                         onChange={(e) =>
                           setFormData({
@@ -647,7 +647,7 @@ export default function AddTask() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Google Sheets/Docs Link
                   </label>
                   <input
@@ -658,12 +658,12 @@ export default function AddTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, googleLink: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Additional Link
                   </label>
                   <input
@@ -677,7 +677,7 @@ export default function AddTask() {
                         additionalLink: e.target.value,
                       })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
@@ -693,7 +693,7 @@ export default function AddTask() {
                 <button
                   type="button"
                   onClick={addMilestone}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                 >
                   + Add Milestone
                 </button>
@@ -706,7 +706,7 @@ export default function AddTask() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Milestone
                         </label>
                         <Select
@@ -733,7 +733,7 @@ export default function AddTask() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Due Date & Time
                         </label>
                         <input
@@ -746,7 +746,7 @@ export default function AddTask() {
                               e.target.value
                             )
                           }
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div>
                     </div>
@@ -754,7 +754,7 @@ export default function AddTask() {
                       <button
                         type="button"
                         onClick={() => removeMilestone(i)}
-                        className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        className="text-red-600 hover:text-red-700 text-[13px] font-medium"
                       >
                         Remove
                       </button>
@@ -763,7 +763,7 @@ export default function AddTask() {
                 ))}
                 {milestones.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    <p className="text-sm">No milestones added yet</p>
+                    <p className="text-[13px]">No milestones added yet</p>
                   </div>
                 )}
               </div>
@@ -775,14 +775,14 @@ export default function AddTask() {
                 <h2 className="text-lg font-medium text-gray-900 flex items-center">
                   <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
                   Attachments
-                  <span className="ml-2 text-sm text-gray-500 font-normal">
+                  <span className="ml-2 text-[13px] text-gray-500 font-normal">
                     (Max 3 files)
                   </span>
                 </h2>
                 <button
                   type="button"
                   onClick={addFile}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                 >
                   + Add File
                 </button>
@@ -795,7 +795,7 @@ export default function AddTask() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Select File
                         </label>
                         <input
@@ -803,11 +803,11 @@ export default function AddTask() {
                           onChange={(e) =>
                             handleFileChange(i, "file", e.target.files[0])
                           }
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           File Name
                         </label>
                         <input
@@ -817,7 +817,7 @@ export default function AddTask() {
                           onChange={(e) =>
                             handleFileChange(i, "fileName", e.target.value)
                           }
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div>
                     </div>
@@ -825,7 +825,7 @@ export default function AddTask() {
                       <button
                         type="button"
                         onClick={() => removeFile(i)}
-                        className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        className="text-red-600 hover:text-red-700 text-[13px] font-medium"
                       >
                         Remove
                       </button>
@@ -834,7 +834,7 @@ export default function AddTask() {
                 ))}
                 {files.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    <p className="text-sm">No files attached yet</p>
+                    <p className="text-[13px]">No files attached yet</p>
                   </div>
                 )}
               </div>

@@ -79,7 +79,7 @@ const Login = () => {
         <h2 className="text-2xl font-semibold text-center">Login</h2>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium">Email</label>
+          <label className="block text-[13px] font-medium">Email</label>
           <input
             type="email"
             required
@@ -90,7 +90,7 @@ const Login = () => {
         </div>
 
         <div className="space-y-2 relative">
-          <label className="block text-sm font-medium">Password</label>
+          <label className="block text-[13px] font-medium">Password</label>
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -116,13 +116,13 @@ const Login = () => {
               handleSubmit();
             }}
             type="button"
-            className="text-sm bg-blue-400 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition cursor-pointer"
+            className="text-[13px] bg-blue-400 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition cursor-pointer"
           >
             Login
           </button>
         </div>
 
-        <div className="text-center text-sm text-gray-500">or</div>
+        <div className="text-center text-[13px] text-gray-500">or</div>
 
         <div id="googleSignInDiv" className="flex justify-center" />
       </form>

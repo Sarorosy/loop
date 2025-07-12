@@ -94,12 +94,12 @@ export default function ManageProjects({ onClose }) {
 
         {/* Content */}
         {loading ? (
-          <p className="text-center text-sm text-gray-500">Loading projects...</p>
+          <p className="text-center text-[13px] text-gray-500">Loading projects...</p>
         ) : projects.length === 0 ? (
-          <p className="text-center text-sm text-gray-500">No projects found.</p>
+          <p className="text-center text-[13px] text-gray-500">No projects found.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm border border-gray-200">
+            <table className="min-w-full text-[13px] border border-gray-200">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-4 py-2 text-left border">Project Name</th>

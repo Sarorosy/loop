@@ -46,7 +46,7 @@ export default function History({ taskId }) {
 
   const renderList = (items, renderItem) =>
     items.length === 0 ? (
-      <div className="text-center text-gray-500 text-sm py-4 bg-white rounded">
+      <div className="text-center text-gray-500 text-[13px] py-4 bg-white rounded">
         No {activeTab} found.
       </div>
     ) : (

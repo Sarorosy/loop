@@ -155,7 +155,7 @@ const AssignQuery = ({ query, onClose }) => {
         <h2 className="text-xl font-semibold mb-4">Assign Query</h2>
         <form className="space-y-4 h-xl max-h-xl overflow-y-auto">
           <div>
-            <label className="block text-sm font-medium mb-1">Assign To</label>
+            <label className="block text-[13px] font-medium mb-1">Assign To</label>
             <Select
               options={users}
               value={selectedUser}
@@ -165,7 +165,7 @@ const AssignQuery = ({ query, onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Team (optional)
             </label>
             <Select
@@ -193,7 +193,7 @@ const AssignQuery = ({ query, onClose }) => {
 
           <div className="flex items-center justify-between space-x-1">
             <div className="w-full">
-              <label className="block text-sm font-medium mb-1">Due Date</label>
+              <label className="block text-[13px] font-medium mb-1">Due Date</label>
               <input
                 type="date"
                 value={dueDate}
@@ -203,7 +203,7 @@ const AssignQuery = ({ query, onClose }) => {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-[13px] font-medium mb-1">
                 Task Title
               </label>
               <input
@@ -216,7 +216,7 @@ const AssignQuery = ({ query, onClose }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-[13px] font-medium mb-1">
               Description
             </label>
             <textarea
