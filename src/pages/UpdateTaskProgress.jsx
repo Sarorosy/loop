@@ -17,7 +17,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     const fetchBenchmarks = async () => {
       try {
         const res = await fetch(
-          "https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"
+          "http://localhost:5000/api/helper/allbenchmarks"
         ); // replace with your API endpoint
         const data = await res.json();
         if (data.status) {
@@ -105,7 +105,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     try {
       setSubmitting(true);
       const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/tasks/closetask",
+        "http://localhost:5000/api/tasks/closetask",
         {
           method: "POST",
           body: formData,

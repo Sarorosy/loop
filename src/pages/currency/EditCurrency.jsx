@@ -32,7 +32,7 @@ export default function EditCurrency({ onClose, currencyData, onUpdate }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/currency/update/${currencyData.id}`, {
+      const res = await fetch(`http://localhost:5000/api/helper/currency/update/${currencyData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),

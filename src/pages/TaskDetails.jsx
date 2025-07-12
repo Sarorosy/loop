@@ -49,7 +49,7 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/addremarks", {
+      const res = await fetch("http://localhost:5000/api/helper/addremarks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -76,7 +76,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
+      const res = await fetch("http://localhost:5000/api/tasks/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: taskId }),
@@ -97,7 +97,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsOnGoing = async () => {
     try {
       const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/helper/markAsOngoing",
+        "http://localhost:5000/api/helper/markAsOngoing",
         {
           method: "POST",
           headers: {
@@ -126,7 +126,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsCompleted = async () => {
     try {
       const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/helper/markAsCompleted",
+        "http://localhost:5000/api/helper/markAsCompleted",
         {
           method: "POST",
           headers: {
@@ -643,10 +643,6 @@ function formatDate(dateString) {
                       <span className="text-[13px] leading-none">
                         {task.assigned_to_name}
                       </span>
-                      <span className="text-gray-500 leading-none">|</span>
-                      <span className="text-[10px] text-gray-600 leading-none w-30 truncate">
-                        {task.assigned_to_email}
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -681,10 +677,6 @@ function formatDate(dateString) {
                       <span className="text-[13px] leading-none">
                         {task.added_by_name}
                       </span>
-                      <span className="text-gray-500 leading-none">|</span>
-                      <span className="text-[10px] text-gray-600 leading-none w-30 truncate">
-                        {task.added_by_email}
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -701,10 +693,6 @@ function formatDate(dateString) {
                     <div className="flex flex-wrap gap-2 text-[13px] text-gray-900 items-end">
                       <span className="text-[13px] leading-none">
                         {task.ongoing_by_name || "Not assigned"}
-                      </span>
-                      <span className="text-gray-500 leading-none">|</span>
-                      <span className="text-[10px] text-gray-600 leading-none w-30 truncate">
-                        {task.ongoing_by_email || "-"}
                       </span>
                     </div>
                   </div>
@@ -749,12 +737,6 @@ function formatDate(dateString) {
                           <div className="flex items-center flex-wrap gap-2 text-[13px] text-gray-900">
                             <span className="text-[13px] leading-none">
                               {follower.name}
-                            </span>
-                            <span className="text-gray-500 leading-none">
-                              |
-                            </span>
-                            <span className="text-[10px] text-gray-600 leading-none w-30 truncate">
-                              {follower.email}
                             </span>
                           </div>
                         </div>

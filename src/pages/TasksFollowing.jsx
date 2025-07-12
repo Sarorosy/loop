@@ -47,7 +47,7 @@ function TasksFollowing() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/following", {
+      const res = await fetch("http://localhost:5000/api/tasks/following", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -85,10 +85,10 @@ function TasksFollowing() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -244,13 +244,27 @@ function TasksFollowing() {
       },
     },
     {
-      title: "Created Date",
-      data: "fld_addedon",
-      orderable: true,
-      render: (data) => {
-        return data ? new Date(data).toLocaleString() : "-";
-      },
-    },
+  title: "Created Date",
+  data: "fld_addedon",
+  orderable: true,
+  render: (data) => {
+    if (!data) return "-";
+
+    const date = new Date(data);
+    if (isNaN(date)) return "-";
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHours = (hours % 12 || 12).toString();
+
+    return `${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}`;
+  },
+},
     {
       title: "Assigned By",
       data: null,

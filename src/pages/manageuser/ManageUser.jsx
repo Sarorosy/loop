@@ -23,7 +23,7 @@ export default function ManageUser({ onClose }) {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/users/all", {
+      const response = await fetch("http://localhost:5000/api/users/all", {
         method: "GET",
         headers: {
           "Content-type": "application/json",
@@ -55,7 +55,7 @@ export default function ManageUser({ onClose }) {
     try {
       setTransferring(true)
       const response = await fetch(
-        `https://loopback-r9kf.onrender.com/api/users/delete/${selectedUser?.id}`,
+        `http://localhost:5000/api/users/delete/${selectedUser?.id}`,
         {
           method: "DELETE",
           headers: {
@@ -83,7 +83,7 @@ export default function ManageUser({ onClose }) {
     try {
       setTransferring(true)
       const response = await fetch(
-        `https://loopback-r9kf.onrender.com/api/helper/transfer-tasks`,
+        `http://localhost:5000/api/helper/transfer-tasks`,
         {
           method: "POST",
           headers: { "Content-type": "application/json" },

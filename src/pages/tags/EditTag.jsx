@@ -22,7 +22,7 @@ export default function EditTag({ onClose, tagData, onUpdate }) {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/tag/update/${tagData.id}`, {
+      const res = await fetch(`http://localhost:5000/api/helper/tag/update/${tagData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

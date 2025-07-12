@@ -63,7 +63,7 @@ function TasksCreatedByMe() {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://loopback-r9kf.onrender.com/api/tasks/getmycreatedtasks",
+        "http://localhost:5000/api/tasks/getmycreatedtasks",
         {
           method: "POST",
           headers: {
@@ -103,10 +103,10 @@ function TasksCreatedByMe() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -266,7 +266,21 @@ function TasksCreatedByMe() {
       data: "fld_addedon",
       orderable: true,
       render: (data) => {
-        return data ? new Date(data).toLocaleString() : "-";
+        if (!data) return "-";
+
+        const date = new Date(data);
+        if (isNaN(date)) return "-";
+
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = date.toLocaleString("en-US", { month: "short" });
+        const year = date.getFullYear();
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const displayHours = (hours % 12 || 12).toString();
+
+        return `${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}`;
       },
     },
     {
@@ -320,7 +334,7 @@ function TasksCreatedByMe() {
       return;
     }
     try {
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/delete", {
+      const response = await fetch("http://localhost:5000/api/tasks/delete", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -401,191 +415,175 @@ function TasksCreatedByMe() {
   };
 
   return (
-      <div className="">
-        <div className="text-xl font-bold mb-4 flex items-center justify-between">
-          Tasks Created By Me
-          <div className="flex gap-3">
-            <button
-              onClick={resetFilters}
-              className="p-1 rounded hover:bg-gray-100"
-            >
-              <RefreshCcw size={14} className="text-gray-700" />
-            </button>
+    <div className="">
+      <div className="text-xl font-bold mb-4 flex items-center justify-between">
+        Tasks Created By Me
+        <div className="flex gap-3">
+          <button
+            onClick={resetFilters}
+            className="p-1 rounded hover:bg-gray-100"
+          >
+            <RefreshCcw size={14} className="text-gray-700" />
+          </button>
 
-            <p
-              onClick={() => {
-                setFiltersVisible(!filtersVisible);
-              }}
-              className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
-            >
-              <Filter size={11} /> Filter
-            </p>
-          </div>
+          <p
+            onClick={() => {
+              setFiltersVisible(!filtersVisible);
+            }}
+            className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
+          >
+            <Filter size={11} /> Filter
+          </p>
         </div>
+      </div>
 
-        <div
-          className={`${
-            filtersVisible
-              ? "block bg-gray-100 rounded   border-blue-400 p-3"
-              : "hidden"
-          }`}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
-            <div className="flex flex-col">
-              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                <Tag size={13} className="text-gray-500" />
-                Task Title / ID
-              </label>
-              <input
-                type="text"
-                placeholder="Task Title / ID"
-                className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                value={filters.taskNameOrId}
-                onChange={(e) =>
-                  setFilters({ ...filters, taskNameOrId: e.target.value })
-                }
-              />
-            </div>
+      <div
+        className={`${
+          filtersVisible
+            ? "block bg-gray-100 rounded   border-blue-400 p-3"
+            : "hidden"
+        }`}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Tag size={13} className="text-gray-500" />
+              Task Title / ID
+            </label>
+            <input
+              type="text"
+              placeholder="Task Title / ID"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.taskNameOrId}
+              onChange={(e) =>
+                setFilters({ ...filters, taskNameOrId: e.target.value })
+              }
+            />
+          </div>
 
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CalendarDays size={13} className="text-gray-500" />
+              Created Date
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Date Range" },
+                  { value: "today", label: "Today" },
+                  { value: "yesterday", label: "Yesterday" },
+                  { value: "7days", label: "Last 7 Days" },
+                  { value: "30days", label: "Last 30 Days" },
+                  { value: "90days", label: "Last 90 Days" },
+                  { value: "custom", label: "Custom" },
+                ].find((o) => o.value === filters.createdDate) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  createdDate: selectedOption?.value || "",
+                  fromDate: "", // reset when option changes
+                  toDate: "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Date Range" },
+                { value: "today", label: "Today" },
+                { value: "yesterday", label: "Yesterday" },
+                { value: "7days", label: "Last 7 Days" },
+                { value: "30days", label: "Last 30 Days" },
+                { value: "90days", label: "Last 90 Days" },
+                { value: "custom", label: "Custom" },
+              ]}
+            />
+          </div>
+          {filters.createdDate === "custom" && (
+            <div className="flex flex-col gap-2 mt-2">
               <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Created Date
+                <label className="text-[11px] font-medium text-gray-600 mb-1">
+                  From Date
                 </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Date Range" },
-                      { value: "today", label: "Today" },
-                      { value: "yesterday", label: "Yesterday" },
-                      { value: "7days", label: "Last 7 Days" },
-                      { value: "30days", label: "Last 30 Days" },
-                      { value: "90days", label: "Last 90 Days" },
-                      { value: "custom", label: "Custom" },
-                    ].find((o) => o.value === filters.createdDate) || null
+                <input
+                  type="date"
+                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                  value={filters.fromDate}
+                  onChange={(e) =>
+                    setFilters({ ...filters, fromDate: e.target.value })
                   }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      createdDate: selectedOption?.value || "",
-                      fromDate: "", // reset when option changes
-                      toDate: "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Date Range" },
-                    { value: "today", label: "Today" },
-                    { value: "yesterday", label: "Yesterday" },
-                    { value: "7days", label: "Last 7 Days" },
-                    { value: "30days", label: "Last 30 Days" },
-                    { value: "90days", label: "Last 90 Days" },
-                    { value: "custom", label: "Custom" },
-                  ]}
                 />
               </div>
-              {filters.createdDate === "custom" && (
-                <div className="flex flex-col gap-2 mt-2">
-                  <div className="flex flex-col">
-                    <label className="text-[11px] font-medium text-gray-600 mb-1">
-                      From Date
-                    </label>
-                    <input
-                      type="date"
-                      className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                      value={filters.fromDate}
-                      onChange={(e) =>
-                        setFilters({ ...filters, fromDate: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-[11px] font-medium text-gray-600 mb-1">
-                      To Date
-                    </label>
-                    <input
-                      type="date"
-                      className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                      value={filters.toDate}
-                      onChange={(e) =>
-                        setFilters({ ...filters, toDate: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-
-            <div className="flex flex-col">
-              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                <CalendarDays size={13} className="text-gray-500" />
-                Due Date
-              </label>
-              <input
-                type="date"
-                className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                value={filters.dueDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, dueDate: e.target.value })
-                }
-              />
+              <div className="flex flex-col">
+                <label className="text-[11px] font-medium text-gray-600 mb-1">
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                  value={filters.toDate}
+                  onChange={(e) =>
+                    setFilters({ ...filters, toDate: e.target.value })
+                  }
+                />
+              </div>
             </div>
+          )}
 
-            <div className="flex flex-col">
-              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                <Layers2 size={13} className="text-gray-500" />
-                Bucket Name
-              </label>
-              <Select
-                classNamePrefix="task-filter"
-                value={
-                  buckets
-                    .map((b) => ({
-                      value: b.id,
-                      label: b.fld_bucket_name,
-                    }))
-                    .find((o) => o.value === filters.bucketName) || null
-                }
-                onChange={(selectedOption) =>
-                  setFilters({
-                    ...filters,
-                    bucketName: selectedOption?.value || "",
-                  })
-                }
-                options={[
-                  { value: "", label: "Bucket Name" },
-                  ...buckets.map((b) => ({
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CalendarDays size={13} className="text-gray-500" />
+              Due Date
+            </label>
+            <input
+              type="date"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.dueDate}
+              onChange={(e) =>
+                setFilters({ ...filters, dueDate: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Layers2 size={13} className="text-gray-500" />
+              Bucket Name
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                buckets
+                  .map((b) => ({
                     value: b.id,
                     label: b.fld_bucket_name,
-                  })),
-                ]}
-              />
-            </div>
+                  }))
+                  .find((o) => o.value === filters.bucketName) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  bucketName: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Bucket Name" },
+                ...buckets.map((b) => ({
+                  value: b.id,
+                  label: b.fld_bucket_name,
+                })),
+              ]}
+            />
+          </div>
 
-            <div className="flex flex-col">
-              <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                <ClipboardList size={13} className="text-gray-500" />
-                Task Status
-              </label>
-              <Select
-                classNamePrefix="task-filter"
-                value={
-                  [
-                    { value: "", label: "Select Status" },
-                    { value: "Open", label: "Open" },
-                    { value: "Updated", label: "Updated" },
-                    { value: "Overdue", label: "Overdue" },
-                    { value: "Today", label: "Today" },
-                    { value: "Late but closed", label: "Late but closed" },
-                    { value: "Completed", label: "Completed" },
-                  ].find((o) => o.value === filters.taskStatus) || null
-                }
-                onChange={(selectedOption) =>
-                  setFilters({
-                    ...filters,
-                    taskStatus: selectedOption?.value || "",
-                  })
-                }
-                options={[
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <ClipboardList size={13} className="text-gray-500" />
+              Task Status
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
                   { value: "", label: "Select Status" },
                   { value: "Open", label: "Open" },
                   { value: "Updated", label: "Updated" },
@@ -593,111 +591,25 @@ function TasksCreatedByMe() {
                   { value: "Today", label: "Today" },
                   { value: "Late but closed", label: "Late but closed" },
                   { value: "Completed", label: "Completed" },
-                ]}
-              />
-            </div>
+                ].find((o) => o.value === filters.taskStatus) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  taskStatus: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Status" },
+                { value: "Open", label: "Open" },
+                { value: "Updated", label: "Updated" },
+                { value: "Overdue", label: "Overdue" },
+                { value: "Today", label: "Today" },
+                { value: "Late but closed", label: "Late but closed" },
+                { value: "Completed", label: "Completed" },
+              ]}
+            />
           </div>
-
-          {loading ? (
-            <div>Loading tasks...</div>
-          ) : tasks.length === 0 ? (
-            <div>No tasks found.</div>
-          ) : (
-            <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
-              <div className="table-scrollable">
-                <DataTable
-                  data={tasks}
-                  columns={columns}
-                  options={{
-                    pageLength: 50,
-                    ordering: false,
-                    createdRow: (row, data) => {
-                      if (data.fld_task_status === "Late") {
-                        $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
-                      }
-                      if (data.fld_task_status === "Completed") {
-                        $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
-                      }
-                      $(row)
-                        .find(".view-btn")
-                        .on("click", () => handleViewButtonClick(data));
-
-                      $(row)
-                        .find(".edit-btn")
-                        .on("click", () => handleEditButtonClick(data)); // <-- Edit button
-
-                      $(row)
-                        .find(".delete-btn")
-                        .on("click", () => handleDeleteButtonClick(data));
-
-                      $(row)
-                        .find(".tag-btn")
-                        .on("click", () => {
-                          setSelectedTags(data.task_tag || "");
-                          setSelectedTask(data);
-                          setUpdateTagModalOpen(true);
-                        });
-
-                      $(row)
-                        .find(".bucket-btn")
-                        .on("click", () => {
-                          setFilters({
-                            ...filters,
-                            bucketName: data?.fld_bucket_name || "",
-                          });
-                          setTimeout(() => {
-                            fetchTasks(user, setTasks, setLoading, {
-                              ...filters,
-                              bucketName: data?.fld_bucket_name || "",
-                            });
-                          }, 300);
-                        });
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <AnimatePresence>
-            {detailsOpen && selectedTask && (
-              <TaskDetails
-                taskId={selectedTask?.task_id}
-                onClose={() => {
-                  setDetailsOpen(false);
-                }}
-              />
-            )}
-
-            {deleteOpen && selectedTask && (
-              <ConfirmationModal
-                title="Delete Task"
-                message={`Are you sure you want to delete? This action cannot be undone.`}
-                onYes={handleDelete}
-                onClose={() => {
-                  setDeleteOpen(false);
-                }}
-              />
-            )}
-            {updateTagModalOpen && selectedTask && (
-              <AddTags
-                taskId={selectedTask.task_id}
-                tags={selectedTags?.split(",") ?? []}
-                onClose={() => {
-                  setUpdateTagModalOpen(false);
-                }}
-                after={(response) => {
-                  // response.tag_names contains the updated tag names
-                  setTasks((prevTasks) =>
-                    prevTasks.map((task) =>
-                      task.task_id == selectedTask.task_id
-                        ? { ...task, tag_names: response.tag_names }
-                        : task
-                    )
-                  );
-                }}
-              />
-            )}
-          </AnimatePresence>
         </div>
 
         {loading ? (
@@ -731,6 +643,29 @@ function TasksCreatedByMe() {
                     $(row)
                       .find(".delete-btn")
                       .on("click", () => handleDeleteButtonClick(data));
+
+                    $(row)
+                      .find(".tag-btn")
+                      .on("click", () => {
+                        setSelectedTags(data.task_tag || "");
+                        setSelectedTask(data);
+                        setUpdateTagModalOpen(true);
+                      });
+
+                    $(row)
+                      .find(".bucket-btn")
+                      .on("click", () => {
+                        setFilters({
+                          ...filters,
+                          bucketName: data?.fld_bucket_name || "",
+                        });
+                        setTimeout(() => {
+                          fetchTasks(user, setTasks, setLoading, {
+                            ...filters,
+                            bucketName: data?.fld_bucket_name || "",
+                          });
+                        }, 300);
+                      });
                   },
                 }}
               />
@@ -757,8 +692,87 @@ function TasksCreatedByMe() {
               }}
             />
           )}
+          {updateTagModalOpen && selectedTask && (
+            <AddTags
+              taskId={selectedTask.task_id}
+              tags={selectedTags?.split(",") ?? []}
+              onClose={() => {
+                setUpdateTagModalOpen(false);
+              }}
+              after={(response) => {
+                // response.tag_names contains the updated tag names
+                setTasks((prevTasks) =>
+                  prevTasks.map((task) =>
+                    task.task_id == selectedTask.task_id
+                      ? { ...task, tag_names: response.tag_names }
+                      : task
+                  )
+                );
+              }}
+            />
+          )}
         </AnimatePresence>
       </div>
+
+      {loading ? (
+        <div>Loading tasks...</div>
+      ) : tasks.length === 0 ? (
+        <div>No tasks found.</div>
+      ) : (
+        <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+          <div className="table-scrollable">
+            <DataTable
+              data={tasks}
+              columns={columns}
+              options={{
+                pageLength: 50,
+                ordering: false,
+                createdRow: (row, data) => {
+                  if (data.fld_task_status === "Late") {
+                    $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
+                  }
+                  if (data.fld_task_status === "Completed") {
+                    $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
+                  }
+                  $(row)
+                    .find(".view-btn")
+                    .on("click", () => handleViewButtonClick(data));
+
+                  $(row)
+                    .find(".edit-btn")
+                    .on("click", () => handleEditButtonClick(data)); // <-- Edit button
+
+                  $(row)
+                    .find(".delete-btn")
+                    .on("click", () => handleDeleteButtonClick(data));
+                },
+              }}
+            />
+          </div>
+        </div>
+      )}
+      <AnimatePresence>
+        {detailsOpen && selectedTask && (
+          <TaskDetails
+            taskId={selectedTask?.task_id}
+            onClose={() => {
+              setDetailsOpen(false);
+            }}
+          />
+        )}
+
+        {deleteOpen && selectedTask && (
+          <ConfirmationModal
+            title="Delete Task"
+            message={`Are you sure you want to delete? This action cannot be undone.`}
+            onYes={handleDelete}
+            onClose={() => {
+              setDeleteOpen(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

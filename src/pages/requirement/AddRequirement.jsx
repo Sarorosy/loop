@@ -29,7 +29,7 @@ export default function AddRequirement({ onClose, after }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/requirement/create`, {
+      const res = await fetch(`http://localhost:5000/api/helper/requirement/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, category }),

@@ -43,7 +43,7 @@ function ManageQuery() {
   ) => {
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/query/queries", {
+      const res = await fetch("http://localhost:5000/api/query/queries", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({
@@ -203,8 +203,8 @@ function ManageQuery() {
   const fetchDropdownData = async () => {
     try {
       const [projectsRes, usersRes] = await Promise.all([
-        fetch("https://loopback-r9kf.onrender.com/api/query/websites"),
-        fetch("https://loopback-r9kf.onrender.com/api/query/users"),
+        fetch("http://localhost:5000/api/query/websites"),
+        fetch("http://localhost:5000/api/query/users"),
       ]);
       setWebsites((await projectsRes.json())?.data || []);
       setUsers((await usersRes.json())?.data || []);

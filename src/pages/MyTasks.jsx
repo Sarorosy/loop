@@ -34,23 +34,23 @@ function MyTasks() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
-  taskNameOrId: "",
-  assignedTo: "",
-  milestone: "",
-  milestoneStatus: "",
-  milestoneCompletionStatus: "",
-  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
-  fromDate: "",      // for custom filter
-  toDate: "",
-  days: "",
-  dueDate: "",
-  bucketName: "",
-  taskStatus: "",
-  assignedBy: "",
-  projectId: "",
-  queryStatus: "",
-  paymentRange: "",
-});
+    taskNameOrId: "",
+    assignedTo: "",
+    milestone: "",
+    milestoneStatus: "",
+    milestoneCompletionStatus: "",
+    createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+    fromDate: "", // for custom filter
+    toDate: "",
+    days: "",
+    dueDate: "",
+    bucketName: "",
+    taskStatus: "",
+    assignedBy: "",
+    projectId: "",
+    queryStatus: "",
+    paymentRange: "",
+  });
 
   DataTable.use(DT);
 
@@ -60,7 +60,7 @@ function MyTasks() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/getmytasks", {
+      const res = await fetch("http://localhost:5000/api/tasks/getmytasks", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -98,10 +98,10 @@ function MyTasks() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -150,27 +150,27 @@ function MyTasks() {
       },
     },
     {
-          title: "Progress",
-          data: null,
-          orderable: false,
-          render: (data, type, row) => {
-            const progress = calculateTaskProgress(row);
-            const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
-    
-            const size = 28; // Circle size
-            const strokeWidth = 3;
-            const radius = (size - strokeWidth) / 2;
-            const circumference = 2 * Math.PI * radius;
-            const progressOffset = circumference * (1 - progress / 100);
-    
-            return `
+      title: "Progress",
+      data: null,
+      orderable: false,
+      render: (data, type, row) => {
+        const progress = calculateTaskProgress(row);
+        const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
+
+        const size = 28; // Circle size
+        const strokeWidth = 3;
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius;
+        const progressOffset = circumference * (1 - progress / 100);
+
+        return `
           <div style="position: relative; width: ${size}px; height: ${size}px;">
             <svg width="${size}" height="${size}" >
               <circle
                 cx="${size / 2}"
                 cy="${size / 2}"
                 r="${radius}"
-                stroke="${displayText == "0%" ? "#FF0000FF"  : "#FFFFFFFF"}"
+                stroke="${displayText == "0%" ? "#FF0000FF" : "#FFFFFFFF"}"
                 stroke-width="${strokeWidth}"
                 fill="none"
               />
@@ -197,15 +197,15 @@ function MyTasks() {
               align-items: center;
               justify-content: center;
               font-size: 10px;
-              color: ${displayText == "0%" ? "#FF0000FF"  : "#0C7733FF"};
+              color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
               font-weight: bold;
             ">
               ${displayText}
             </div>
           </div>
         `;
-          },
-        },
+      },
+    },
     {
       title: "Due Date & Time",
       data: null,
@@ -261,7 +261,21 @@ function MyTasks() {
       data: "fld_addedon",
       orderable: true,
       render: (data) => {
-        return data ? new Date(data).toLocaleString() : "-";
+        if (!data) return "-";
+
+        const date = new Date(data);
+        if (isNaN(date)) return "-";
+
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = date.toLocaleString("en-US", { month: "short" });
+        const year = date.getFullYear();
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const displayHours = (hours % 12 || 12).toString();
+
+        return `${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}`;
       },
     },
     {
@@ -308,378 +322,377 @@ function MyTasks() {
 
   const resetFilters = () => {
     setFilters({
-  taskNameOrId: "",
-  assignedTo: "",
-  milestone: "",
-  milestoneStatus: "",
-  milestoneCompletionStatus: "",
-  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
-  fromDate: "",      // for custom filter
-  toDate: "",
-  days: "",
-  dueDate: "",
-  bucketName: "",
-  taskStatus: "",
-  assignedBy: "",
-  projectId: "",
-  queryStatus: "",
-  paymentRange: "",
-});
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
     fetchTasks(user, setTasks, setLoading, {
-  taskNameOrId: "",
-  assignedTo: "",
-  milestone: "",
-  milestoneStatus: "",
-  milestoneCompletionStatus: "",
-  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
-  fromDate: "",      // for custom filter
-  toDate: "",
-  days: "",
-  dueDate: "",
-  bucketName: "",
-  taskStatus: "",
-  assignedBy: "",
-  projectId: "",
-  queryStatus: "",
-  paymentRange: "",
-});
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
   };
 
   return (
-        <div className="">
-          <div className="text-xl font-bold mb-4 flex items-center justify-between">
-            My Tasks
-            <div className="flex gap-3">
-              <button
-                onClick={resetFilters}
-                className="p-1 rounded hover:bg-gray-100"
-              >
-                <RefreshCcw size={14} className="text-gray-700" />
-              </button>
-
-              <p
-                onClick={() => {
-                  setFiltersVisible(!filtersVisible);
-                }}
-                className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
-              >
-                <Filter size={11} /> Filter
-              </p>
-            </div>
-          </div>
-
-          <div
-            className={`${
-              filtersVisible
-                ? "block bg-gray-100 rounded   border-blue-400 p-3"
-                : "hidden"
-            }`}
+    <div className="">
+      <div className="text-xl font-bold mb-4 flex items-center justify-between">
+        My Tasks
+        <div className="flex gap-3">
+          <button
+            onClick={resetFilters}
+            className="p-1 rounded hover:bg-gray-100"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Tag size={13} className="text-gray-500" />
-                  Task Title / ID
-                </label>
-                <input
-                  type="text"
-                  placeholder="Task Title / ID"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.taskNameOrId}
-                  onChange={(e) =>
-                    setFilters({ ...filters, taskNameOrId: e.target.value })
-                  }
-                />
-              </div>
+            <RefreshCcw size={14} className="text-gray-700" />
+          </button>
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Flag size={13} className="text-gray-500" />
-                  Milestone
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    milestones
-                      .map((m) => ({
-                        value: m.id,
-                        label: m.fld_benchmark_name,
-                      }))
-                      .find((o) => o.value === filters.milestone) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestone: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Milestone" },
-                    ...milestones.map((m) => ({
-                      value: m.id,
-                      label: m.fld_benchmark_name,
-                    })),
-                  ]}
-                />
-              </div>
+          <p
+            onClick={() => {
+              setFiltersVisible(!filtersVisible);
+            }}
+            className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
+          >
+            <Filter size={11} /> Filter
+          </p>
+        </div>
+      </div>
 
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CheckCircle size={13} className="text-gray-500" />
-                  Milestone Completion Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Completion Status" },
-                      { value: "overdue1", label: "Overdue" },
-                      { value: "not_completed", label: "Not Completed" },
-                      { value: "on_time", label: "Completed on Time" },
-                      { value: "overdue", label: "Completed as Overdue" },
-                    ].find(
-                      (o) => o.value === filters.milestoneCompletionStatus
-                    ) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      milestoneCompletionStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Completion Status" },
-                    { value: "overdue1", label: "Overdue" },
-                    { value: "not_completed", label: "Not Completed" },
-                    { value: "on_time", label: "Completed on Time" },
-                    { value: "overdue", label: "Completed as Overdue" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Created Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.createdDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, createdDate: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <CalendarDays size={13} className="text-gray-500" />
-                  Due Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.dueDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, dueDate: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <Layers2 size={13} className="text-gray-500" />
-                  Bucket Name
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    buckets
-                      .map((b) => ({
-                        value: b.id,
-                        label: b.fld_bucket_name,
-                      }))
-                      .find((o) => o.value === filters.bucketName) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      bucketName: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Bucket Name" },
-                    ...buckets.map((b) => ({
-                      value: b.id,
-                      label: b.fld_bucket_name,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <ClipboardList size={13} className="text-gray-500" />
-                  Task Status
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    [
-                      { value: "", label: "Select Status" },
-                      { value: "Open", label: "Open" },
-                      { value: "Updated", label: "Updated" },
-                      { value: "Overdue", label: "Overdue" },
-                      { value: "Today", label: "Today" },
-                      { value: "Late but closed", label: "Late but closed" },
-                      { value: "Completed", label: "Completed" },
-                    ].find((o) => o.value === filters.taskStatus) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      taskStatus: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Select Status" },
-                    { value: "Open", label: "Open" },
-                    { value: "Updated", label: "Updated" },
-                    { value: "Overdue", label: "Overdue" },
-                    { value: "Today", label: "Today" },
-                    { value: "Late but closed", label: "Late but closed" },
-                    { value: "Completed", label: "Completed" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
-                  <User2 size={13} className="text-gray-500" />
-                  Assigned By
-                </label>
-                <Select
-                  classNamePrefix="task-filter"
-                  value={
-                    users
-                      .map((u) => ({
-                        value: u.id,
-                        label: `${u.fld_first_name} ${u.fld_last_name}`,
-                      }))
-                      .find((o) => o.value === filters.assignedBy) || null
-                  }
-                  onChange={(selectedOption) =>
-                    setFilters({
-                      ...filters,
-                      assignedBy: selectedOption?.value || "",
-                    })
-                  }
-                  options={[
-                    { value: "", label: "Assigned By" },
-                    ...users.map((u) => ({
-                      value: u.id,
-                      label: `${u.fld_first_name} ${u.fld_last_name}`,
-                    })),
-                  ]}
-                />
-              </div>
-            </div>
-
-            <div className="w-full flex items-center justify-end">
-              <button
-                onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
-                className="px-2 py-1 bg-blue-600 text-white rounded f-11"
-              >
-                Apply Filters
-              </button>
-            </div>
+      <div
+        className={`${
+          filtersVisible
+            ? "block bg-gray-100 rounded   border-blue-400 p-3"
+            : "hidden"
+        }`}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 text-[11px] ">
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Tag size={13} className="text-gray-500" />
+              Task Title / ID
+            </label>
+            <input
+              type="text"
+              placeholder="Task Title / ID"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.taskNameOrId}
+              onChange={(e) =>
+                setFilters({ ...filters, taskNameOrId: e.target.value })
+              }
+            />
           </div>
 
-          {loading ? (
-            <div>Loading tasks...</div>
-          ) : tasks.length === 0 ? (
-            <div>No tasks found.</div>
-          ) : (
-            <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
-              <div className="table-scrollable">
-                <DataTable
-                  data={tasks}
-                  columns={columns}
-                  options={{
-                    pageLength: 50,
-                    ordering: false,
-                    createdRow: (row, data) => {
-                      if (data.fld_task_status === "Late") {
-                        $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
-                      }
-                      if (data.fld_task_status === "Completed") {
-                        $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
-                      }
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Flag size={13} className="text-gray-500" />
+              Milestone
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                milestones
+                  .map((m) => ({
+                    value: m.id,
+                    label: m.fld_benchmark_name,
+                  }))
+                  .find((o) => o.value === filters.milestone) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  milestone: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Milestone" },
+                ...milestones.map((m) => ({
+                  value: m.id,
+                  label: m.fld_benchmark_name,
+                })),
+              ]}
+            />
+          </div>
 
-                      $(row)
-                        .find(".view-btn")
-                        .on("click", () => handleViewButtonClick(data));
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CheckCircle size={13} className="text-gray-500" />
+              Milestone Completion Status
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Completion Status" },
+                  { value: "overdue1", label: "Overdue" },
+                  { value: "not_completed", label: "Not Completed" },
+                  { value: "on_time", label: "Completed on Time" },
+                  { value: "overdue", label: "Completed as Overdue" },
+                ].find((o) => o.value === filters.milestoneCompletionStatus) ||
+                null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  milestoneCompletionStatus: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Completion Status" },
+                { value: "overdue1", label: "Overdue" },
+                { value: "not_completed", label: "Not Completed" },
+                { value: "on_time", label: "Completed on Time" },
+                { value: "overdue", label: "Completed as Overdue" },
+              ]}
+            />
+          </div>
 
-                      $(row)
-                        .find(".tag-btn")
-                        .on("click", () => {
-                          setSelectedTags(data.task_tag || "");
-                          setSelectedTask(data);
-                          setUpdateTagModalOpen(true);
-                        });
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CalendarDays size={13} className="text-gray-500" />
+              Created Date
+            </label>
+            <input
+              type="date"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.createdDate}
+              onChange={(e) =>
+                setFilters({ ...filters, createdDate: e.target.value })
+              }
+            />
+          </div>
 
-                      $(row)
-                        .find(".bucket-btn")
-                        .on("click", () => {
-                          setFilters({
-                            ...filters,
-                            bucketName: data?.fld_bucket_name || "",
-                          });
-                          setTimeout(() => {
-                            fetchTasks(user, setTasks, setLoading, {
-                              ...filters,
-                              bucketName: data?.fld_bucket_name || "",
-                            });
-                          }, 300);
-                        });
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <AnimatePresence>
-            {detailsOpen && selectedTask && (
-              <TaskDetails
-                taskId={selectedTask?.task_id}
-                onClose={() => {
-                  setDetailsOpen(false);
-                }}
-              />
-            )}
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <CalendarDays size={13} className="text-gray-500" />
+              Due Date
+            </label>
+            <input
+              type="date"
+              className="px-2 py-2.5 border rounded bg-white border-gray-300"
+              value={filters.dueDate}
+              onChange={(e) =>
+                setFilters({ ...filters, dueDate: e.target.value })
+              }
+            />
+          </div>
 
-            {updateTagModalOpen && selectedTask && (
-              <AddTags
-                taskId={selectedTask.task_id}
-                tags={selectedTags?.split(",") ?? []}
-                onClose={() => {
-                  setUpdateTagModalOpen(false);
-                }}
-                after={(response) => {
-                  // response.tag_names contains the updated tag names
-                  setTasks((prevTasks) =>
-                    prevTasks.map((task) =>
-                      task.task_id == selectedTask.task_id
-                        ? { ...task, tag_names: response.tag_names }
-                        : task
-                    )
-                  );
-                }}
-              />
-            )}
-          </AnimatePresence>
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <Layers2 size={13} className="text-gray-500" />
+              Bucket Name
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                buckets
+                  .map((b) => ({
+                    value: b.id,
+                    label: b.fld_bucket_name,
+                  }))
+                  .find((o) => o.value === filters.bucketName) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  bucketName: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Bucket Name" },
+                ...buckets.map((b) => ({
+                  value: b.id,
+                  label: b.fld_bucket_name,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <ClipboardList size={13} className="text-gray-500" />
+              Task Status
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                [
+                  { value: "", label: "Select Status" },
+                  { value: "Open", label: "Open" },
+                  { value: "Updated", label: "Updated" },
+                  { value: "Overdue", label: "Overdue" },
+                  { value: "Today", label: "Today" },
+                  { value: "Late but closed", label: "Late but closed" },
+                  { value: "Completed", label: "Completed" },
+                ].find((o) => o.value === filters.taskStatus) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  taskStatus: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Select Status" },
+                { value: "Open", label: "Open" },
+                { value: "Updated", label: "Updated" },
+                { value: "Overdue", label: "Overdue" },
+                { value: "Today", label: "Today" },
+                { value: "Late but closed", label: "Late but closed" },
+                { value: "Completed", label: "Completed" },
+              ]}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-[11px] font-medium text-gray-600 mb-1 flex items-center gap-1">
+              <User2 size={13} className="text-gray-500" />
+              Assigned By
+            </label>
+            <Select
+              classNamePrefix="task-filter"
+              value={
+                users
+                  .map((u) => ({
+                    value: u.id,
+                    label: `${u.fld_first_name} ${u.fld_last_name}`,
+                  }))
+                  .find((o) => o.value === filters.assignedBy) || null
+              }
+              onChange={(selectedOption) =>
+                setFilters({
+                  ...filters,
+                  assignedBy: selectedOption?.value || "",
+                })
+              }
+              options={[
+                { value: "", label: "Assigned By" },
+                ...users.map((u) => ({
+                  value: u.id,
+                  label: `${u.fld_first_name} ${u.fld_last_name}`,
+                })),
+              ]}
+            />
+          </div>
         </div>
+
+        <div className="w-full flex items-center justify-end">
+          <button
+            onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
+            className="px-2 py-1 bg-blue-600 text-white rounded f-11"
+          >
+            Apply Filters
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div>Loading tasks...</div>
+      ) : tasks.length === 0 ? (
+        <div>No tasks found.</div>
+      ) : (
+        <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+          <div className="table-scrollable">
+            <DataTable
+              data={tasks}
+              columns={columns}
+              options={{
+                pageLength: 50,
+                ordering: false,
+                createdRow: (row, data) => {
+                  if (data.fld_task_status === "Late") {
+                    $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
+                  }
+                  if (data.fld_task_status === "Completed") {
+                    $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
+                  }
+
+                  $(row)
+                    .find(".view-btn")
+                    .on("click", () => handleViewButtonClick(data));
+
+                  $(row)
+                    .find(".tag-btn")
+                    .on("click", () => {
+                      setSelectedTags(data.task_tag || "");
+                      setSelectedTask(data);
+                      setUpdateTagModalOpen(true);
+                    });
+
+                  $(row)
+                    .find(".bucket-btn")
+                    .on("click", () => {
+                      setFilters({
+                        ...filters,
+                        bucketName: data?.fld_bucket_name || "",
+                      });
+                      setTimeout(() => {
+                        fetchTasks(user, setTasks, setLoading, {
+                          ...filters,
+                          bucketName: data?.fld_bucket_name || "",
+                        });
+                      }, 300);
+                    });
+                },
+              }}
+            />
+          </div>
+        </div>
+      )}
+      <AnimatePresence>
+        {detailsOpen && selectedTask && (
+          <TaskDetails
+            taskId={selectedTask?.task_id}
+            onClose={() => {
+              setDetailsOpen(false);
+            }}
+          />
+        )}
+
+        {updateTagModalOpen && selectedTask && (
+          <AddTags
+            taskId={selectedTask.task_id}
+            tags={selectedTags?.split(",") ?? []}
+            onClose={() => {
+              setUpdateTagModalOpen(false);
+            }}
+            after={(response) => {
+              // response.tag_names contains the updated tag names
+              setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                  task.task_id == selectedTask.task_id
+                    ? { ...task, tag_names: response.tag_names }
+                    : task
+                )
+              );
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
