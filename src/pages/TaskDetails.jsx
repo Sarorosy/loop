@@ -554,6 +554,7 @@ function formatDate(dateString) {
                   )}
                 </div>
                 <div className="mt-4">
+                  {task.fld_file_upload && (
                   <div className="flex items-center gap-2 mb-3">
                     <Paperclip className="w-4 h-4 text-gray-500" />
                     <h3 className="text-[13px] font-semibold text-gray-800">
@@ -561,6 +562,7 @@ function formatDate(dateString) {
                     </h3>
                     <div className="flex-grow border-t border-gray-200" />
                   </div>
+                  )}
 
                   {task.fld_file_upload && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">

@@ -144,7 +144,7 @@ function Dashboard() {
         if (!data) return "-";
 
         return `
-      <button class="bucket-btn cursor-pointer" style="font-size: 11px; color: #2563EB;text-align:left;">
+      <button class="bucket-btn cursor-pointer" style="font-size: 12px; color: #2563EB;text-align:left;">
         ${data}
       </button>
     `;
@@ -165,13 +165,13 @@ function Dashboard() {
         const progressOffset = circumference * (1 - progress / 100);
 
         return `
-      <div style="position: relative; width: ${size}px; height: ${size}px;">
+      <div style="position: relative; margin:auto; width: ${size}px; height: ${size}px;">
         <svg width="${size}" height="${size}" >
           <circle
             cx="${size / 2}"
             cy="${size / 2}"
             r="${radius}"
-            stroke="${displayText == "0%" ? "#FF0000FF" : "#FFFFFFFF"}"
+            stroke="${displayText == "0%" ? "#FF0000FF" : "#e0e0e0ff"}"
             stroke-width="${strokeWidth}"
             fill="none"
           />
@@ -197,7 +197,7 @@ function Dashboard() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 10px;
+          font-size: 8px;
           color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
           font-weight: bold;
         ">
@@ -241,12 +241,12 @@ function Dashboard() {
 
         // Add a button with a data attribute to identify the row
         const buttonHtml = `
-      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+      <button class="tag-btn" style="font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
         ${buttonLabel}
       </button>
     `;
 
-        return `${tagsHtml}${buttonHtml}`;
+        return `<div>${buttonHtml}${tagsHtml}</div>`;
       },
     },
     {
@@ -817,7 +817,7 @@ function Dashboard() {
         <div className="w-full flex items-center justify-end">
           <button
             onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
-            className="px-2 py-1 bg-blue-600 text-white rounded f-11"
+            className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[12px] leading-none"
           >
             Apply Filters
           </button>

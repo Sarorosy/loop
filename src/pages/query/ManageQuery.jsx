@@ -311,7 +311,7 @@ function ManageQuery() {
       data: null,
       orderable: false,
       render: (data, type, row) => `
-      <button class="assign-btn px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-[13px]" data-id="${row.id}">
+      <button class="assign-btn px-1 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-[13px] leading-none" data-id="${row.id}">
         Assign
       </button>
     `,
@@ -526,7 +526,7 @@ function ManageQuery() {
                     setTotalRows
                   )
                 }
-                className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs"
+                className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[12px] leading-none"
               >
                 Apply Filters
               </button>

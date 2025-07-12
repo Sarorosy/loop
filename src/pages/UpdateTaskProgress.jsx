@@ -126,16 +126,20 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#0000007d] flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000073]">
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 50 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 50 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="p-6 bg-white rounded-2xl shadow-2xl max-w-lg w-full"
+        className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4"
       >
-        <h2 className="text-xl font-semibold mb-4">Update Task Progress</h2>
-        <form onSubmit={handleSubmit}>
+        <div className="flex justify-between items-center px-4 py-3 bg-[#224d68]  rounded-t">
+          <h2 className="text-[15px] font-semibold text-white">Update Task Progress</h2>
+          
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-4">
           {task.fld_benchmark_name && (
             <div className="form-group col-sm-12 h-48 max-h-48 overflow-y-auto">
               <label className="col-form-label">Milestones Completed</label>
@@ -228,9 +232,12 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           )}
 
           <div className="mb-4">
-            <label className="font-medium">Remarks</label>
+            <label className="text-[13px]">Remarks</label>
             <textarea
-              className="w-full p-2 border rounded"
+              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
             />
@@ -239,7 +246,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           <div className="mb-4">
             <label className="block text-[13px] font-medium text-gray-700 mb-1">
               File Upload{" "}
-              <span className="text-xs text-gray-500">
+              <span className="text-[11px] text-gray-500">
                 (Max 25MB per file, Max 3 files)
               </span>
             </label>
@@ -251,12 +258,15 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
                     type="file"
                     accept=".doc, .docx, .pdf, .gif, .jpeg, .jpg, .png, .xlsx, .csv, .rar, .zip, .odt"
                     onChange={(e) => handleFileChange(e, index)}
-                    className="flex-1 text-[13px] border rounded p-1 "
+                    className="flex-1 w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
                   />
                   <button
                     type="button"
                     onClick={() => removeFileInput(index)}
-                    className="text-red-500 hover:text-red-700 text-lg font-bold border border-red-500 px-2 rounded"
+                    className="text-red-500 hover:text-red-700 text-lg font-bold border border-red-500 px-2 py-0 rounded"
                   >
                     &minus;
                   </button>
@@ -267,7 +277,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             <button
               type="button"
               onClick={addFileInput}
-              className="mt-2 text-blue-600 text-[13px] hover:underline"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
             >
               {files.length > 0 ? "+ Add Another File" : "+ Add File"}
             </button>
@@ -277,18 +287,18 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             )}
           </div>
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-between gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
+              className="bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded"
+              className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
             >
               {submitting ? "Submitting" : "Submit"}
             </button>

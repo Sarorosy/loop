@@ -152,7 +152,7 @@ function TasksFollowing() {
         const progressOffset = circumference * (1 - progress / 100);
 
         return `
-          <div style="position: relative; width: ${size}px; height: ${size}px;">
+          <div style="position: relative; margin:auto; width: ${size}px; height: ${size}px;">
             <svg width="${size}" height="${size}" >
               <circle
                 cx="${size / 2}"
@@ -184,7 +184,7 @@ function TasksFollowing() {
               display: flex;
               align-items: center;
               justify-content: center;
-              font-size: 10px;
+              font-size: 8px;
               color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
               font-weight: bold;
             ">
@@ -224,12 +224,12 @@ function TasksFollowing() {
 
         // Add a button with a data attribute to identify the row
         const buttonHtml = `
-      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+      <button class="tag-btn" style="font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
         ${buttonLabel}
       </button>
     `;
 
-        return `${tagsHtml}${buttonHtml}`;
+        return `<div>${buttonHtml}${tagsHtml}</div>`;
       },
     },
     {

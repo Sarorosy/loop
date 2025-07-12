@@ -80,21 +80,22 @@ export default function TransferModal({ taskId, onClose, after }) {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
-        className="bg-white rounded-lg p-3 w-full max-w-md relative"
+        className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4"
       >
        
 
-        <div className="flex justify-between mb-3">
-          <h2 className="text-[16px] font-semibold">Transfer Task</h2>
+        <div className="flex justify-between items-center px-4 py-3 bg-[#224d68]  rounded-t">
+          <h2 className="text-[15px] font-semibold text-white">Transfer Task</h2>
 
           {/* Close Button */}
           <button
-            className="text-gray-500 hover:text-black"
+            className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
             onClick={onClose}
           >
-            <X size={16} className="text-red-600 hover:text-red-800" />
+            <X size={12} className="" />
           </button>
         </div>
+        <div className="p-4">
 
         {/* Single Select */}
         <Select
@@ -113,6 +114,7 @@ export default function TransferModal({ taskId, onClose, after }) {
           >
             Transfer
           </button>
+        </div>
         </div>
       </motion.div>
     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, RefreshCcw, Users, X } from "lucide-react";
+import { EditIcon, Plus, RefreshCcw, Trash2, Users, X } from "lucide-react";
 import AddUser from "./AddUser";
 import EditUser from "./EditUser";
 import ConfirmationModal from "../../components/ConfirmationModal";
@@ -125,18 +125,18 @@ export default function ManageUser({ onClose }) {
         </div>
         <div className="flex items-center justify-end space-x-2">
           <button
-            className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
             onClick={fetchUsers}
           >
-            <RefreshCcw size={13} className="" /> Refresh
+            Refresh<RefreshCcw size={11} className="" />
           </button>
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+            className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
             onClick={() => {
               setAddopen(true);
             }}
           >
-            <Plus size={13} className="" /> Add
+           Add<Plus size={11} className="" /> 
           </button>
         </div>
       </div>
@@ -191,16 +191,16 @@ export default function ManageUser({ onClose }) {
                       <td className="px-4 py-2 border">
                         <div className="flex items-center space-x-2">
                           <button
-                          className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
+                          className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
                             onClick={() => {
                               setSelectedUser(u);
                               setEditOpen(true);
                             }}
                           >
-                            Edit
+                            <EditIcon size={13} />
                           </button>
                           <button
-                            className="delete-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
+                            className="delete-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
                             onClick={() => {
                               setSelectedUser(u);
                               setDeleteOpen(true);
@@ -209,7 +209,7 @@ export default function ManageUser({ onClose }) {
                               );
                             }}
                           >
-                            Delete
+                            <Trash2 size={13} />
                           </button>
                         </div>
                       </td>

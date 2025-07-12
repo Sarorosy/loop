@@ -170,7 +170,7 @@ function TasksCreatedByMe() {
         const progressOffset = circumference * (1 - progress / 100);
 
         return `
-          <div style="position: relative; width: ${size}px; height: ${size}px;">
+          <div style="position: relative; margin:auto; width: ${size}px; height: ${size}px;">
             <svg width="${size}" height="${size}" >
               <circle
                 cx="${size / 2}"
@@ -202,7 +202,7 @@ function TasksCreatedByMe() {
               display: flex;
               align-items: center;
               justify-content: center;
-              font-size: 10px;
+              font-size: 8px;
               color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
               font-weight: bold;
             ">
@@ -242,12 +242,12 @@ function TasksCreatedByMe() {
 
         // Add a button with a data attribute to identify the row
         const buttonHtml = `
-      <button class="tag-btn" style="margin-left: 8px; font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+      <button class="tag-btn" style="font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
         ${buttonLabel}
       </button>
     `;
 
-        return `${tagsHtml}${buttonHtml}`;
+        return `<div>${buttonHtml}${tagsHtml}</div>`;
       },
     },
     {
@@ -300,8 +300,8 @@ function TasksCreatedByMe() {
       orderable: false,
       render: (data, type, row) => `
       <div class="flex gap-2">
-        <button class="edit-btn text-blue-600 hover:underline">Edit</button>
-        <button class="delete-btn text-red-600 hover:underline">Delete</button>
+        <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">Edit</button>
+        <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">Delete</button>
       </div>
     `,
     },

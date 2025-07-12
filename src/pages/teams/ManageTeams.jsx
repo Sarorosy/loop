@@ -120,11 +120,11 @@ export default function ManageTeams({ onClose }) {
       orderable: false,
       render: (data, type, row) => `
         <div class="flex items-center gap-2">
-          <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+          <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
             
             Edit
           </button>
-          <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+          <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
             
             Delete
           </button>
@@ -253,19 +253,19 @@ export default function ManageTeams({ onClose }) {
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
               onClick={fetchUsers}
               disabled={loading}
             >
-              <RefreshCcw size={13} className={` ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              Refresh<RefreshCcw size={11} className={` ${loading ? 'animate-spin' : ''}`} />
+              
             </button>
             <button
-              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 text-xs"
+              className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
               onClick={() => setAddopen(true)}
             >
-              <Plus size={13}  className="" />
-              Add Team
+              
+              Add Team<Plus size={11}  className="" />
             </button>
           </div>
         </div>

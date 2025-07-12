@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LogInIcon } from "lucide-react";
 import { useAuth } from "../utils/idb";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo-new.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -74,22 +75,27 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <form className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm space-y-3">
-        <h2 className="text-2xl font-semibold text-center">Login</h2>
-
-        <div className="space-y-2">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f2f7ff] p-4">
+      <form className="bg-white p-4 rounded shadow-md w-full max-w-sm space-y-3">
+        <div className="flex justify-center border-b border-gray-300 pb-3">
+          <img src={logo} className="h-5 w-auto" />
+        </div>
+        <h2 className="text-[12px] text-gray-400 text-center">Sign into your account</h2>
+        <div className="space-y-1">
           <label className="block text-[13px] font-medium">Email</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
           />
         </div>
 
-        <div className="space-y-2 relative">
+        <div className="space-y-1 relative">
           <label className="block text-[13px] font-medium">Password</label>
           <div className="relative">
             <input
@@ -97,14 +103,17 @@ const Login = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md pr-10"
+              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-2 flex items-center text-gray-500 cursor-pointer"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           </div>
         </div>
@@ -116,9 +125,9 @@ const Login = () => {
               handleSubmit();
             }}
             type="button"
-            className="text-[13px] bg-blue-400 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition cursor-pointer"
+            className="text-[13px] bg-orange-500 text-white px-2 py-1.5 rounded hover:bg-orange-700 transition cursor-pointer flex items-center gap-1 leading-none"
           >
-            Login
+            Login <LogInIcon size={13} />
           </button>
         </div>
 

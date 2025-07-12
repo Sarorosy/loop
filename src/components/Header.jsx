@@ -94,17 +94,17 @@ export default function Header() {
         </div>
 
         {user ? (
-          <div className="flex items-center gap-4 text-[13px]">
+          <div className="flex items-end gap-4 text-[14px]">
             <div className="relative" ref={userRef}>
               <button
                 onClick={() => setUserDropdownOpen((prev) => !prev)}
-                className="flex items-center px-2 py-1 rounded  text-black"
+                className="flex items-end px-2 py-2 rounded  gap-1 hover:bg-gray-100"
               >
-                <CircleUserRound className="mr-1" size={15} />
-                <span>
-                  Welcome , {user.fld_first_name + " " + user?.fld_last_name}
+                <CircleUserRound className="" size={18} />
+                <span className="leading-none">
+                  Welcome  -  <span className="text-orange-600 font-bold">{user.fld_first_name + " " + user?.fld_last_name}</span>
                 </span>
-                <ChevronDown className="mt-0.5" size={15} />
+                <ChevronDown className="" size={15} />
               </button>
 
               <AnimatePresence>

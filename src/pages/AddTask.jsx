@@ -4,13 +4,14 @@ import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
 import { useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
 export default function AddTask() {
   const [buckets, setBuckets] = useState([]);
   const [milestonesList, setMilestonesList] = useState([]);
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
-  const {user} = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const todayDateTime = format(new Date(), "yyyy-MM-dd'T'HH:mm");
@@ -89,230 +90,251 @@ export default function AddTask() {
     setFiles(updated);
   };
 
-  const [creatingTask, setCreatingTask] = useState(false)
+  const [creatingTask, setCreatingTask] = useState(false);
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  // Validation function
-  const validateForm = () => {
-    const errors = [];
-    
-    // Required field validations
-    if (!formData.title.trim()) {
-      errors.push("Task title is required");
-    }
-    
-    if (!formData.bucketId) {
-      errors.push("Please select a bucket");
-    }
-    
-    if (!formData.projectId) {
-      //errors.push("Please select a project");
-    }
-    
-    if (formData.assignedTo.length === 0) {
-      errors.push("Please assign the task to at least one user");
-    }
-    
-    if (!formData.dueDate) {
-      //errors.push("Due date is required");
-    }
-    
-    // Validate due date is not in the past
-    if (formData.dueDate) {
-      const today = new Date().toISOString().split('T')[0];
-      if (formData.dueDate < today) {
-        errors.push("Due date cannot be in the past");
-      }
-    }
-    
-    // Validate recurring task fields
-    if (formData.recurring === "Yes") {
-      if (!formData.recurringDuration) {
-        errors.push("Please select recurring frequency");
-      }
-      if (!formData.recurringType) {
-        errors.push("Please select recurring type");
-      }
-    }
-    
-    // Validate URL formats
-    const urlPattern = /^https?:\/\/.+/;
-    if (formData.googleLink && !urlPattern.test(formData.googleLink)) {
-      errors.push("Google link must be a valid URL starting with http:// or https://");
-    }
-    
-    if (formData.additionalLink && !urlPattern.test(formData.additionalLink)) {
-      errors.push("Additional link must be a valid URL starting with http:// or https://");
-    }
-    
-    // Validate milestones
-    for (let i = 0; i < milestones.length; i++) {
-      const milestone = milestones[i];
-      if (!milestone.milestoneId) {
-        errors.push(`Milestone ${i + 1}: Please select a milestone`);
-      }
-      if (!milestone.milestoneDueDate) {
-        errors.push(`Milestone ${i + 1}: Due date is required`);
-      }
-    }
-    
-    // Validate files
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      if (!file.file) {
-        errors.push(`File ${i + 1}: Please select a file`);
-      }
-      if (!file.fileName.trim()) {
-        errors.push(`File ${i + 1}: File name is required`);
-      }
-      
-      // File size validation (10MB limit)
-      if (file.file && file.file.size > 10 * 1024 * 1024) {
-        errors.push(`File ${i + 1}: File size must be less than 10MB`);
-      }
-      
-      // File type validation (optional - add allowed types as needed)
-      const allowedTypes = [
-        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-        'application/pdf', 'application/msword', 
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/plain', 'text/csv'
-      ];
-      
-      if (file.file && !allowedTypes.includes(file.file.type)) {
-        errors.push(`File ${i + 1}: Unsupported file type. Please use images, PDFs, Word docs, Excel files, or text files.`);
-      }
-    }
-    
-    return errors;
-  };
-  
-  // Run validation
-  const validationErrors = validateForm();
-  
-  if (validationErrors.length > 0) {
-    // Display all validation errors
-    validationErrors.forEach(error => {
-      toast.error(error);
-    });
-    return;
-  }
-  
-  try {
-    setCreatingTask(true)
-    // Show loading state
-    const loadingToast = toast.loading("Creating task...");
-    
-    // Create FormData object
-    const formDataToSend = new FormData();
-    
-    // Append basic form data
-    formDataToSend.append('user_id', user?.id);
-    formDataToSend.append('user_type', user?.fld_admin_type);
-    formDataToSend.append('user_name', user?.fld_first_name + " " + user?.fld_last_name);
-    formDataToSend.append('title', formData.title);
-    formDataToSend.append('description', formData.description || '');
-    formDataToSend.append('bucket_name', formData.bucketId);
-    formDataToSend.append('project_name', formData.projectId);
-    formDataToSend.append('due_date', formData.dueDate);
-    formDataToSend.append('due_time', formData.dueTime || '');
-    formDataToSend.append('recurring', formData.recurring);
-    formDataToSend.append('google_sheets_or_docs_link', formData.googleLink || '');
-    formDataToSend.append('fld_asana_link', formData.additionalLink || '');
-    
-    // Append recurring fields if applicable
-    if (formData.recurring === "Yes") {
-      formDataToSend.append('recurring_duration', formData.recurringDuration);
-      formDataToSend.append('recurring_type', formData.recurringType);
-    }else{
-      formDataToSend.append('recurring_tasks', formData.recurring ?? "No");
+    e.preventDefault();
 
-    }
-    
-    // Append arrays as JSON strings
-    formDataToSend.append('assigned_to', JSON.stringify(formData.assignedTo));
-    formDataToSend.append('follower', formData.followers.join(","));
-    
-    // Append milestones
-    if (milestones.length > 0) {
-      formDataToSend.append('benchmark_name', JSON.stringify(milestones));
-    }
-    
-    // Append files
-    files.forEach((fileObj, index) => {
-      if (fileObj.file) {
-        formDataToSend.append(`file_upload[]`, fileObj.file);
-        formDataToSend.append(`file_names[]`, fileObj.fileName);
+    // Validation function
+    const validateForm = () => {
+      const errors = [];
+
+      // Required field validations
+      if (!formData.title.trim()) {
+        errors.push("Task title is required");
       }
-    });
-    
-    // Make API call
-    const response = await fetch('http://localhost:5000/api/tasks/create', {
-      method: 'POST',
-      body: formDataToSend,
-      // Don't set Content-Type header - let browser set it with boundary for FormData
-    });
-    
-    const result = await response.json();
-    
-    // Dismiss loading toast
-    toast.dismiss(loadingToast);
-    
-    if (response.ok) {
-      toast.success('Task created successfully!');
-      navigate('/tasks/created-by-me');
-      
-      // Reset form after successful submission
-      // setFormData({
-      //   bucketId: "",
-      //   assignedTo: [],
-      //   projectId: "",
-      //   dueTime: "",
-      //   dueDate: "",
-      //   recurring: "No",
-      //   recurringDuration: "",
-      //   recurringType: "",
-      //   followers: [],
-      //   title: "",
-      //   description: "",
-      //   googleLink: "",
-      //   additionalLink: "",
-      // });
-      // setMilestones([]);
-      // setFiles([]);
-      
-      // Optional: Redirect to task list or task detail page
-      // window.location.href = '/tasks';
-      // or if using React Router:
-      // navigate('/tasks');
-      
-    } else {
-      // Handle API errors
-      const errorMessage = result.message || 'Failed to create task';
-      toast.error(errorMessage);
-      
-      // Log detailed error for debugging
-      console.error('Task creation failed:', result);
+
+      if (!formData.bucketId) {
+        errors.push("Please select a bucket");
+      }
+
+      if (!formData.projectId) {
+        //errors.push("Please select a project");
+      }
+
+      if (formData.assignedTo.length === 0) {
+        errors.push("Please assign the task to at least one user");
+      }
+
+      if (!formData.dueDate) {
+        //errors.push("Due date is required");
+      }
+
+      // Validate due date is not in the past
+      if (formData.dueDate) {
+        const today = new Date().toISOString().split("T")[0];
+        if (formData.dueDate < today) {
+          errors.push("Due date cannot be in the past");
+        }
+      }
+
+      // Validate recurring task fields
+      if (formData.recurring === "Yes") {
+        if (!formData.recurringDuration) {
+          errors.push("Please select recurring frequency");
+        }
+        if (!formData.recurringType) {
+          errors.push("Please select recurring type");
+        }
+      }
+
+      // Validate URL formats
+      const urlPattern = /^https?:\/\/.+/;
+      if (formData.googleLink && !urlPattern.test(formData.googleLink)) {
+        errors.push(
+          "Google link must be a valid URL starting with http:// or https://"
+        );
+      }
+
+      if (
+        formData.additionalLink &&
+        !urlPattern.test(formData.additionalLink)
+      ) {
+        errors.push(
+          "Additional link must be a valid URL starting with http:// or https://"
+        );
+      }
+
+      // Validate milestones
+      for (let i = 0; i < milestones.length; i++) {
+        const milestone = milestones[i];
+        if (!milestone.milestoneId) {
+          errors.push(`Milestone ${i + 1}: Please select a milestone`);
+        }
+        if (!milestone.milestoneDueDate) {
+          errors.push(`Milestone ${i + 1}: Due date is required`);
+        }
+      }
+
+      // Validate files
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!file.file) {
+          errors.push(`File ${i + 1}: Please select a file`);
+        }
+        if (!file.fileName.trim()) {
+          errors.push(`File ${i + 1}: File name is required`);
+        }
+
+        // File size validation (10MB limit)
+        if (file.file && file.file.size > 10 * 1024 * 1024) {
+          errors.push(`File ${i + 1}: File size must be less than 10MB`);
+        }
+
+        // File type validation (optional - add allowed types as needed)
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "text/plain",
+          "text/csv",
+        ];
+
+        if (file.file && !allowedTypes.includes(file.file.type)) {
+          errors.push(
+            `File ${
+              i + 1
+            }: Unsupported file type. Please use images, PDFs, Word docs, Excel files, or text files.`
+          );
+        }
+      }
+
+      return errors;
+    };
+
+    // Run validation
+    const validationErrors = validateForm();
+
+    if (validationErrors.length > 0) {
+      // Display all validation errors
+      validationErrors.forEach((error) => {
+        toast.error(error);
+      });
+      return;
     }
-    
-  } catch (error) {
-    toast.dismiss(); // Dismiss any loading toasts
-    
-    // Handle network errors
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      toast.error('Network error. Please check your connection and try again.');
-    } else {
-      toast.error('An unexpected error occurred. Please try again.');
+
+    try {
+      setCreatingTask(true);
+      // Show loading state
+      const loadingToast = toast.loading("Creating task...");
+
+      // Create FormData object
+      const formDataToSend = new FormData();
+
+      // Append basic form data
+      formDataToSend.append("user_id", user?.id);
+      formDataToSend.append("user_type", user?.fld_admin_type);
+      formDataToSend.append(
+        "user_name",
+        user?.fld_first_name + " " + user?.fld_last_name
+      );
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description || "");
+      formDataToSend.append("bucket_name", formData.bucketId);
+      formDataToSend.append("project_name", formData.projectId);
+      formDataToSend.append("due_date", formData.dueDate);
+      formDataToSend.append("due_time", formData.dueTime || "");
+      formDataToSend.append("recurring", formData.recurring);
+      formDataToSend.append(
+        "google_sheets_or_docs_link",
+        formData.googleLink || ""
+      );
+      formDataToSend.append("fld_asana_link", formData.additionalLink || "");
+
+      // Append recurring fields if applicable
+      if (formData.recurring === "Yes") {
+        formDataToSend.append("recurring_duration", formData.recurringDuration);
+        formDataToSend.append("recurring_type", formData.recurringType);
+      } else {
+        formDataToSend.append("recurring_tasks", formData.recurring ?? "No");
+      }
+
+      // Append arrays as JSON strings
+      formDataToSend.append("assigned_to", JSON.stringify(formData.assignedTo));
+      formDataToSend.append("follower", formData.followers.join(","));
+
+      // Append milestones
+      if (milestones.length > 0) {
+        formDataToSend.append("benchmark_name", JSON.stringify(milestones));
+      }
+
+      // Append files
+      files.forEach((fileObj, index) => {
+        if (fileObj.file) {
+          formDataToSend.append(`file_upload[]`, fileObj.file);
+          formDataToSend.append(`file_names[]`, fileObj.fileName);
+        }
+      });
+
+      // Make API call
+      const response = await fetch("http://localhost:5000/api/tasks/create", {
+        method: "POST",
+        body: formDataToSend,
+        // Don't set Content-Type header - let browser set it with boundary for FormData
+      });
+
+      const result = await response.json();
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
+      if (response.ok) {
+        toast.success("Task created successfully!");
+        navigate("/tasks/created-by-me");
+
+        // Reset form after successful submission
+        // setFormData({
+        //   bucketId: "",
+        //   assignedTo: [],
+        //   projectId: "",
+        //   dueTime: "",
+        //   dueDate: "",
+        //   recurring: "No",
+        //   recurringDuration: "",
+        //   recurringType: "",
+        //   followers: [],
+        //   title: "",
+        //   description: "",
+        //   googleLink: "",
+        //   additionalLink: "",
+        // });
+        // setMilestones([]);
+        // setFiles([]);
+
+        // Optional: Redirect to task list or task detail page
+        // window.location.href = '/tasks';
+        // or if using React Router:
+        // navigate('/tasks');
+      } else {
+        // Handle API errors
+        const errorMessage = result.message || "Failed to create task";
+        toast.error(errorMessage);
+
+        // Log detailed error for debugging
+        console.error("Task creation failed:", result);
+      }
+    } catch (error) {
+      toast.dismiss(); // Dismiss any loading toasts
+
+      // Handle network errors
+      if (error.name === "TypeError" && error.message.includes("fetch")) {
+        toast.error(
+          "Network error. Please check your connection and try again."
+        );
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+
+      console.error("Task creation error:", error);
+    } finally {
+      setCreatingTask(false);
     }
-    
-    console.error('Task creation error:', error);
-  }finally{
-    setCreatingTask(false)
-  }
-};
+  };
 
   const selectOptions = (
     list,
@@ -357,168 +379,172 @@ export default function AddTask() {
   return (
     <div className="">
       <div className="">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="">
           {/* Header */}
-          <div className="bg-orange-600 px-6 py-2">
-            <h1 className="text-xl font-semibold text-white">
+          <div className="">
+            <h1 className="text-xl font-bold mb-4 flex items-center justify-between">
               Create New Task
             </h1>
           </div>
 
-          <form className="p-6">
-            {/* Basic Information */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
-                Basic Information
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Bucket
-                  </label>
-                  <Select
-                    classNamePrefix="task-filter"
-                    styles={customSelectStyles}
-                    options={selectOptions(buckets, "fld_bucket_name")}
-                    value={
-                      selectOptions(buckets, "fld_bucket_name").find(
-                        (o) => o.value === formData.bucketId
-                      ) || null
-                    }
-                    onChange={(option) =>
-                      setFormData({
-                        ...formData,
-                        bucketId: option?.value || "",
-                      })
-                    }
-                    placeholder="Select Bucket"
-                  />
-                </div>
+          <form className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1 pt-5">
+            <div>
+              {/* Basic Information */}
+              <div className="mb-8">
+                <h2 className="text-[16px] font-medium text-gray-900 mb-4 flex items-end leading-none ">
+                  <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
+                  Basic Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Bucket
+                    </label>
+                    <Select
+                      classNamePrefix="task-filter"
+                      styles={customSelectStyles}
+                      options={selectOptions(buckets, "fld_bucket_name")}
+                      value={
+                        selectOptions(buckets, "fld_bucket_name").find(
+                          (o) => o.value === formData.bucketId
+                        ) || null
+                      }
+                      onChange={(option) =>
+                        setFormData({
+                          ...formData,
+                          bucketId: option?.value || "",
+                        })
+                      }
+                      placeholder="Select Bucket"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Assign To
-                  </label>
-                  <Select
-                    classNamePrefix="task-filter"
-                    styles={customSelectStyles}
-                    isMulti
-                    options={selectOptions(
-                      users,
-                      "fld_first_name",
-                      "id",
-                      "fld_last_name"
-                    )}
-                    value={selectOptions(
-                      users,
-                      "fld_first_name",
-                      "id",
-                      "fld_last_name"
-                    ).filter((o) => formData.assignedTo.includes(o.value))}
-                    onChange={(selectedOptions) =>
-                      setFormData({
-                        ...formData,
-                        assignedTo: selectedOptions
-                          ? selectedOptions.map((opt) => opt.value)
-                          : [],
-                      })
-                    }
-                    placeholder="Select Users"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Assign To
+                    </label>
+                    <Select
+                      classNamePrefix="task-filter"
+                      styles={customSelectStyles}
+                      isMulti
+                      options={selectOptions(
+                        users,
+                        "fld_first_name",
+                        "id",
+                        "fld_last_name"
+                      )}
+                      value={selectOptions(
+                        users,
+                        "fld_first_name",
+                        "id",
+                        "fld_last_name"
+                      ).filter((o) => formData.assignedTo.includes(o.value))}
+                      onChange={(selectedOptions) =>
+                        setFormData({
+                          ...formData,
+                          assignedTo: selectedOptions
+                            ? selectedOptions.map((opt) => opt.value)
+                            : [],
+                        })
+                      }
+                      placeholder="Select Users"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Project
-                  </label>
-                  <Select
-                    classNamePrefix="task-filter"
-                    styles={customSelectStyles}
-                    options={selectOptions(projects, "fld_project_name")}
-                    value={
-                      selectOptions(projects, "fld_project_name").find(
-                        (o) => o.value === formData.projectId
-                      ) || null
-                    }
-                    onChange={(option) =>
-                      setFormData({
-                        ...formData,
-                        projectId: option?.value || "",
-                      })
-                    }
-                    placeholder="Select Project"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Project
+                    </label>
+                    <Select
+                      classNamePrefix="task-filter"
+                      styles={customSelectStyles}
+                      options={selectOptions(projects, "fld_project_name")}
+                      value={
+                        selectOptions(projects, "fld_project_name").find(
+                          (o) => o.value === formData.projectId
+                        ) || null
+                      }
+                      onChange={(option) =>
+                        setFormData({
+                          ...formData,
+                          projectId: option?.value || "",
+                        })
+                      }
+                      placeholder="Select Project"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Followers
-                  </label>
-                  <Select
-                    classNamePrefix="task-filter"
-                    styles={customSelectStyles}
-                    isMulti
-                    options={selectOptions(users, "fld_first_name")}
-                    value={selectOptions(users, "fld_first_name").filter((u) =>
-                      formData.followers.includes(u.value)
-                    )}
-                    onChange={(selected) =>
-                      setFormData({
-                        ...formData,
-                        followers: selected.map((s) => s.value),
-                      })
-                    }
-                    placeholder="Select Followers"
-                  />
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Followers
+                    </label>
+                    <Select
+                      classNamePrefix="task-filter"
+                      styles={customSelectStyles}
+                      isMulti
+                      options={selectOptions(users, "fld_first_name")}
+                      value={selectOptions(users, "fld_first_name").filter(
+                        (u) => formData.followers.includes(u.value)
+                      )}
+                      onChange={(selected) =>
+                        setFormData({
+                          ...formData,
+                          followers: selected.map((s) => s.value),
+                        })
+                      }
+                      placeholder="Select Followers"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Task Details */}
+              <div className="mb-8">
+                <h2 className="text-[16px] font-medium text-gray-900 mb-4 flex items-end leading-none ">
+                  <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
+                  Task Details
+                </h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Task Title
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      placeholder="Enter task title"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      name="description"
+                      placeholder="Enter task description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      rows={3}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Task Details */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
-                Task Details
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Task Title
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    placeholder="Enter task title"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    placeholder="Enter task description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Timing & Schedule */}
             <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+              <h2 className="text-[16px] font-medium text-gray-900 mb-4 flex items-end leading-none ">
                 <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
                 Timing & Schedule
               </h2>
@@ -554,11 +580,11 @@ export default function AddTask() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <label className="block text-[13px] font-medium text-gray-700 mb-3">
+              <div className="bg-gray-50 rounded p-3 border border-gray-200">
+                <label className="block text-[13px] font-medium text-gray-700 mb-2">
                   Recurring Task
                 </label>
-                <div className="flex gap-6 mb-4">
+                <div className="flex gap-6">
                   <label className="flex items-center">
                     <input
                       type="radio"
@@ -588,7 +614,7 @@ export default function AddTask() {
                 </div>
 
                 {formData.recurring === "Yes" && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                       <label className="block text-[13px] font-medium text-gray-700 mb-1">
                         Frequency
@@ -641,7 +667,7 @@ export default function AddTask() {
 
             {/* Links */}
             <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+              <h2 className="text-[16px] font-medium text-gray-900 mb-4 flex items-end leading-none ">
                 <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
                 Links & References
               </h2>
@@ -686,14 +712,14 @@ export default function AddTask() {
             {/* Milestones */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                <h2 className="text-[16px] font-medium text-gray-900 flex items-center">
                   <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
                   Milestones
                 </h2>
                 <button
                   type="button"
                   onClick={addMilestone}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className="inline-flex items-center px-2 py-1 leading-none border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                 >
                   + Add Milestone
                 </button>
@@ -702,9 +728,9 @@ export default function AddTask() {
                 {milestones.map((m, i) => (
                   <div
                     key={i}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-center gap-3"
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                       <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Milestone
@@ -754,15 +780,15 @@ export default function AddTask() {
                       <button
                         type="button"
                         onClick={() => removeMilestone(i)}
-                        className="text-red-600 hover:text-red-700 text-[13px] font-medium"
+                        className="bg-red-600 hover:bg-red-700 p-2 rounded text-white mt-2"
                       >
-                        Remove
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
                 ))}
                 {milestones.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-2 text-gray-500 bg-red-50">
                     <p className="text-[13px]">No milestones added yet</p>
                   </div>
                 )}
@@ -772,7 +798,7 @@ export default function AddTask() {
             {/* Files */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                <h2 className="text-[16px] font-medium text-gray-900 flex items-center">
                   <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
                   Attachments
                   <span className="ml-2 text-[13px] text-gray-500 font-normal">
@@ -782,7 +808,7 @@ export default function AddTask() {
                 <button
                   type="button"
                   onClick={addFile}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className="inline-flex items-center px-2 py-1 leading-none border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
                 >
                   + Add File
                 </button>
@@ -791,9 +817,9 @@ export default function AddTask() {
                 {files.map((f, i) => (
                   <div
                     key={i}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-center gap-3"
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  w-full">
                       <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Select File
@@ -825,15 +851,15 @@ export default function AddTask() {
                       <button
                         type="button"
                         onClick={() => removeFile(i)}
-                        className="text-red-600 hover:text-red-700 text-[13px] font-medium"
+                        className="bg-red-600 hover:bg-red-700 p-2 rounded text-white mt-2"
                       >
-                        Remove
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
                 ))}
                 {files.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-2 text-gray-500 bg-red-50">
                     <p className="text-[13px]">No files attached yet</p>
                   </div>
                 )}
@@ -845,7 +871,7 @@ export default function AddTask() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="inline-flex items-center px-2 py-1 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                className="inline-flex items-center px-2 py-1.5 border border-transparent text-[13px] leading-none font-medium rounded shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
               >
                 {creatingTask ? "Creating..." : "Create Task"}
               </button>
