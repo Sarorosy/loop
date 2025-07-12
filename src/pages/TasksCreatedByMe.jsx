@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
 import AddTags from "./detailsUtils/AddTags";
+import TaskLoader from "../utils/TaskLoader";
 
 function TasksCreatedByMe() {
   const { user } = useAuth();
@@ -613,7 +614,7 @@ function TasksCreatedByMe() {
         </div>
 
         {loading ? (
-          <div>Loading tasks...</div>
+          <div><TaskLoader rows={10} /></div>
         ) : tasks.length === 0 ? (
           <div>No tasks found.</div>
         ) : (
@@ -715,7 +716,7 @@ function TasksCreatedByMe() {
       </div>
 
       {loading ? (
-        <div>Loading tasks...</div>
+        <div><TaskLoader rows={10} /></div>
       ) : tasks.length === 0 ? (
         <div>No tasks found.</div>
       ) : (
