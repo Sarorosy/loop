@@ -4,6 +4,7 @@ import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
 export default function EditTask() {
   const [buckets, setBuckets] = useState([]);
@@ -51,15 +52,18 @@ export default function EditTask() {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          task_id: taskId,
-        }),
-      });
+      const response = await fetch(
+        "https://loopback-r9kf.onrender.com/api/tasks/details",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            task_id: taskId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -205,7 +209,7 @@ export default function EditTask() {
       if (formData.dueDate) {
         const today = new Date().toISOString().split("T")[0];
         if (formData.dueDate < today) {
-         // errors.push("Due date cannot be in the past");
+          // errors.push("Due date cannot be in the past");
         }
       }
 
@@ -354,11 +358,14 @@ export default function EditTask() {
       });
 
       // Make API call
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/update", {
-        method: "POST",
-        body: formDataToSend,
-        // Don't set Content-Type header - let browser set it with boundary for FormData
-      });
+      const response = await fetch(
+        "https://loopback-r9kf.onrender.com/api/tasks/update",
+        {
+          method: "POST",
+          body: formDataToSend,
+          // Don't set Content-Type header - let browser set it with boundary for FormData
+        }
+      );
 
       const result = await response.json();
 
@@ -386,7 +393,7 @@ export default function EditTask() {
         });
         setMilestones([]);
         setFiles([]);
-        navigate(-1)
+        navigate(-1);
 
         // Optional: Redirect to task list or task detail page
         // window.location.href = '/tasks';
@@ -457,15 +464,17 @@ export default function EditTask() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="">
+      <div className="">
+        <div className="">
           {/* Header */}
-          <div className="bg-orange-600 px-6 py-2">
-            <h1 className="text-xl font-semibold text-white">Edit Task</h1>
+          <div className="">
+            <h1 className="text-xl font-bold mb-4 flex items-center justify-between">
+              Edit Task
+            </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6">
+          <form onSubmit={handleSubmit} className="bg-white w-full f-13 mt-5">
             {/* Basic Information */}
             <div className="mb-8">
               <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -501,21 +510,28 @@ export default function EditTask() {
                     Assign To
                   </label>
                   <Select
-  classNamePrefix="task-filter"
-  styles={customSelectStyles}
-  options={selectOptions(users, "fld_first_name", "id", "fld_last_name")}
-  value={selectOptions(users, "fld_first_name", "id", "fld_last_name").find(
-    (o) => o.value === formData.assignedTo
-  )}
-  onChange={(selectedOption) =>
-    setFormData({
-      ...formData,
-      assignedTo: selectedOption ? selectedOption.value : "",
-    })
-  }
-  placeholder="Select User"
-/>
-
+                    classNamePrefix="task-filter"
+                    styles={customSelectStyles}
+                    options={selectOptions(
+                      users,
+                      "fld_first_name",
+                      "id",
+                      "fld_last_name"
+                    )}
+                    value={selectOptions(
+                      users,
+                      "fld_first_name",
+                      "id",
+                      "fld_last_name"
+                    ).find((o) => o.value === formData.assignedTo)}
+                    onChange={(selectedOption) =>
+                      setFormData({
+                        ...formData,
+                        assignedTo: selectedOption ? selectedOption.value : "",
+                      })
+                    }
+                    placeholder="Select User"
+                  />
                 </div>
 
                 <div>
@@ -584,7 +600,7 @@ export default function EditTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -600,19 +616,20 @@ export default function EditTask() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Timing & Schedule */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
-                Timing & Schedule
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+              <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
+              Timing & Schedule
+            </h2>
+            <div className="mb-8 flex gap-5 items-start">
+              <div className="w-1/2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Due Date
@@ -624,7 +641,7 @@ export default function EditTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, dueDate: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -639,12 +656,13 @@ export default function EditTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, dueTime: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
-
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              </div>
+              <div className="w-1/2 flex gap-7">
+              <div>
                 <label className="block text-[13px] font-medium text-gray-700 mb-3">
                   Recurring Task
                 </label>
@@ -676,6 +694,7 @@ export default function EditTask() {
                     <span className="ml-2 text-[13px] text-gray-700">No</span>
                   </label>
                 </div>
+              </div>
 
                 {formData.recurring === "Yes" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -685,7 +704,7 @@ export default function EditTask() {
                       </label>
                       <select
                         name="recurring_duration"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         required
                         onChange={(e) =>
                           setFormData({
@@ -707,7 +726,7 @@ export default function EditTask() {
                       </label>
                       <select
                         name="recurring_type"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         required
                         onChange={(e) =>
                           setFormData({
@@ -748,7 +767,7 @@ export default function EditTask() {
                     onChange={(e) =>
                       setFormData({ ...formData, googleLink: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -767,7 +786,7 @@ export default function EditTask() {
                         additionalLink: e.target.value,
                       })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
@@ -783,7 +802,7 @@ export default function EditTask() {
                 <button
                   type="button"
                   onClick={addMilestone}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className="inline-flex items-center px-2 py-1 leading-none border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
                 >
                   + Add Milestone
                 </button>
@@ -792,9 +811,9 @@ export default function EditTask() {
                 {milestones.map((m, i) => (
                   <div
                     key={i}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-center gap-3"
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                       <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Milestone
@@ -836,7 +855,7 @@ export default function EditTask() {
                               e.target.value
                             )
                           }
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div>
                     </div>
@@ -844,15 +863,15 @@ export default function EditTask() {
                       <button
                         type="button"
                         onClick={() => removeMilestone(i)}
-                        className="text-red-600 hover:text-red-700 text-[13px] font-medium"
+                        className="bg-red-600 hover:bg-red-700 p-2 rounded text-white mt-2"
                       >
-                        Remove
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
                 ))}
                 {milestones.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-2 text-gray-500 bg-red-50">
                     <p className="text-[13px]">No milestones added yet</p>
                   </div>
                 )}
@@ -872,7 +891,7 @@ export default function EditTask() {
                 <button
                   type="button"
                   onClick={addFile}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                  className="inline-flex items-center px-2 py-1 leading-none border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
                 >
                   + Add File
                 </button>
@@ -881,9 +900,9 @@ export default function EditTask() {
                 {files.map((f, i) => (
                   <div
                     key={i}
-                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-center gap-3"
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                       <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Select File
@@ -893,7 +912,7 @@ export default function EditTask() {
                           onChange={(e) =>
                             handleFileChange(i, "file", e.target.files[0])
                           }
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div>
                       <div>
@@ -907,7 +926,7 @@ export default function EditTask() {
                           onChange={(e) =>
                             handleFileChange(i, "fileName", e.target.value)
                           }
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div>
                     </div>
@@ -915,15 +934,15 @@ export default function EditTask() {
                       <button
                         type="button"
                         onClick={() => removeFile(i)}
-                        className="text-red-600 hover:text-red-700 text-[13px] font-medium"
+                        className="bg-red-600 hover:bg-red-700 p-2 rounded text-white mt-2"
                       >
-                        Remove
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
                 ))}
                 {files.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-2 text-gray-500 bg-red-50">
                     <p className="text-[13px]">No files attached yet</p>
                   </div>
                 )}
@@ -934,7 +953,7 @@ export default function EditTask() {
             <div className="flex justify-end pt-4 border-t border-gray-200">
               <button
                 type="submit"
-                className="inline-flex items-center px-2 py-1 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                className="inline-flex items-center px-2 py-1.5 border border-transparent text-[13px] leading-none font-medium rounded shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
               >
                 Update Task
               </button>

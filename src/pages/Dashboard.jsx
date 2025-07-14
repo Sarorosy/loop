@@ -124,9 +124,9 @@ function Dashboard() {
         <div class="truncate !w-50">
           <small>${row.fld_unique_task_id || "-"}</small>
           <br>
-           <strong class="view-btn hover:cursor-pointer hover:underline ">${
+           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
              row.fld_title || "-"
-           }</strong>
+           }</div>
         </div>
       `,
     },
@@ -231,7 +231,7 @@ function Dashboard() {
               .split(",")
               .map(
                 (tag) => `
-              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+              <span class="bg-orange-100 text-[9px] py-1 px-1.5 rounded whitespace-nowrap">#${tag.trim()}</span>
             `
               )
               .join("")
@@ -241,12 +241,12 @@ function Dashboard() {
 
         // Add a button with a data attribute to identify the row
         const buttonHtml = `
-      <button class="tag-btn" style="font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+      <button class="tag-btn bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-[10px]" >
         ${buttonLabel}
       </button>
     `;
 
-        return `<div>${buttonHtml}${tagsHtml}</div>`;
+        return `<div class="flex flex-wrap gap-1 items-end">${buttonHtml}${tagsHtml}</div>`;
       },
     },
     {
@@ -366,23 +366,23 @@ function Dashboard() {
   return (
     <div className="">
       <div className="text-xl font-bold mb-4 flex items-center justify-between">
-        Dashboard
+        <h2 class="text-[16px] font-semibold">Dashboard</h2>
         <div className="flex gap-3">
           <button
             onClick={resetFilters}
-            className="p-1 rounded hover:bg-gray-100"
+            className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
           >
-            <RefreshCcw size={14} className="text-gray-700" />
+            <RefreshCcw size={11} className="text-gray-700" />
           </button>
 
-          <p
+          <button
             onClick={() => {
               setFiltersVisible(!filtersVisible);
             }}
-            className=" flex items-center gap-1 bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 text-xs rounded cursor-pointer "
+            className="bg-orange-600 hover:bg-orange-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
           >
-            <Filter size={11} /> Filter
-          </p>
+            <Filter size={9} /> Filter
+          </button>
         </div>
       </div>
 
@@ -543,7 +543,7 @@ function Dashboard() {
             />
           </div>
           {filters.createdDate === "custom" && (
-            <div className="flex flex-col gap-2 mt-2">
+            
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1">
                   From Date
@@ -557,6 +557,12 @@ function Dashboard() {
                   }
                 />
               </div>
+              
+            
+          )}
+          {filters.createdDate === "custom" && (
+            
+              
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1">
                   To Date
@@ -570,7 +576,7 @@ function Dashboard() {
                   }
                 />
               </div>
-            </div>
+            
           )}
 
           <div className="flex flex-col">
@@ -817,7 +823,7 @@ function Dashboard() {
         <div className="w-full flex items-center justify-end">
           <button
             onClick={() => fetchTasks(user, setTasks, setLoading, filters)}
-            className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[12px] leading-none"
+            className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] leading-none"
           >
             Apply Filters
           </button>
@@ -829,9 +835,9 @@ function Dashboard() {
           <TaskLoader rows={10} />
         </div>
       ) : tasks.length === 0 ? (
-        <div>No tasks found.</div>
+        <div className="text-center py-2 text-gray-500 bg-red-50 ">No tasks found.</div>
       ) : (
-        <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+        <div className="bg-white w-full f-13 mt-5">
           <div className="table-scrollable">
             <DataTable
               data={tasks}

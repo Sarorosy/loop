@@ -105,7 +105,7 @@ function ManageQuery() {
         pageNumbers.push(
           <button
             key={i}
-            className={`px-2 py-1 mx-1 ${
+            className={`px-2 py-1 mx-1 leading-none border-0 ${
               page === i ? "bg-blue-500 text-white" : "bg-white border"
             } rounded`}
             onClick={() => handlePageChange(i)}
@@ -133,7 +133,7 @@ function ManageQuery() {
         </p>
         <div className="flex items-center text-[13px]">
           <button
-            className={`px-2 py-1 mx-1 ${
+            className={`px-2 py-1 mx-1 leading-none border-0 ${
               page === 1 ? "opacity-50 cursor-not-allowed" : "bg-white border"
             } rounded`}
             onClick={() => handlePageChange(page - 1)}
@@ -143,8 +143,8 @@ function ManageQuery() {
           </button>
 
           <button
-            className={`px-2 py-1 mx-1 ${
-              page === 1 ? "bg-blue-500 text-white" : "bg-white border"
+            className={`px-2 py-1 mx-1 leading-none border-0 ${
+              page === 1 ? "bg-[#bbb] text-black" : "bg-white border"
             } rounded`}
             onClick={() => handlePageChange(1)}
           >
@@ -155,9 +155,9 @@ function ManageQuery() {
 
           {totalPages > 1 && (
             <button
-              className={`px-2 py-1 mx-1 ${
+              className={`px-2 py-1 mx-1 leading-none border-0 ${
                 page === totalPages
-                  ? "bg-blue-500 text-white"
+                  ? "bg-[#bbb] text-black"
                   : "bg-white border"
               } rounded`}
               onClick={() => handlePageChange(totalPages)}
@@ -167,7 +167,7 @@ function ManageQuery() {
           )}
 
           <button
-            className={`px-2 py-1 mx-1 ${
+            className={`px-2 py-1 mx-1 leading-none border-0 ${
               page === totalPages
                 ? "opacity-50 cursor-not-allowed"
                 : "bg-white border"
@@ -526,7 +526,7 @@ function ManageQuery() {
                     setTotalRows
                   )
                 }
-                className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[12px] leading-none"
+                className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] leading-none"
               >
                 Apply Filters
               </button>
@@ -538,7 +538,7 @@ function ManageQuery() {
           ) : queries.length === 0 ? (
             <div>No queries found.</div>
           ) : (
-            <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+            <div className="bg-white w-full f-13 mt-5">
               <div className="table-scrollable">
                 <DataTable
                   data={queries}

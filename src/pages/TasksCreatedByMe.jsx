@@ -129,9 +129,9 @@ function TasksCreatedByMe() {
         <div class="truncate !w-50">
           <small>${row.fld_unique_task_id || "-"}</small>
           <br>
-           <strong class="view-btn hover:cursor-pointer hover:underline ">${
+           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
              row.fld_title || "-"
-           }</strong>
+           }</div>
         </div>
       `,
     },
@@ -232,7 +232,7 @@ function TasksCreatedByMe() {
               .split(",")
               .map(
                 (tag) => `
-              <span style="color: #3B82F6; margin-right: 4px; font-size: 11px;">#${tag.trim()}</span>
+              <span class="bg-orange-100 text-[9px] py-1 px-1.5 rounded whitespace-nowrap">#${tag.trim()}</span>
             `
               )
               .join("")
@@ -242,12 +242,12 @@ function TasksCreatedByMe() {
 
         // Add a button with a data attribute to identify the row
         const buttonHtml = `
-      <button class="tag-btn" style="font-size: 10px; background-color: #E5E7EB; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer;">
+      <button class="tag-btn bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-[10px]" >
         ${buttonLabel}
       </button>
     `;
 
-        return `<div>${buttonHtml}${tagsHtml}</div>`;
+        return `<div class="flex flex-wrap gap-1 items-end">${buttonHtml}${tagsHtml}</div>`;
       },
     },
     {
@@ -499,7 +499,7 @@ function TasksCreatedByMe() {
             />
           </div>
           {filters.createdDate === "custom" && (
-            <div className="flex flex-col gap-2 mt-2">
+            
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1">
                   From Date
@@ -513,6 +513,12 @@ function TasksCreatedByMe() {
                   }
                 />
               </div>
+              
+            
+          )}
+          {filters.createdDate === "custom" && (
+            
+              
               <div className="flex flex-col">
                 <label className="text-[11px] font-medium text-gray-600 mb-1">
                   To Date
@@ -526,7 +532,7 @@ function TasksCreatedByMe() {
                   }
                 />
               </div>
-            </div>
+            
           )}
 
           <div className="flex flex-col">
@@ -619,7 +625,7 @@ function TasksCreatedByMe() {
         ) : tasks.length === 0 ? (
           <div>No tasks found.</div>
         ) : (
-          <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+          <div className="bg-white w-full f-13 mt-5">
             <div className="table-scrollable">
               <DataTable
                 data={tasks}
@@ -723,7 +729,7 @@ function TasksCreatedByMe() {
       ) : tasks.length === 0 ? (
         <div>No tasks found.</div>
       ) : (
-        <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+        <div className="bg-white w-full f-13 mt-5">
           <div className="table-scrollable">
             <DataTable
               data={tasks}

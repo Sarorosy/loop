@@ -125,10 +125,10 @@ export default function ManageUser({ onClose }) {
         </div>
         <div className="flex items-center justify-end space-x-2">
           <button
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
+            className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
             onClick={fetchUsers}
           >
-            Refresh<RefreshCcw size={11} className="" />
+            <RefreshCcw size={11} className="" />
           </button>
           <button
             className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
@@ -142,7 +142,7 @@ export default function ManageUser({ onClose }) {
       </div>
 
       {/* Content */}
-      <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1 pt-5">
+      <div className="bg-white w-full f-13 mt-5 pt-5">
         
         {loading ? (
           <p className="text-center text-[13px] text-gray-500">Loading users...</p>

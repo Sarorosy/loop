@@ -239,8 +239,8 @@ export default function ManageTeams({ onClose }) {
       <div className="">
         <div className="flex items-center justify-between">
           <div className="flex items-end gap-2">
-            <Users size={20} className="text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-800 leading-none">Manage Teams</h2>
+            {/* <Users size={20} className="text-blue-600" /> */}
+            <h2 className="text-[16px] font-semibold text-gray-800 leading-none">Manage Teams</h2>
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -253,11 +253,11 @@ export default function ManageTeams({ onClose }) {
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
+              className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
               onClick={fetchUsers}
               disabled={loading}
             >
-              Refresh<RefreshCcw size={11} className={` ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCcw size={11} className={` ${loading ? 'animate-spin' : ''}`} />
               
             </button>
             <button
@@ -280,7 +280,7 @@ export default function ManageTeams({ onClose }) {
       </div>
 
       {/* Content */}
-      <div className="bg-white  border-t-2 border-blue-400 rounded w-full f-13 mt-5 p-1">
+      <div className="bg-white w-full f-13 mt-5">
         
 
         {/* DataTable */}
@@ -327,32 +327,22 @@ export default function ManageTeams({ onClose }) {
       {/* Modals */}
       <AnimatePresence>
         {addOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
-          >
+          
             <AddTeam
               onClose={handleAddClose}
               after={fetchUsers}
             />
-          </motion.div>
+          
         )}
         
         {editOpen && selectedTeam && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#000000c2] flex items-center justify-center z-50"
-          >
+          
             <EditTeam
               onClose={handleEditClose}
               teamData={selectedTeam}
               onUpdate={fetchUsers}
             />
-          </motion.div>
+          
         )}
         
         {deleteOpen && selectedTeam && (
