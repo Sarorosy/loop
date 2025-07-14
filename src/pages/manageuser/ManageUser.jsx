@@ -151,44 +151,44 @@ export default function ManageUser({ onClose }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-[13px] ">
-              <thead className="bg-gray-100">
+              <thead className="bg-[#e4eaff]">
                 <tr>
-                  <th className="px-4 py-2 text-left border">Name</th>
-                  <th className="px-4 py-2 text-left border">Role</th>
-                  <th className="px-4 py-2 text-left border">Access Type</th>
-                  <th className="px-4 py-2 text-left border">Email Id</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Name</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Role</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Access Type</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Email Id</th>
                   {(user?.fld_admin_type == "SUPERADMIN" ||
                     user?.fld_admin_type == "SUBADMIN") && (
-                    <th className="px-4 py-2 text-left border">Password</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Password</th>
                   )}
-                  <th className="px-4 py-2 text-left border">Added On</th>
-                  <th className="px-4 py-2 text-left border">Status</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Added On</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Status</th>
                   {(user?.fld_admin_type == "SUPERADMIN" ||
                     user?.fld_admin_type == "SUBADMIN") && (
-                    <th className="px-4 py-2 text-left border">Actions</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Actions</th>
                   )}
                 </tr>
               </thead>
               <tbody>
                 {users.map((u, idx) => (
                   <tr key={u._id || idx} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-2 border border-[#ccc]">
                       {u.fld_first_name + " " + u.fld_last_name}
                     </td>
-                    <td className="px-4 py-2 border">{u.fld_admin_type}</td>
-                    <td className="px-4 py-2 border">{u.fld_access_type}</td>
-                    <td className="px-4 py-2 border">{u.fld_email}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{u.fld_admin_type}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{u.fld_access_type}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{u.fld_email}</td>
                     {(user?.fld_admin_type == "SUPERADMIN" ||
                       user?.fld_admin_type == "SUBADMIN") && (
-                      <td className="px-4 py-2 border">
+                      <td className="px-4 py-2 border border-[#ccc]">
                         {u.fld_decrypt_password}
                       </td>
                     )}
-                    <td className="px-4 py-2 border">{u.fld_addedon}</td>
-                    <td className="px-4 py-2 border">{u.status}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{u.fld_addedon}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{u.status}</td>
                     {(user?.fld_admin_type == "SUPERADMIN" ||
                       user?.fld_admin_type == "SUBADMIN") && (
-                      <td className="px-4 py-2 border">
+                      <td className="px-4 py-2 border border-[#ccc]">
                         <div className="flex items-center space-x-2">
                           <button
                           className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"

@@ -353,9 +353,9 @@ function TasksFollowing() {
             <div className="flex gap-3">
               <button
                 onClick={resetFilters}
-                className="p-1 rounded hover:bg-gray-100"
+                className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
               >
-                <RefreshCcw size={14} className="text-gray-700" />
+                <RefreshCcw size={11} className="text-gray-700" />
               </button>
             </div>
           </div>

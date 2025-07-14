@@ -100,21 +100,21 @@ export default function ManageTags({ onClose }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-[13px] border border-gray-200">
-              <thead className="bg-gray-100">
+              <thead className="bg-[#e4eaff]">
                 <tr>
-                  <th className="px-4 py-2 text-left border">Tag Name</th>
-                  <th className="px-4 py-2 text-left border">Created By</th>
-                  <th className="px-4 py-2 text-left border">Created On</th>
-                  <th className="px-4 py-2 text-left border">Actions</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Tag Name</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Created By</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Created On</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {tags.map((tag, idx) => (
                   <tr key={tag.id || idx} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-2 border">{tag.tag_name}</td>
-                    <td className="px-4 py-2 border">{tag.fld_first_name + " " + tag.fld_last_name}</td>
-                    <td className="px-4 py-2 border">{tag.created_at}</td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-2 border border-[#ccc]">{tag.tag_name}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{tag.fld_first_name + " " + tag.fld_last_name}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{tag.created_at}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">
                       <div className="flex items-center space-x-2">
                         <button
                           className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"

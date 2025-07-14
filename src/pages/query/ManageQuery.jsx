@@ -257,37 +257,37 @@ function ManageQuery() {
       title: "RefId",
       data: "assign_id",
       orderable: false,
-      render: (data) => data || "-",
+      render:  (data) => `<div class="">` + data + `</div>` || "-",
     },
     {
       title: "CRM Name",
       data: "insta_user_name",
       orderable: false,
-      render: (data) => data || "-",
+      render:  (data) => `<div class="n-word-break">` + data + `</div>` || "-",
     },
     {
       title: "Client Name",
       data: "name",
       orderable: false,
-      render: (data) => data || "-",
+      render:  (data) => `<div class="n-word-break">` + data + `</div>` || "-",
     },
     {
       title: "Email Id",
       data: "email_id",
       orderable: false,
-      render: (data) => data || "-",
+      render:  (data) => `<div class="n-word-break">` + data + `</div>` || "-",
     },
     {
       title: "Website",
       data: "website",
       orderable: false,
-      render: (data) => data || "-",
+      render:  (data) => `<div class="n-word-break">` + data + `</div>` || "-",
     },
     {
       title: "Contact No",
       data: "phone",
       orderable: false,
-      render: (data) => data || "-",
+      render:  (data) => `<div class="n-word-break">` + data + `</div>` || "-",
     },
     {
       title: "Requirement",
@@ -295,15 +295,15 @@ function ManageQuery() {
       orderable: false,
       render: (data, type, row) =>
         row.requirement_line == 1
-          ? row.line_format
-          : row.paragraph_format || "-",
+          ? `<div class="n-word-break">` + row.line_format + `</div>`
+          :  `<div class="n-word-break">` + row.paragraph_format + `</div>` || "-",
     },
     {
       title: "Added On",
       data: "date",
       orderable: true,
       render: (data) => {
-        return data ? data : "-";
+        return data ? `<div class="n-word-break">` +  data + `</div>` : "-";
       },
     },
     {
@@ -368,20 +368,21 @@ function ManageQuery() {
   return (
         <div className="">
           <div className="text-xl font-bold mb-4 flex items-center justify-between">
-            Dashboard
+            Manage Query
             <div className="flex gap-3">
+              <button
+                onClick={resetFilters}
+                className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
+              >
+                <RefreshCcw size={11} className="text-gray-700" />
+              </button>
               <button
                 onClick={handleAsssignMultiple}
                 className="p-1 rounded bg-orange-600 text-white f-11"
               >
                 Assign Multiple
               </button>
-              <button
-                onClick={resetFilters}
-                className="p-1 rounded hover:bg-gray-100"
-              >
-                <RefreshCcw size={14} className="text-gray-700" />
-              </button>
+              
             </div>
           </div>
 
@@ -538,8 +539,8 @@ function ManageQuery() {
           ) : queries.length === 0 ? (
             <div>No queries found.</div>
           ) : (
-            <div className="bg-white w-full f-13 mt-5">
-              <div className="table-scrollable">
+            <div className="bg-white w-full text-[12px] mt-5">
+              <div className="table-scrollable table-aligns">
                 <DataTable
                   data={queries}
                   columns={columns}

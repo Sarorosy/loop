@@ -100,21 +100,21 @@ export default function ManageBenchmark({ onClose }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-[13px] border border-gray-200">
-              <thead className="bg-gray-100">
+              <thead className="bg-[#e4eaff]">
                 <tr>
-                  <th className="px-4 py-2 text-left border">Milestone Name</th>
-                  <th className="px-4 py-2 text-left border">Milestone Creator</th>
-                  <th className="px-4 py-2 text-left border">Added On</th>
-                  <th className="px-4 py-2 text-left border">Actions</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Milestone Name</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Milestone Creator</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Added On</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {benchmarks.map((benchmark) => (
                   <tr key={benchmark.id} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-2 border">{benchmark.fld_benchmark_name}</td>
-                    <td className="px-4 py-2 border">{benchmark.milestone_creator}</td>
-                    <td className="px-4 py-2 border">{benchmark.fld_addedon}</td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-2 border border-[#ccc]">{benchmark.fld_benchmark_name}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{benchmark.milestone_creator}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{benchmark.fld_addedon}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">
                       <div className="flex items-center space-x-2">
                         <button
                           className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"

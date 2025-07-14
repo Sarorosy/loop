@@ -100,19 +100,19 @@ export default function ManageRequirement({ onClose }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-[13px] border border-gray-200">
-              <thead className="bg-gray-100">
+              <thead className="bg-[#e4eaff]">
                 <tr>
-                  <th className="px-4 py-2 text-left border">Category</th>
-                  <th className="px-4 py-2 text-left border">Name</th>
-                  <th className="px-4 py-2 text-left border">Actions</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Category</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Name</th>
+                  <th className="px-4 py-2 text-left border border-[#ccc]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {requirements.map((requirement, idx) => (
                   <tr key={requirement.id || idx} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-2 border">{requirement.category}</td>
-                    <td className="px-4 py-2 border">{requirement.name}</td>
-                    <td className="px-4 py-2 border">
+                    <td className="px-4 py-2 border border-[#ccc]">{requirement.category}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{requirement.name}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">
                       <div className="flex items-center space-x-2">
                         <button
                           className="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1"
