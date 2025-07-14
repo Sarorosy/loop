@@ -13,7 +13,7 @@ export default function AddFollowers({ taskId, followers = [], onClose , after})
   // Example: fetch all possible followers (replace this with your API call)
   const fetchAllUsers = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/users/allusers", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/users/allusers", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export default function AddFollowers({ taskId, followers = [], onClose , after})
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/updateFollower",
+        "https://loopback-r9kf.onrender.com/api/helper/updateFollower",
         {
           method: "POST",
           headers: {

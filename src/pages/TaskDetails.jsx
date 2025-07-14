@@ -49,7 +49,7 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch("http://localhost:5000/api/helper/addremarks", {
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/addremarks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -76,7 +76,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/tasks/details", {
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: taskId }),
@@ -97,7 +97,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsOnGoing = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/markAsOngoing",
+        "https://loopback-r9kf.onrender.com/api/helper/markAsOngoing",
         {
           method: "POST",
           headers: {
@@ -126,7 +126,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsCompleted = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/markAsCompleted",
+        "https://loopback-r9kf.onrender.com/api/helper/markAsCompleted",
         {
           method: "POST",
           headers: {

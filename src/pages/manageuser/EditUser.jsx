@@ -32,7 +32,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
   // Fetch teams
   useEffect(() => {
-    fetch("http://localhost:5000/api/helper/allteams")
+    fetch("https://loopback-r9kf.onrender.com/api/helper/allteams")
       .then((res) => res.json())
       .then((data) => setTeams(data.data || []))
       .catch((err) => console.error("Error fetching teams:", err));
@@ -40,7 +40,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
   // Fetch all users
   useEffect(() => {
-    fetch("http://localhost:5000/api/users/all")
+    fetch("https://loopback-r9kf.onrender.com/api/users/all")
       .then((res) => res.json())
       .then((data) => setAllUsers(data.data || []))
       .catch((err) => console.error("Error fetching users:", err));
@@ -151,7 +151,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/update/${userData.id}`,
+        `https://loopback-r9kf.onrender.com/api/users/update/${userData.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

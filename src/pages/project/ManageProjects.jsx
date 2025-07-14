@@ -18,7 +18,7 @@ export default function ManageProjects({ onClose }) {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/helper/allprojects", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageProjects({ onClose }) {
     }
     try {
       const response = await fetch(
-        `http://localhost:5000/api/helper/project/delete/${selectedProject.id}`,
+        `https://loopback-r9kf.onrender.com/api/helper/project/delete/${selectedProject.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

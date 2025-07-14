@@ -18,7 +18,7 @@ export default function ManageOtherTags({ onClose }) {
   const fetchTags = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/helper/allothertags", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/helper/allothertags", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageOtherTags({ onClose }) {
     }
     try {
       const response = await fetch(
-        `http://localhost:5000/api/helper/othertags/delete/${selectedTag.id}`,
+        `https://loopback-r9kf.onrender.com/api/helper/othertags/delete/${selectedTag.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

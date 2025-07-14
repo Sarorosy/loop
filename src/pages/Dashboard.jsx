@@ -61,7 +61,7 @@ function Dashboard() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/tasks/get", {
+      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/get", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -99,10 +99,10 @@ function Dashboard() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);

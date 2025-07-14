@@ -51,7 +51,7 @@ export default function EditTask() {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/tasks/details", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,10 +126,10 @@ export default function EditTask() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:5000/api/helper/allbuckets"),
-          fetch("http://localhost:5000/api/helper/allbenchmarks"),
-          fetch("http://localhost:5000/api/helper/allprojects"),
-          fetch("http://localhost:5000/api/users/allusers"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestonesList((await milestonesRes.json())?.data || []);
@@ -354,7 +354,7 @@ export default function EditTask() {
       });
 
       // Make API call
-      const response = await fetch("http://localhost:5000/api/tasks/update", {
+      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/update", {
         method: "POST",
         body: formDataToSend,
         // Don't set Content-Type header - let browser set it with boundary for FormData

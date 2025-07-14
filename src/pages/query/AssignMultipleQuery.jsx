@@ -19,7 +19,7 @@ const AssignMultipleQuery = ({ queries, onClose, after }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/users/all");
+        const res = await fetch("https://loopback-r9kf.onrender.com/api/users/all");
         const data = await res.json();
         if (res.ok) {
           const options =
@@ -50,7 +50,7 @@ const AssignMultipleQuery = ({ queries, onClose, after }) => {
 
     const fetchTeams = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/helper/myteams", {
+        const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/myteams", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: selectedUser.value }),
@@ -93,7 +93,7 @@ const AssignMultipleQuery = ({ queries, onClose, after }) => {
         }`;
 
         const response = await fetch(
-          "http://localhost:5000/api/helper/assignTask",
+          "https://loopback-r9kf.onrender.com/api/helper/assignTask",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

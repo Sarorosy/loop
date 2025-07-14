@@ -17,7 +17,7 @@ export default function EditBucket({ onClose, bucketData, onUpdate }) {
 
   // Fetch all milestones
   useEffect(() => {
-    fetch("http://localhost:5000/api/helper/allbenchmarks")
+    fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks")
       .then(res => res.json())
       .then(data => setMilestones(data.data))
       .catch(err => console.error("Failed to fetch milestones", err));
@@ -53,7 +53,7 @@ export default function EditBucket({ onClose, bucketData, onUpdate }) {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`http://localhost:5000/api/helper/bucket/update/${bucketData.id}`, {
+      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/bucket/update/${bucketData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
