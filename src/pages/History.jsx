@@ -54,18 +54,22 @@ export default function History({ taskId }) {
     );
 
   function formatDateTime(dateTimeString) {
-    const date = new Date(dateTimeString.replace(" ", "T")); // Make sure it's parseable
+  const date = new Date(dateTimeString.replace(" ", "T"));
 
-    const day = date.getDate();
-    const month = date.toLocaleString("en-US", { month: "short" }); // e.g., Feb
-    const year = date.getFullYear();
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
 
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const seconds = date.getSeconds().toString().padStart(2, "0");
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
 
-    return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
-  }
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  return `${day} ${month} ${year} ${hours}:${minutes} ${ampm}`;
+}
+
 
   return (
     <div className="p-3 bg-gray-100 rounded w-full">

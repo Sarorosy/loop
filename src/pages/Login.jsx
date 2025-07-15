@@ -24,7 +24,8 @@ const Login = () => {
     if (window.google) {
       window.google.accounts.id.initialize({
         //client_id:"206783732985-tik2esbefh0is6domtdi477vur7cno31.apps.googleusercontent.com",
-        client_id: "206783732985-52qm38amnimfkm1c0g41206en2q77uls.apps.googleusercontent.com",
+        client_id:
+          "206783732985-52qm38amnimfkm1c0g41206en2q77uls.apps.googleusercontent.com",
         callback: handleGoogleCallback,
       });
 
@@ -80,7 +81,9 @@ const Login = () => {
         <div className="flex justify-center border-b border-gray-300 pb-3">
           <img src={logo} className="h-5 w-auto" />
         </div>
-        <h2 className="text-[12px] text-gray-400 text-center">Sign into your account</h2>
+        <h2 className="text-[12px] text-gray-400 text-center">
+          Sign into your account
+        </h2>
         <div className="space-y-1">
           <label className="block text-[13px] font-medium">Email</label>
           <input
@@ -128,6 +131,16 @@ const Login = () => {
             className="text-[13px] bg-orange-500 text-white px-2 py-1.5 rounded hover:bg-orange-700 transition cursor-pointer flex items-center gap-1 leading-none"
           >
             Login <LogInIcon size={13} />
+          </button>
+        </div>
+
+        <div className="flex justify-center">
+          <button
+            onClick={()=>{navigate('/forgot-password')}}
+            type="button"
+            className="text-[13px] text-orange-500  px-2 py-1.5 text-center transition cursor-pointer mx-auto"
+          >
+            Forgot Password ?
           </button>
         </div>
 
