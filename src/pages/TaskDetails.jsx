@@ -288,28 +288,57 @@ export default function TaskDetails({ taskId, onClose }) {
       ) : (
         <div className="bg-gray-100 py-5">
           <div className="max-w-[1250px] mx-auto bg-white">
-            <div className="bg-[#224d68] w-full px-4 py-4">
+            <div className="bg-[#e4eaff] w-full px-4 py-3">
               <div className="flex justify-between items-start w-full space-x-2">
                 {/* Left Side */}
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 mb-3">
                     {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                     <Target size={13} className="text-white" />
                   </div> */}
-                    <div className="flex items-center gap-3">
-                      <h1 className="text-[15px] font-semibold text-gray-50">
+                    <div>
+                      <h1 className="text-[15px] font-semibold text-gray-900">
                         View Details - {task.fld_title}
                       </h1>
-                      <p className="text-[13px] text-gray-900 bg-white p-1 leading-none rounded">
+                      <p className="text-[13px] text-gray-600">
                         {task.fld_unique_task_id}
                       </p>
                     </div>
                   </div>
 
-                  
+                  <div className="flex items-center gap-4 text-[13px]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-600">Status:</span>
+                      <span
+                        className={`px-1 py-0.5 rounded border text-[12px] font-medium ${getStatusColor(
+                          task.fld_task_status
+                        )}`}
+                      >
+                        {task.fld_task_status}
+                      </span>
+                      {task.fld_reopen == 1 && (
+                        <span
+                          className={`px-2 py-1 text-gray-600 rounded text-xs font-medium border border-gray-200`}
+                        >
+                          Re-Opened
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-600">Bucket:</span>
+                      <span className="font-medium text-blue-600">
+                        {task.bucket_display_name}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-end  gap-2 justify-between">
-                  
+                <div className="flex items-end flex-col gap-9 justify-between">
+                  <button
+                    onClick={onClose}
+                    className="bg-gray-700 hover:bg-gray-800 px-1 py-1 rounded flex items-center justify-center gap-1 text-gray-100 text-[11px] leading-none"
+                  >
+                    <ArrowLeft size={12} className="" /> Back
+                  </button>
                   <div className="flex items-center justify-between space-x-2">
                     <div className="flex items-center space-x-1 leading-none">
                       {task.tag_names &&
@@ -386,12 +415,6 @@ export default function TaskDetails({ taskId, onClose }) {
                       </button>
                     </div>
                   </div>
-                  <button
-                    onClick={onClose}
-                    className="bg-red-700 hover:bg-red-800 px-1 py-1 rounded flex items-center justify-center gap-1 text-gray-100 text-[11px] leading-none"
-                  >
-                    <ArrowLeft size={12} className="" /> Back
-                  </button>
                 </div>
               </div>
             </div>
@@ -429,33 +452,6 @@ export default function TaskDetails({ taskId, onClose }) {
                         {formatDate(task.fld_addedon)}
                       </span>
                     </div>
-                    <span className="text-gray-400 leading-none">|</span>
-                    <div className="flex items-center gap-4 text-[13px]">
-                    <div className="flex items-center gap-1 leading-none">
-                      <span className="font-medium leading-none">Status:</span>
-                      <span
-                        className={`px-1 rounded border text-[11px] font-medium ${getStatusColor(
-                          task.fld_task_status
-                        )}`}
-                      >
-                        {task.fld_task_status}
-                      </span>
-                      {task.fld_reopen == 1 && (
-                        <span
-                          className={`px-2 py-1 text-gray-600 rounded font-medium border border-gray-200 leading-none`}
-                        >
-                          Re-Opened
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-gray-400 leading-none">|</span>
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium leading-none">Bucket :</span>
-                      <span className="font-medium text-blue-600 leading-none">
-                        {task.bucket_display_name}
-                      </span>
-                    </div>
-                  </div>
                   </div>
                 </div>
 
