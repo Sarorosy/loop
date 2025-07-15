@@ -456,7 +456,7 @@ function formatDate(dateString) {
                     </h4>
                   </div>
                   <div
-                    className="bg-gray-100 p-2 rounded text-gray-800 text-[13px] leading-relaxed flex-1"
+                    className="bg-gray-100 p-2 rounded text-gray-800 text-[13px] leading-relaxed flex-1 max-h-[300px] overflow-y-auto"
                     dangerouslySetInnerHTML={{
                       __html:
                         task.fld_description ||
@@ -464,12 +464,12 @@ function formatDate(dateString) {
                     }}
                   />
                 </div>
-                <div className="gap-3">
                   {task.fld_task_status !== "updated" &&
                     task.fld_task_status !== "Completed" &&
                     (task.fld_assign_to == user?.id ||
                       task.fld_follower?.split(",").includes(user?.id)) && (
-                      <>
+                        <>
+                        <div className="gap-3">
                         {!showRemarksInput ? (
                           <button
                             className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
@@ -505,9 +505,9 @@ function formatDate(dateString) {
                             </div>
                           </div>
                         )}
+                </div>
                       </>
                     )}
-                </div>
 
                 <div className="flex gap-3">
                   {/* DOC link */}
@@ -553,9 +553,9 @@ function formatDate(dateString) {
                     </div>
                   )}
                 </div>
-                <div className="mt-4">
+                
                   {task.fld_file_upload && (
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2">
                     <Paperclip className="w-4 h-4 text-gray-500" />
                     <h3 className="text-[13px] font-semibold text-gray-800">
                       Attachments
@@ -590,7 +590,7 @@ function formatDate(dateString) {
                       })}
                     </div>
                   )}
-                </div>
+                
               </div>
               <div className="w-[30%] flex flex-col gap-3">
                 {/* Right Side */}
