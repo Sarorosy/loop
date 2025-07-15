@@ -232,17 +232,17 @@ export default function Header() {
 
           <TabDropdown title="Others" icon={Wrench}>
             <TabLink
-              label="Requirement"
+              label="AskScope Requirement"
               icon={ClipboardList}
               onClick={() => navigate("/manage/requirement")}
             />
             <TabLink
-              label="Currency"
+              label="AskScope Currency"
               icon={BadgeDollarSign}
               onClick={() => navigate("/manage/currency")}
             />
             <TabLink
-              label="Other Tags"
+              label="AskScope Tags"
               icon={Tag}
               onClick={() => navigate("/manage/othertags")}
             />
@@ -253,7 +253,7 @@ export default function Header() {
               window.open(
                 `https://apacvault.com/askforscope/${encodeURIComponent(
                   user?.fld_email
-                )}`,
+                )}/GEKREWR977FXC86VCXV89XCV6VCX`,
                 "_blank"
               )
             }

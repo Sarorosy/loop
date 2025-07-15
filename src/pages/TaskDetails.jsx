@@ -49,15 +49,18 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/addremarks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          task_id: taskId,
-          remarks: taskRemarks,
-          user_id: user?.id,
-        }),
-      });
+      const res = await fetch(
+        "https://loopback-r9kf.onrender.com/api/helper/addremarks",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            task_id: taskId,
+            remarks: taskRemarks,
+            user_id: user?.id,
+          }),
+        }
+      );
       const data = await res.json();
       if (data.status) {
         fetchTaskDetails();
@@ -76,11 +79,14 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: taskId }),
-      });
+      const res = await fetch(
+        "https://loopback-r9kf.onrender.com/api/tasks/details",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task_id: taskId }),
+        }
+      );
       const data = await res.json();
       if (data.status) setTask(data.data);
       else console.error("Error fetching task:", data.message);
@@ -152,8 +158,6 @@ export default function TaskDetails({ taskId, onClose }) {
     }
   };
 
-
-
   if (!task) {
     return (
       <div className="text-center text-red-500 text-[13px] font-medium">
@@ -182,9 +186,14 @@ export default function TaskDetails({ taskId, onClose }) {
   // Example: Replace these with your actual values
   const adminId = user?.id || "";
 
-  const iframeSrc = `https://apacvault.com/loop_chatapp/?userid=${base64Encode(
+  // const iframeSrc = `https://apacvault.com/loop_chatapp/?userid=${base64Encode(
+  //   adminId
+  // )}&taskid=${base64Encode(taskId)}`;
+
+  const iframeSrc = `http://localhost:5175/loop_chatapp/?userid=${base64Encode(
     adminId
   )}&taskid=${base64Encode(taskId)}`;
+
 
   const calculateTaskProgress = (task) => {
     let totalPercent = 0;
@@ -237,33 +246,32 @@ export default function TaskDetails({ taskId, onClose }) {
     progress >= 100 ? "Completed" : `${Math.round(progress)}% Completed`;
   // console.log(task.fld_benchmark_name);
 
-
-function formatDate(dateString) {
-    if (!dateString) return '';
+  function formatDate(dateString) {
+    if (!dateString) return "";
 
     const date = new Date(dateString);
 
-    const hasTime =
-        dateString.includes(' ') || dateString.includes('T'); // detect if time part exists
+    const hasTime = dateString.includes(" ") || dateString.includes("T"); // detect if time part exists
 
     if (hasTime) {
-        return date.toLocaleString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-        }).replace(',', '');
+      return date
+        .toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(",", "");
     } else {
-        return date.toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        });
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
     }
-}
-
+  }
 
   return (
     <motion.div
@@ -464,12 +472,12 @@ function formatDate(dateString) {
                     }}
                   />
                 </div>
-                  {task.fld_task_status !== "updated" &&
-                    task.fld_task_status !== "Completed" &&
-                    (task.fld_assign_to == user?.id ||
-                      task.fld_follower?.split(",").includes(user?.id)) && (
-                        <>
-                        <div className="gap-3">
+                {task.fld_task_status !== "updated" &&
+                  task.fld_task_status !== "Completed" &&
+                  (task.fld_assign_to == user?.id ||
+                    task.fld_follower?.split(",").includes(user?.id)) && (
+                    <>
+                      <div className="gap-3">
                         {!showRemarksInput ? (
                           <button
                             className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
@@ -505,56 +513,59 @@ function formatDate(dateString) {
                             </div>
                           </div>
                         )}
-                </div>
-                      </>
+                      </div>
+                    </>
+                  )}
+
+                {(task.fld_google_sheets_or_docs_link ||
+                  task.fld_asana_link) && (
+                  <div className="flex gap-3">
+                    {/* DOC link */}
+                    {task.fld_google_sheets_or_docs_link && (
+                      <div className="bg-white border border-gray-200 rounded p-2 min-w-[50%] truncate">
+                        <div className=" gap-3 text-[13px]">
+                          <div className="flex items-end">
+                            <span className="font-medium leading-none flex items-end gap-1">
+                              {" "}
+                              <FileText size={15} className="text-blue-600" />
+                              DOCS :
+                            </span>
+                            <span className="text-blue-900 ml-2 leading-none whitespace-nowrap truncate w-100">
+                              <a
+                                href={task.fld_google_sheets_or_docs_link}
+                                target="_blank"
+                              >
+                                {task.fld_google_sheets_or_docs_link}
+                              </a>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     )}
 
-                <div className="flex gap-3">
-                  {/* DOC link */}
-                  {task.fld_google_sheets_or_docs_link && (
-                    <div className="bg-white border border-gray-200 rounded p-2 min-w-[50%] truncate">
-                      <div className=" gap-3 text-[13px]">
-                        <div className="flex items-end">
-                          <span className="font-medium leading-none flex items-end gap-1">
-                            {" "}
-                            <FileText size={15} className="text-blue-600" />
-                            DOCS :
-                          </span>
-                          <span className="text-blue-900 ml-2 leading-none whitespace-nowrap truncate w-100">
-                            <a
-                              href={task.fld_google_sheets_or_docs_link}
-                              target="_blank"
-                            >
-                              {task.fld_google_sheets_or_docs_link}
-                            </a>
-                          </span>
+                    {/* ASANA URL */}
+                    {task.fld_asana_link && (
+                      <div className="bg-white border border-gray-200 rounded- p-2 truncate">
+                        <div className="gap-3 text-[13px]">
+                          <div className="flex items-end">
+                            <span className="font-medium text-orange-600 flex items-end gap-1 leading-none">
+                              {" "}
+                              <Link size={15} className="text-blue-600" /> ASANA
+                              URL :
+                            </span>
+                            <span className="text-blue-900 ml-2 leading-none truncate">
+                              <a href={task.fld_asana_link} target="_blank">
+                                {task.fld_asana_link}
+                              </a>
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                )}
 
-                  {/* ASANA URL */}
-                  {task.fld_asana_link && (
-                    <div className="bg-white border border-gray-200 rounded- p-2 truncate">
-                      <div className="gap-3 text-[13px]">
-                        <div className="flex items-end">
-                          <span className="font-medium text-orange-600 flex items-end gap-1 leading-none">
-                            {" "}
-                            <Link size={15} className="text-blue-600" /> ASANA
-                            URL :
-                          </span>
-                          <span className="text-blue-900 ml-2 leading-none truncate">
-                            <a href={task.fld_asana_link} target="_blank">
-                              {task.fld_asana_link}
-                            </a>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                  {task.fld_file_upload && (
+                {task.fld_file_upload && (
                   <div className="flex items-center gap-2">
                     <Paperclip className="w-4 h-4 text-gray-500" />
                     <h3 className="text-[13px] font-semibold text-gray-800">
@@ -562,35 +573,34 @@ function formatDate(dateString) {
                     </h3>
                     <div className="flex-grow border-t border-gray-200" />
                   </div>
-                  )}
+                )}
 
-                  {task.fld_file_upload && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                      {task.fld_file_upload.split(",").map((file, index) => {
-                        const isFullUrl = file.startsWith("http");
-                        const fileUrl = isFullUrl
-                          ? file
-                          : `https://www.apacvault.com/assets/taskfileuploads/${file}`;
-                        const fileName = file.split("/").pop();
+                {task.fld_file_upload && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {task.fld_file_upload.split(",").map((file, index) => {
+                      const isFullUrl = file.startsWith("http");
+                      const fileUrl = isFullUrl
+                        ? file
+                        : `https://www.apacvault.com/assets/taskfileuploads/${file}`;
+                      const fileName = file.split("/").pop();
 
-                        return (
-                          <a
-                            key={index}
-                            href={fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition shadow-sm"
-                          >
-                            <Paperclip className="w-4 h-4 text-blue-500" />
-                            <span className="text-xs text-gray-700 break-all">
-                              {fileName}
-                            </span>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
-                
+                      return (
+                        <a
+                          key={index}
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition shadow-sm"
+                        >
+                          <Paperclip className="w-4 h-4 text-blue-500" />
+                          <span className="text-xs text-gray-700 break-all">
+                            {fileName}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div className="w-[30%] flex flex-col gap-3">
                 {/* Right Side */}
@@ -766,7 +776,7 @@ function formatDate(dateString) {
                     padding: "0px 10px 10px",
                     border: "1px solid #dbdbdb",
                     width: "100%",
-                    height: "600px",
+                    height: "565px",
                     borderRadius: "4px",
                   }}
                 />

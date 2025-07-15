@@ -45,7 +45,7 @@ export default function AddTeam({ onClose, after }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    
     setError("");
     setSuccessMsg("");
 
@@ -59,6 +59,7 @@ export default function AddTeam({ onClose, after }) {
     }
 
     try {
+      setLoading(true);
       const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/team/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

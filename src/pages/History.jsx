@@ -85,7 +85,7 @@ export default function History({ taskId }) {
         ))}
       </div>
 
-      <div className="max-h-[538px] overflow-y-auto ">
+      <div className="max-h-[500px] overflow-y-auto ">
         {activeTab === "remarks" &&
           renderList(remarks, (item) => (
             <div key={item.id} className="relative pl-5 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-1.5 before:w-px before:bg-gray-300">

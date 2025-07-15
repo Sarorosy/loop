@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronsRightIcon, X } from "lucide-react";
 import Select from "react-select";
+import { useAuth } from "../../utils/idb";
 
 export default function AddUser({ onClose, after }) {
   const [form, setForm] = useState({
@@ -21,6 +22,7 @@ export default function AddUser({ onClose, after }) {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [error, setError] = useState("");
+  const {user} = useAuth();
 
   // Fetch teams
   useEffect(() => {
@@ -207,7 +209,10 @@ export default function AddUser({ onClose, after }) {
          active:border-blue-600"
           >
             <option value="TEAM MEMBER">TEAM MEMBER</option>
+            {user?.fld_admin_type != "TEAM MEMBER" && (
+
             <option value="SUBADMIN">SUBADMIN</option>
+            )}
           </select>
         </div>
 

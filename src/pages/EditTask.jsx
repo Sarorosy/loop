@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Trash2 } from "lucide-react";
+import { Editor } from "@tinymce/tinymce-react";
 
 export default function EditTask() {
   const [buckets, setBuckets] = useState([]);
@@ -16,6 +17,8 @@ export default function EditTask() {
   const { user } = useAuth();
   const { taskId } = useParams();
   const navigate = useNavigate();
+
+  const editorRef = useRef(null);
 
   const todayDateTime = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 
@@ -608,7 +611,7 @@ export default function EditTask() {
                   <label className="block text-[13px] font-medium text-gray-700 mb-1">
                     Description
                   </label>
-                  <textarea
+                  {/* <textarea
                     name="description"
                     placeholder="Enter task description"
                     value={formData.description}
@@ -617,8 +620,35 @@ export default function EditTask() {
                     }
                     rows={3}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
-                  />
+                  /> */}
+
+                  <Editor
+                  apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
+                  onInit={(evt, editor) => (editorRef.current = editor)}
+                  onEditorChange={(newContent) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: newContent,
+                    }))
+                  }
+                  initialValue={formData.description}
+                  init={{
+                    height: 500,
+                    menubar: true,
+                    plugins: [
+                      "advlist autolink lists link image charmap print preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table paste code help wordcount",
+                    ],
+                    toolbar:
+                      "undo redo | formatselect | bold italic backcolor | \
+                            alignleft aligncenter alignright alignjustify | \
+                            bullist numlist outdent indent | removeformat | help",
+                  }}
+                />
                 </div>
+
+                
               </div>
             </div>
 
@@ -629,72 +659,80 @@ export default function EditTask() {
             </h2>
             <div className="mb-8 flex gap-5 items-start">
               <div className="w-1/2">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    name="dueDate"
-                    value={formData.dueDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dueDate: e.target.value })
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      name="dueDate"
+                      value={formData.dueDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dueDate: e.target.value })
+                      }
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-[13px] font-medium text-gray-700 mb-1">
-                    Due Time
-                  </label>
-                  <input
-                    type="time"
-                    name="dueTime"
-                    value={formData.dueTime}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dueTime: e.target.value })
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                  />
+                  <div>
+                    <label className="block text-[13px] font-medium text-gray-700 mb-1">
+                      Due Time
+                    </label>
+                    <input
+                      type="time"
+                      name="dueTime"
+                      value={formData.dueTime}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dueTime: e.target.value })
+                      }
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    />
+                  </div>
                 </div>
-              </div>
               </div>
               <div className="w-1/2 flex gap-7">
-              <div>
-                <label className="block text-[13px] font-medium text-gray-700 mb-3">
-                  Recurring Task
-                </label>
-                <div className="flex gap-6 mb-4">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="Yes"
-                      checked={formData.recurring === "Yes"}
-                      onChange={(e) =>
-                        setFormData({ ...formData, recurring: e.target.value })
-                      }
-                      className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
-                    />
-                    <span className="ml-2 text-[13px] text-gray-700">Yes</span>
+                {/* <div>
+                  <label className="block text-[13px] font-medium text-gray-700 mb-3">
+                    Recurring Task
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="No"
-                      checked={formData.recurring === "No"}
-                      onChange={(e) =>
-                        setFormData({ ...formData, recurring: e.target.value })
-                      }
-                      className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
-                    />
-                    <span className="ml-2 text-[13px] text-gray-700">No</span>
-                  </label>
-                </div>
-              </div>
+                  <div className="flex gap-6 mb-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="recurring"
+                        value="Yes"
+                        checked={formData.recurring === "Yes"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            recurring: e.target.value,
+                          })
+                        }
+                        className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-[13px] text-gray-700">
+                        Yes
+                      </span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="recurring"
+                        value="No"
+                        checked={formData.recurring === "No"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            recurring: e.target.value,
+                          })
+                        }
+                        className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-[13px] text-gray-700">No</span>
+                    </label>
+                  </div>
+                </div> */}
 
                 {formData.recurring === "Yes" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -841,7 +879,7 @@ export default function EditTask() {
                           placeholder="Select Milestone"
                         />
                       </div>
-                      <div>
+                      {/* <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Due Date & Time
                         </label>
@@ -857,8 +895,7 @@ export default function EditTask() {
                           }
                           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
-                      </div>
-                    </div>
+                      </div> */}
                     <div className="mt-3 flex justify-end">
                       <button
                         type="button"
@@ -867,6 +904,7 @@ export default function EditTask() {
                       >
                         <Trash2 size={13} />
                       </button>
+                    </div>
                     </div>
                   </div>
                 ))}

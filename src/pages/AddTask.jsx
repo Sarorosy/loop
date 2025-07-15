@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
+import { Editor } from "@tinymce/tinymce-react";
 
 export default function AddTask() {
   const [buckets, setBuckets] = useState([]);
@@ -13,6 +14,8 @@ export default function AddTask() {
   const [users, setUsers] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const editorRef = useRef(null);
 
   const todayDateTime = format(new Date(), "yyyy-MM-dd'T'HH:mm");
 
@@ -272,11 +275,14 @@ export default function AddTask() {
       });
 
       // Make API call
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/tasks/create", {
-        method: "POST",
-        body: formDataToSend,
-        // Don't set Content-Type header - let browser set it with boundary for FormData
-      });
+      const response = await fetch(
+        "https://loopback-r9kf.onrender.com/api/tasks/create",
+        {
+          method: "POST",
+          body: formDataToSend,
+          // Don't set Content-Type header - let browser set it with boundary for FormData
+        }
+      );
 
       const result = await response.json();
 
@@ -389,7 +395,7 @@ export default function AddTask() {
 
           <form className="bg-white w-full f-13 mt-5">
             <div>
-              {/* Basic Information */} 
+              {/* Basic Information */}
               <div className="mb-8">
                 <h2 className="text-[16px] font-medium text-gray-900 mb-4 flex items-end leading-none ">
                   <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
@@ -525,7 +531,7 @@ export default function AddTask() {
                     <label className="block text-[13px] font-medium text-gray-700 mb-1">
                       Description
                     </label>
-                    <textarea
+                    {/* <textarea
                       name="description"
                       placeholder="Enter task description"
                       value={formData.description}
@@ -537,19 +543,45 @@ export default function AddTask() {
                       }
                       rows={3}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
-                    />
+                    /> */}
+
+                    <Editor
+                    apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
+                    onInit={(evt, editor) => (editorRef.current = editor)}
+                    onEditorChange={(newContent) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: newContent,
+                      }))
+                    }
+                    initialValue=""
+                    init={{
+                      height: 500,
+                      menubar: true,
+                      plugins: [
+                        "advlist autolink lists link image charmap print preview anchor",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime media table paste code help wordcount",
+                      ],
+                      toolbar:
+                        "undo redo | formatselect | bold italic backcolor | \
+            alignleft aligncenter alignright alignjustify | \
+            bullist numlist outdent indent | removeformat | help",
+                    }}
+                  />
                   </div>
+
+                  
                 </div>
               </div>
             </div>
             {/* Timing & Schedule */}
             <h2 className="text-[16px] font-medium text-gray-900 mb-4 flex items-end leading-none ">
-                  <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
-                  Timing & Schedule
-                </h2>
+              <div className="w-1 h-5 bg-orange-600 rounded-full mr-3"></div>
+              Timing & Schedule
+            </h2>
             <div className="mb-8 flex gap-5 items-start">
               <div className="w-1/2">
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[13px] font-medium text-gray-700 mb-1">
@@ -584,39 +616,47 @@ export default function AddTask() {
               </div>
 
               <div className="w-1/2 flex gap-7">
-                <div>
+                {/* <div>
                   <label className="block text-[13px] font-medium text-gray-700 mb-3">
-                  Recurring Task
-                </label>
-                <div className="flex gap-6">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="Yes"
-                      checked={formData.recurring === "Yes"}
-                      onChange={(e) =>
-                        setFormData({ ...formData, recurring: e.target.value })
-                      }
-                      className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
-                    />
-                    <span className="ml-2 text-[13px] text-gray-700">Yes</span>
+                    Recurring Task
                   </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="recurring"
-                      value="No"
-                      checked={formData.recurring === "No"}
-                      onChange={(e) =>
-                        setFormData({ ...formData, recurring: e.target.value })
-                      }
-                      className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
-                    />
-                    <span className="ml-2 text-[13px] text-gray-700">No</span>
-                  </label>
-                </div>
-                </div>
+                  <div className="flex gap-6">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="recurring"
+                        value="Yes"
+                        checked={formData.recurring === "Yes"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            recurring: e.target.value,
+                          })
+                        }
+                        className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-[13px] text-gray-700">
+                        Yes
+                      </span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="recurring"
+                        value="No"
+                        checked={formData.recurring === "No"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            recurring: e.target.value,
+                          })
+                        }
+                        className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-[13px] text-gray-700">No</span>
+                    </label>
+                  </div>
+                </div> */}
 
                 {formData.recurring === "Yes" && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full ">
@@ -763,7 +803,7 @@ export default function AddTask() {
                           placeholder="Select Milestone"
                         />
                       </div>
-                      <div>
+                      {/* <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Due Date & Time
                         </label>
@@ -779,8 +819,7 @@ export default function AddTask() {
                           }
                           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
-                      </div>
-                    </div>
+                      </div> */}
                     <div className="mt-3 flex justify-end">
                       <button
                         type="button"
@@ -789,6 +828,7 @@ export default function AddTask() {
                       >
                         <Trash2 size={13} />
                       </button>
+                    </div>
                     </div>
                   </div>
                 ))}

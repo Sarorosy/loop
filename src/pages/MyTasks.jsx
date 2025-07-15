@@ -214,7 +214,7 @@ function MyTasks() {
       render: (data, type, row) => {
         const dueDate = row.fld_due_date || "-";
         const dueTime = row.fld_due_time || "";
-        return `${formatDate(dueDate)} ${dueTime}`.trim();
+        return `<div class="text-[11px]">${formatDate(dueDate)} ${dueTime}</div>`.trim();
       },
     },
     {
@@ -254,7 +254,7 @@ function MyTasks() {
         let color = "#6B7280"; // default gray
         if (status === "Completed") color = "#10B981";
         else if (status === "Pending") color = "#EF4444";
-        return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
+        return `<span class="text-[11px]" style="color: ${color}; font-weight: bold;">${status}</span>`;
       },
     },
     {
@@ -284,7 +284,7 @@ function MyTasks() {
       data: null,
       orderable: false,
       render: (data, type, row) => `
-        <div>
+        <div class="text-[11px]">
           ${row.added_by_name || "-"}
         </div>
       `,
@@ -362,7 +362,8 @@ function MyTasks() {
   return (
     <div className="">
       <div className="text-xl font-bold mb-4 flex items-center justify-between">
-        My Tasks
+        
+        <h2 class="text-[16px] font-semibold">My Tasks</h2>
         <div className="flex gap-3">
           <button
             onClick={resetFilters}
