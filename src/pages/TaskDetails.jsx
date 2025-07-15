@@ -49,15 +49,18 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/addremarks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          task_id: taskId,
-          remarks: taskRemarks,
-          user_id: user?.id,
-        }),
-      });
+      const res = await fetch(
+        "https://loopback-r9kf.onrender.com/api/helper/addremarks",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            task_id: taskId,
+            remarks: taskRemarks,
+            user_id: user?.id,
+          }),
+        }
+      );
       const data = await res.json();
       if (data.status) {
         fetchTaskDetails();
@@ -76,11 +79,14 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: taskId }),
-      });
+      const res = await fetch(
+        "https://loopback-r9kf.onrender.com/api/tasks/details",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task_id: taskId }),
+        }
+      );
       const data = await res.json();
       if (data.status) setTask(data.data);
       else console.error("Error fetching task:", data.message);
@@ -152,13 +158,17 @@ export default function TaskDetails({ taskId, onClose }) {
     }
   };
 
-
-
-  if (!task) {
-    return (
-      <div className="text-center text-red-500 text-[13px] font-medium">
+  {
+    !loading && !task && (
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto flex items-center justify-center text-red-600 font-semibold text-[14px]"
+      >
         Failed to load task details.
-      </div>
+      </motion.div>
     );
   }
 
@@ -231,39 +241,43 @@ export default function TaskDetails({ taskId, onClose }) {
 
     return Math.min(totalPercent, 100); // Make sure it doesn't exceed 100
   };
+  let progress = 0;
+  let progressLabel = "";
 
-  const progress = calculateTaskProgress(task);
-  const progressLabel =
-    progress >= 100 ? "Completed" : `${Math.round(progress)}% Completed`;
+  if (task) {
+    progress = calculateTaskProgress(task);
+    progressLabel =
+      progress >= 100 ? "Completed" : `${Math.round(progress)}% Completed`;
+  }
+
   // console.log(task.fld_benchmark_name);
 
-
-function formatDate(dateString) {
-    if (!dateString) return '';
+  function formatDate(dateString) {
+    if (!dateString) return "";
 
     const date = new Date(dateString);
 
-    const hasTime =
-        dateString.includes(' ') || dateString.includes('T'); // detect if time part exists
+    const hasTime = dateString.includes(" ") || dateString.includes("T"); // detect if time part exists
 
     if (hasTime) {
-        return date.toLocaleString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-        }).replace(',', '');
+      return date
+        .toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(",", "");
     } else {
-        return date.toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        });
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
     }
-}
-
+  }
 
   return (
     <motion.div
@@ -555,13 +569,13 @@ function formatDate(dateString) {
                 </div>
                 <div className="mt-4">
                   {task.fld_file_upload && (
-                  <div className="flex items-center gap-2 mb-3">
-                    <Paperclip className="w-4 h-4 text-gray-500" />
-                    <h3 className="text-[13px] font-semibold text-gray-800">
-                      Attachments
-                    </h3>
-                    <div className="flex-grow border-t border-gray-200" />
-                  </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Paperclip className="w-4 h-4 text-gray-500" />
+                      <h3 className="text-[13px] font-semibold text-gray-800">
+                        Attachments
+                      </h3>
+                      <div className="flex-grow border-t border-gray-200" />
+                    </div>
                   )}
 
                   {task.fld_file_upload && (
