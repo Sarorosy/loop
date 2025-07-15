@@ -81,7 +81,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
       </div>
 
       <form  className="p-4 space-y-4">
-        <div>
+        {/* <div>
           <label className="block text-[13px] mb-1">Category</label>
           <select
             value={category}
@@ -94,7 +94,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
             <option value="PhD">PhD</option>
             <option value="Sales">Sales</option>
           </select>
-        </div>
+        </div> */}
 
         <div>
           <label className="block text-[13px] mb-1">Tag Name</label>
@@ -110,7 +110,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-[13px] mb-1">Tag Type</label>
           <select
             value={tagType}
@@ -123,7 +123,7 @@ export default function EditOtherTags({ onClose, requirementData, onUpdate }) {
             <option value="Primary">Primary</option>
             <option value="Secondary">Secondary</option>
           </select>
-        </div>
+        </div> */}
 
         {error && <p className="text-[13px] text-red-500">{error}</p>}
         <div className="flex justify-end">
