@@ -22,6 +22,8 @@ import TeamTasks from "../pages/Teamtasks";
 import TasksCreatedByMe from "../pages/TasksCreatedByMe";
 import TasksFollowing from "../pages/TasksFollowing";
 import ManageQuery from "../pages/query/ManageQuery";
+import SetPassword from "../pages/manageuser/SetPassword";
+import ForgotPassword from "../pages/ForgotPassword";
 
 
 
@@ -32,6 +34,8 @@ export default function AppRouter() {
       <Routes>
         {/* Public Restaurant Routes (NO layout) */}
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/admin/set_password/:token" element={<SetPassword />} />
 
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
@@ -58,6 +62,9 @@ export default function AppRouter() {
             <Route path="/manage/othertags" element={<ManageOtherTags />} />
 
             <Route path="/manage/queries" element={<ManageQuery />} />
+
+            
+
 
           </Route>
         </Route>
