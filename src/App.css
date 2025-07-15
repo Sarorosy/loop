@@ -126,3 +126,16 @@ div.dt-container .dt-paging .dt-paging-button:hover{
 .table-scrollable.table-aligns .n-word-break {
     word-break: break-word;
 }
+
+.chat-hub{
+  padding: 10px;
+  border: 1px solid rgb(219, 219, 219);
+  height: 565px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.inner-content p, .inner-content div, .inner-content span {
+    font-size: 12px;
+    color: oklch(44.6% 0.03 256.802);
+}

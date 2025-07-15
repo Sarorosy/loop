@@ -72,15 +72,15 @@ export default function History({ taskId }) {
 
 
   return (
-    <div className="p-3 bg-gray-100 rounded w-full">
+    <div className="p-2 bg-gray-100 rounded w-full">
       <div className="flex space-x-3 mb-3">
         {["remarks", "history", "reminders"].map((tab) => (
           <button
             key={tab}
-            className={`px-2 py-1.5 rounded transition leading-none text-[14px] transition ${
+            className={`px-2 py-1 rounded transition leading-none text-[13px] transition border border-orange-400 ${
               activeTab === tab
                 ? "bg-orange-400 text-white shadow"
-                : "bg-gray-300 text-gray-800 hover:bg-orange-100"
+                : "bg-orange-100 text-orange-800 hover:bg-orange-100"
             }`}
             onClick={() => setActiveTab(tab)}
           >
@@ -89,18 +89,18 @@ export default function History({ taskId }) {
         ))}
       </div>
 
-      <div className="max-h-[500px] overflow-y-auto ">
+      <div className="max-h-[490px] overflow-y-auto ">
         {activeTab === "remarks" &&
           renderList(remarks, (item) => (
-            <div key={item.id} className="relative pl-5 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-1.5 before:w-px before:bg-gray-300">
-              <span class="absolute left-[0px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
+            <div key={item.id} className="relative pl-4 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-0 before:w-px before:bg-gray-300">
+              <span class="absolute left-[-5.1px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
               <div className="bg-gray-100 p-2 rounded">
-                <div className="flex justify-between f-11 text-gray-500 mb-1">
-                <span>Added by : {item.added_by_name}</span>
-                <span className="text-[10px]">{formatDateTime(item.fld_addedon)}</span>
-              </div>
+                <div className="flex justify-between text-[12px]  mb-1">
+                  <span>Added by : {item.added_by_name}</span>
+                  <span className="text-[10px] text-gray-500">{formatDateTime(item.fld_addedon)}</span>
+                </div>
               <div
-                className="f-12 text-gray-600 inner-content"
+                className="!text-[12px] text-gray-600 inner-content"
                 dangerouslySetInnerHTML={{ __html: item.fld_remark }}
               />
               {item.fld_file && (
@@ -139,12 +139,12 @@ export default function History({ taskId }) {
 
         {activeTab === "history" &&
           renderList(history, (item) => (
-            <div key={item.id} className="relative pl-5 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-1.5 before:w-px before:bg-gray-300">
-              <span class="absolute left-[0px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
+            <div key={item.id} className="relative pl-4 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-0 before:w-px before:bg-gray-300">
+              <span class="absolute left-[-5.1px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
               <div className="bg-gray-100 p-2 rounded">
-                <div className="flex justify-between f-11 text-gray-500">
-                  <span>{item.fld_history}</span>
-                  <span className="text-[10px]">{formatDateTime(item.created_at)}</span>
+                <div className="flex justify-between f-11 text-gray-500 flex-wrap gap-1">
+                  <span className="w-full text-gray-900">{item.fld_history}</span>
+                  <span className="text-[10px] text-end w-full">{formatDateTime(item.created_at)}</span>
                 </div>
               </div>
             </div>

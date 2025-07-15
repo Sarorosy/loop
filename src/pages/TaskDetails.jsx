@@ -99,6 +99,9 @@ export default function TaskDetails({ taskId, onClose }) {
   useEffect(() => {
     fetchTaskDetails();
   }, [taskId]);
+  useEffect(()=>{
+    console.log(task)
+  },[task])
 
   const handleMarkAsOnGoing = async () => {
     try {
@@ -158,11 +161,17 @@ export default function TaskDetails({ taskId, onClose }) {
     }
   };
 
-  if (!task) {
-    return (
-      <div className="text-center text-red-500 text-[13px] font-medium">
+  {
+    !loading && !task && (
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto flex items-center justify-center text-red-600 font-semibold text-[14px]"
+      >
         Failed to load task details.
-      </div>
+      </motion.div>
     );
   }
 
@@ -189,11 +198,9 @@ export default function TaskDetails({ taskId, onClose }) {
   // const iframeSrc = `https://apacvault.com/loop_chatapp/?userid=${base64Encode(
   //   adminId
   // )}&taskid=${base64Encode(taskId)}`;
-
-  const iframeSrc = `http://localhost:5175/loop_chatapp/?userid=${base64Encode(
+  const iframeSrc = `http://localhost:5174/loop_chatapp/?userid=${base64Encode(
     adminId
   )}&taskid=${base64Encode(taskId)}`;
-
 
   const calculateTaskProgress = (task) => {
     let totalPercent = 0;
@@ -240,10 +247,15 @@ export default function TaskDetails({ taskId, onClose }) {
 
     return Math.min(totalPercent, 100); // Make sure it doesn't exceed 100
   };
+  let progress = 0;
+  let progressLabel = "";
 
-  const progress = calculateTaskProgress(task);
-  const progressLabel =
-    progress >= 100 ? "Completed" : `${Math.round(progress)}% Completed`;
+  if (task) {
+    progress = calculateTaskProgress(task);
+    progressLabel =
+      progress >= 100 ? "Completed" : `${Math.round(progress)}% Completed`;
+  }
+
   // console.log(task.fld_benchmark_name);
 
   function formatDate(dateString) {
@@ -476,8 +488,8 @@ export default function TaskDetails({ taskId, onClose }) {
                   task.fld_task_status !== "Completed" &&
                   (task.fld_assign_to == user?.id ||
                     task.fld_follower?.split(",").includes(user?.id)) && (
-                    <>
-                      <div className="gap-3">
+                    <div className="gap-3">
+                      <>
                         {!showRemarksInput ? (
                           <button
                             className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
@@ -513,10 +525,9 @@ export default function TaskDetails({ taskId, onClose }) {
                             </div>
                           </div>
                         )}
-                      </div>
-                    </>
+                      </>
+                    </div>
                   )}
-
                 {(task.fld_google_sheets_or_docs_link ||
                   task.fld_asana_link) && (
                   <div className="flex gap-3">
@@ -564,43 +575,51 @@ export default function TaskDetails({ taskId, onClose }) {
                     )}
                   </div>
                 )}
+                {(task.fld_file_upload || task.fld_file_upload) && (
+                  <div className="mt-4">
+                    {task.fld_file_upload && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Paperclip className="w-4 h-4 text-gray-500" />
+                        <h3 className="text-[13px] font-semibold text-gray-800">
+                          Attachments
+                        </h3>
+                        <div className="flex-grow border-t border-gray-200" />
+                      </div>
+                    )}
 
-                {task.fld_file_upload && (
-                  <div className="flex items-center gap-2">
-                    <Paperclip className="w-4 h-4 text-gray-500" />
-                    <h3 className="text-[13px] font-semibold text-gray-800">
-                      Attachments
-                    </h3>
-                    <div className="flex-grow border-t border-gray-200" />
+                    {task.fld_file_upload && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {task.fld_file_upload.split(",").map((file, index) => {
+                          const isFullUrl = file.startsWith("http");
+                          const fileUrl = isFullUrl
+                            ? file
+                            : `https://www.apacvault.com/assets/taskfileuploads/${file}`;
+                          const fileName = file.split("/").pop();
+
+                          return (
+                            <a
+                              key={index}
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition shadow-sm"
+                            >
+                              <Paperclip className="w-4 h-4 text-blue-500" />
+                              <span className="text-xs text-gray-700 break-all">
+                                {fileName}
+                              </span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
-
-                {task.fld_file_upload && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {task.fld_file_upload.split(",").map((file, index) => {
-                      const isFullUrl = file.startsWith("http");
-                      const fileUrl = isFullUrl
-                        ? file
-                        : `https://www.apacvault.com/assets/taskfileuploads/${file}`;
-                      const fileName = file.split("/").pop();
-
-                      return (
-                        <a
-                          key={index}
-                          href={fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition shadow-sm"
-                        >
-                          <Paperclip className="w-4 h-4 text-blue-500" />
-                          <span className="text-xs text-gray-700 break-all">
-                            {fileName}
-                          </span>
-                        </a>
-                      );
-                    })}
-                  </div>
-                )}
+                <iframe
+                  className="chat-hub"
+                  src={iframeSrc}
+                  
+                />
               </div>
               <div className="w-[30%] flex flex-col gap-3">
                 {/* Right Side */}
@@ -761,14 +780,15 @@ export default function TaskDetails({ taskId, onClose }) {
                     <MilestoneInfo taskId={taskId} />
                   </div>
                 )}
+                <div className=" flex">
+                <History taskId={taskId} />
+              </div>
               </div>
             </div>
 
-            <div className="w-full flex p-3 gap-2">
-              <div className="w-1/2 flex">
-                <History taskId={taskId} />
-              </div>
-              <div className="w-1/2">
+            {/* <div className="w-full flex p-3 gap-2">
+              
+              <div className="w-[71%]">
                 <iframe
                   className=""
                   src={iframeSrc}
@@ -776,12 +796,15 @@ export default function TaskDetails({ taskId, onClose }) {
                     padding: "0px 10px 10px",
                     border: "1px solid #dbdbdb",
                     width: "100%",
-                    height: "565px",
+                    height: "556px",
                     borderRadius: "4px",
                   }}
                 />
               </div>
-            </div>
+              <div className="w-[29%] flex">
+                <History taskId={taskId} />
+              </div>
+            </div> */}
           </div>
         </div>
       )}

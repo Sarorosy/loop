@@ -27,14 +27,6 @@ function TabDropdown({ title, icon: Icon, children }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <div className="relative" ref={ref}>
       <button
@@ -86,6 +78,27 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const commentsRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (commentsRef.current && !commentsRef.current.contains(event.target)) {
+        setCommentsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <header className="bg-white text-[#092e46] shadow-md">
       <div className="flex items-center justify-between py-3 max-w-[1250px] mx-auto ">
@@ -95,44 +108,89 @@ export default function Header() {
 
         {user ? (
           <div className="flex items-end gap-4 text-[14px]">
-            <div className="relative" ref={userRef}>
-              <button
-                onClick={() => setUserDropdownOpen((prev) => !prev)}
-                className="flex items-end px-2 py-2 rounded  gap-1 hover:bg-gray-100"
-              >
-                <CircleUserRound className="" size={18} />
-                <span className="leading-none">
-                  Welcome  -  <span className="text-orange-600 font-bold">{user.fld_first_name + " " + user?.fld_last_name}</span>
-                </span>
-                <ChevronDown className="" size={15} />
-              </button>
+            <div className="relative flex items-center gap-2" ref={userRef}>
+              {/* COMMENT BUTTON */}
+              <div className="relative">
+                <button
+                  onClick={() => setCommentsOpen(!commentsOpen)}
+                  className="relative p-2 rounded hover:bg-gray-100"
+                >
+                  <MessageCircleQuestion
+                    size={18}
+                    className="text-gray-600 hover:text-gray-800"
+                  />
+                  <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                    3
+                  </span>
+                </button>
 
-              <AnimatePresence>
-                {userDropdownOpen && (
-                  <div className="absolute right-3 mt-1 w-52 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
-                    <div className="px-3 py-2">
-                      <p className="font-semibold text-gray-800 text-center">
-                        {user.fld_first_name}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate w-full">
-                        {user.fld_email}
-                      </p>
+                {/* COMMENT BOX */}
+                {commentsOpen && (
+                  <div
+                    ref={commentsRef}
+                    className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded shadow z-50 p-3 text-[13px]"
+                  >
+                    <div className="font-semibold text-gray-800 mb-2">
+                      Comments
                     </div>
-                    <ul>
-                      <li
-                        className="flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
-                        onClick={() => {
-                          logout();
-                          setUserDropdownOpen(false);
-                        }}
-                      >
-                        <LogOut className="mr-2" size={14} />
-                        Sign Out
+                    <ul className="space-y-1 max-h-40 overflow-y-auto">
+                      <li className="text-gray-700 text-sm">
+                        Comment 1: Feedback pending
+                      </li>
+                      <li className="text-gray-700 text-sm">
+                        Comment 2: Deadline updated
+                      </li>
+                      <li className="text-gray-700 text-sm">
+                        Comment 3: Please review
                       </li>
                     </ul>
                   </div>
                 )}
-              </AnimatePresence>
+              </div>
+
+              {/* USER DROPDOWN */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen((prev) => !prev)}
+                  className="flex items-center px-2 py-2 rounded gap-1 hover:bg-gray-100"
+                >
+                  <CircleUserRound className="" size={18} />
+                  <span className="leading-none">
+                    Welcome -{" "}
+                    <span className="text-orange-600 font-bold">
+                      {user.fld_first_name + " " + user?.fld_last_name}
+                    </span>
+                  </span>
+                  <ChevronDown className="" size={15} />
+                </button>
+
+                <AnimatePresence>
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 mt-1 w-52 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
+                      <div className="px-3 py-2">
+                        <p className="font-semibold text-gray-800 text-center">
+                          {user.fld_first_name}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate w-full">
+                          {user.fld_email}
+                        </p>
+                      </div>
+                      <ul>
+                        <li
+                          className="flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+                          onClick={() => {
+                            logout();
+                            setUserDropdownOpen(false);
+                          }}
+                        >
+                          <LogOut className="mr-2" size={14} />
+                          Sign Out
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         ) : (

@@ -52,18 +52,19 @@ export default function MilestoneInfo({ taskId }) {
       </div>
       <div className=" max-h-[230px] overflow-y-auto pr-2 flex flex-col gap-2">
       {milestones.map((milestone) => (
-        <div key={milestone.benchmark_id} className="bg-gray-50 shadow px-2 py-1 rounded ">
+        <div key={milestone.benchmark_id} className="bg-gray-50 shadow px-2 py-2 rounded flex gap-2 items-center">
           <div
-            className={milestone.completed ? "text-green-600 text-[13px] font-medium" : "text-[13px]"}
+            className={milestone.completed ? "text-green-600 text-[13px] font-medium" : "text-[13px] leading-none"}
           >
             {milestone.name}
             {milestone.completed_by ? (
-              <span className="text-[12px] text-gray-500 ml-1">
+              <span className="text-[12px] text-gray-500 ml-1 leading-none">
                 [{milestone.completed_by}]
               </span>
             ) : null}
           </div>
-          <div className="text-gray-600 text-[12px]">
+          <span className="text-[13px] leading-none">|</span>
+          <div className="text-gray-600 text-[12px] leading-none">
             Deadline: {formatDate(milestone.deadline)}
           </div>
         </div>
