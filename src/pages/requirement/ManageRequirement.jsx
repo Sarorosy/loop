@@ -18,7 +18,7 @@ export default function ManageRequirement({ onClose }) {
   const fetchRequirements = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/helper/allrequirements", {
+      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/allrequirements", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageRequirement({ onClose }) {
     }
     try {
       const response = await fetch(
-        `https://loopback-r9kf.onrender.com/api/helper/requirement/delete/${selectedRequirement.id}`,
+        `https://loopback-n3to.onrender.com/api/helper/requirement/delete/${selectedRequirement.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

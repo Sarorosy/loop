@@ -1,5 +1,5 @@
 import { useAuth } from "../utils/idb.jsx";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import {
   LogOut,
@@ -17,15 +17,25 @@ import {
   BadgeDollarSign,
   FileQuestion,
   ChevronDown,
+  AtSign,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import ManageUser from "../pages/manageuser/ManageUser.jsx";
 import logo from "../assets/logo-new.png";
+import TaskDetails from "../pages/TaskDetails.jsx";
 
 // Dropdown Tab Component
 function TabDropdown({ title, icon: Icon, children }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="relative" ref={ref}>
@@ -83,7 +93,8 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (commentsRef.current && !commentsRef.current.contains(e.target))
+        setCommentsOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -99,6 +110,59 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const [notifications, setNotifications] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [selectedNotificationId, setSelectedNotificationId] = useState(null);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch(
+        "https://loopback-n3to.onrender.com/api/helper/notifications",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user?.id }),
+        }
+      );
+      const data = await res.json();
+      if (data.status) setNotifications(data.data);
+      else console.error("Error fetching notifications:", data.message);
+    } catch (err) {
+      console.error("Failed to fetch notifications", err);
+    } finally {
+    }
+  };
+
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [pathname]);
+
+  useEffect(() => {
+  const markNotificationAsRead = async () => {
+    if (!selectedNotificationId) return;
+
+    try {
+      const res = await fetch("https://loopback-n3to.onrender.com/api/helper/read-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notification_id: selectedNotificationId }),
+      });
+
+      const data = await res.json();
+      if (!data.status) {
+        console.error("Failed to mark notification as read:", data.message);
+      }
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
+    }
+  };
+
+  markNotificationAsRead();
+}, [selectedNotificationId]);
+
+
   return (
     <header className="bg-white text-[#092e46] shadow-md">
       <div className="flex items-center justify-between py-3 max-w-[1250px] mx-auto ">
@@ -113,14 +177,14 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setCommentsOpen(!commentsOpen)}
-                  className="relative p-2 rounded hover:bg-gray-100"
+                  className="relative p-2 rounded hover:bg-gray-100 border border-gray-200"
                 >
-                  <MessageCircleQuestion
-                    size={18}
+                  <AtSign
+                    size={15}
                     className="text-gray-600 hover:text-gray-800"
                   />
                   <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">
-                    3
+                    {notifications.length}
                   </span>
                 </button>
 
@@ -128,21 +192,57 @@ export default function Header() {
                 {commentsOpen && (
                   <div
                     ref={commentsRef}
-                    className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded shadow z-50 p-3 text-[13px]"
+                    className="absolute -right-48 mt-2 w-96 bg-white border border-gray-300 rounded shadow z-50 p-3 text-[13px]"
                   >
                     <div className="font-semibold text-gray-800 mb-2">
                       Comments
                     </div>
-                    <ul className="space-y-1 max-h-40 overflow-y-auto">
-                      <li className="text-gray-700 text-sm">
-                        Comment 1: Feedback pending
-                      </li>
-                      <li className="text-gray-700 text-sm">
-                        Comment 2: Deadline updated
-                      </li>
-                      <li className="text-gray-700 text-sm">
-                        Comment 3: Please review
-                      </li>
+                    <ul className="space-y-2 max-h-60 overflow-y-auto px-1">
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => {
+                          const formattedTime = new Date(
+                            notification.created_at
+                          ).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          });
+
+                          return (
+                            <li
+                              key={notification.id}
+                              onClick={() => {
+                                setSelectedTaskId(notification.task_id);
+                                setSelectedNotificationId(notification.id);
+                                setNotifications((prev) =>
+                                  prev.filter((n) => n.id !== notification.id)
+                                );
+                              }}
+                              className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all duration-150 rounded-md px-3 py-2 cursor-pointer"
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <p className="text-sm text-gray-800 leading-snug">
+                                    <span className="font-semibold text-gray-900">
+                                      {notification.user_name}
+                                    </span>{" "}
+                                    {notification.message}
+                                  </p>
+                                </div>
+                                <div className="text-xs text-gray-400 ml-2 whitespace-nowrap">
+                                  {formattedTime}
+                                </div>
+                              </div>
+                            </li>
+                          );
+                        })
+                      ) : (
+                        <li className="text-sm text-gray-500 px-3 py-2 bg-gray-50 border border-dashed border-gray-200 rounded-md text-center">
+                          No notifications found
+                        </li>
+                      )}
                     </ul>
                   </div>
                 )}
@@ -325,6 +425,15 @@ export default function Header() {
       <AnimatePresence>
         {openedTab === "users" && (
           <ManageUser onClose={() => setOpenedTab(null)} />
+        )}
+
+        {selectedTaskId && (
+          <TaskDetails
+            taskId={selectedTaskId}
+            onClose={() => {
+              setSelectedTaskId(null);
+            }}
+          />
         )}
       </AnimatePresence>
     </header>

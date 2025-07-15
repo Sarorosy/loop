@@ -18,7 +18,7 @@ export default function ManageCurrency({ onClose }) {
   const fetchCurrency = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/helper/allcurrency", {
+      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/allcurrency", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageCurrency({ onClose }) {
     }
     try {
       const response = await fetch(
-        `https://loopback-r9kf.onrender.com/api/helper/currency/delete/${selectedCurrency.id}`,
+        `https://loopback-n3to.onrender.com/api/helper/currency/delete/${selectedCurrency.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

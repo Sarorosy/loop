@@ -55,18 +55,15 @@ export default function EditTask() {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/tasks/details",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            task_id: taskId,
-          }),
-        }
-      );
+      const response = await fetch("https://loopback-n3to.onrender.com/api/tasks/details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          task_id: taskId,
+        }),
+      });
 
       if (response.ok) {
         const result = await response.json();
@@ -133,10 +130,10 @@ export default function EditTask() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
+          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestonesList((await milestonesRes.json())?.data || []);
@@ -361,14 +358,11 @@ export default function EditTask() {
       });
 
       // Make API call
-      const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/tasks/update",
-        {
-          method: "POST",
-          body: formDataToSend,
-          // Don't set Content-Type header - let browser set it with boundary for FormData
-        }
-      );
+      const response = await fetch("https://loopback-n3to.onrender.com/api/tasks/update", {
+        method: "POST",
+        body: formDataToSend,
+        // Don't set Content-Type header - let browser set it with boundary for FormData
+      });
 
       const result = await response.json();
 
@@ -568,10 +562,14 @@ export default function EditTask() {
                     classNamePrefix="task-filter"
                     styles={customSelectStyles}
                     isMulti
-                    options={selectOptions(users, "fld_first_name")}
-                    value={selectOptions(users, "fld_first_name").filter((u) =>
-                      formData.followers.includes(u.value)
+                    options={selectOptions(
+                      users.filter((u) => u.id !== user?.id), // exclude current user
+                      "fld_first_name"
                     )}
+                    value={selectOptions(
+                      users.filter((u) => u.id !== user?.id),
+                      "fld_first_name"
+                    ).filter((u) => formData.followers.includes(u.value))}
                     onChange={(selected) =>
                       setFormData({
                         ...formData,
@@ -623,32 +621,30 @@ export default function EditTask() {
                   /> */}
 
                   <Editor
-                  apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
-                  onInit={(evt, editor) => (editorRef.current = editor)}
-                  onEditorChange={(newContent) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      description: newContent,
-                    }))
-                  }
-                  initialValue={formData.description}
-                  init={{
-                    height: 500,
-                    menubar: true,
-                    plugins: [
-                      "advlist autolink lists link image charmap print preview anchor",
-                      "searchreplace visualblocks code fullscreen",
-                      "insertdatetime media table paste code help wordcount",
-                    ],
-                    toolbar:
-                      "undo redo | formatselect | bold italic backcolor | \
+                    apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
+                    onInit={(evt, editor) => (editorRef.current = editor)}
+                    onEditorChange={(newContent) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: newContent,
+                      }))
+                    }
+                    initialValue={formData.description}
+                    init={{
+                      height: 500,
+                      menubar: true,
+                      plugins: [
+                        "advlist autolink lists link image charmap print preview anchor",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime media table paste code help wordcount",
+                      ],
+                      toolbar:
+                        "undo redo | formatselect | bold italic backcolor | \
                             alignleft aligncenter alignright alignjustify | \
                             bullist numlist outdent indent | removeformat | help",
-                  }}
-                />
+                    }}
+                  />
                 </div>
-
-                
               </div>
             </div>
 
@@ -896,15 +892,15 @@ export default function EditTask() {
                           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div> */}
-                    <div className="mt-3 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => removeMilestone(i)}
-                        className="bg-red-600 hover:bg-red-700 p-2 rounded text-white mt-2"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => removeMilestone(i)}
+                          className="bg-red-600 hover:bg-red-700 p-2 rounded text-white mt-2"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

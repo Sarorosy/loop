@@ -38,7 +38,7 @@ export default function AddProject({ onClose, after }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/project/create`, {
+      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/project/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

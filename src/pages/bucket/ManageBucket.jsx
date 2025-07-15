@@ -18,7 +18,7 @@ export default function ManageBucket({ onClose }) {
   const fetchBuckets = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets", {
+      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageBucket({ onClose }) {
     }
     try {
       const response = await fetch(
-        `https://loopback-r9kf.onrender.com/api/helper/bucket/delete/${selectedBucket?.id}`,
+        `https://loopback-n3to.onrender.com/api/helper/bucket/delete/${selectedBucket?.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
