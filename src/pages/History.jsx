@@ -15,7 +15,7 @@ export default function History({ taskId }) {
   }, [taskId]);
 
   const fetchRemarks = async () => {
-    const res = await fetch("https://loopback-n3to.onrender.com/api/helper/getRemarks", {
+    const res = await fetch("http://localhost:5000/api/helper/getRemarks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task_id: taskId }),
@@ -25,7 +25,7 @@ export default function History({ taskId }) {
   };
 
   const fetchHistory = async () => {
-    const res = await fetch("https://loopback-n3to.onrender.com/api/helper/getHistory", {
+    const res = await fetch("http://localhost:5000/api/helper/getHistory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task_id: taskId }),
@@ -35,7 +35,7 @@ export default function History({ taskId }) {
   };
 
   const fetchReminders = async () => {
-    const res = await fetch("https://loopback-n3to.onrender.com/api/helper/getReminders", {
+    const res = await fetch("http://localhost:5000/api/helper/getReminders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task_id: taskId, user_id: user?.id }),

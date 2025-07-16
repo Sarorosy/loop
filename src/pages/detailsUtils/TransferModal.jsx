@@ -12,7 +12,7 @@ export default function TransferModal({ taskId, onClose, after }) {
 
   const fetchAllUsers = async () => {
     try {
-      const response = await fetch("https://loopback-n3to.onrender.com/api/users/allusers", {
+      const response = await fetch("http://localhost:5000/api/users/allusers", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export default function TransferModal({ taskId, onClose, after }) {
     }
 
     try {
-      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/transferTask", {
+      const response = await fetch("http://localhost:5000/api/helper/transferTask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

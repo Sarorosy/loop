@@ -27,7 +27,7 @@ const AssignQuery = ({ query, onClose }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("https://loopback-n3to.onrender.com/api/users/all");
+        const res = await fetch("http://localhost:5000/api/users/all");
         const data = await res.json();
         if (res.ok) {
           const userOptions =
@@ -62,7 +62,7 @@ const AssignQuery = ({ query, onClose }) => {
 
     const fetchTeams = async () => {
       try {
-        const res = await fetch("https://loopback-n3to.onrender.com/api/helper/myteams", {
+        const res = await fetch("http://localhost:5000/api/helper/myteams", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: selectedUser.value }),
@@ -103,7 +103,7 @@ const AssignQuery = ({ query, onClose }) => {
     if (!description.trim()) return toast.error("Please enter a description");
 
     try {
-      const res = await fetch("https://loopback-n3to.onrender.com/api/helper/assignTask", {
+      const res = await fetch("http://localhost:5000/api/helper/assignTask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

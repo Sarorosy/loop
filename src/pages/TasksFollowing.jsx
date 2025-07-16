@@ -11,6 +11,8 @@ import { Filter, Layers2, RefreshCcw, User2 } from "lucide-react";
 import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
 import AddTags from "./detailsUtils/AddTags";
 import TaskLoader from "../utils/TaskLoader";
+import Sort from "./Sort";
+import ReminderModal from "./ReminderModal";
 
 function TasksFollowing() {
   const { user } = useAuth();
@@ -22,23 +24,23 @@ function TasksFollowing() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
-  taskNameOrId: "",
-  assignedTo: "",
-  milestone: "",
-  milestoneStatus: "",
-  milestoneCompletionStatus: "",
-  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
-  fromDate: "",      // for custom filter
-  toDate: "",
-  days: "",
-  dueDate: "",
-  bucketName: "",
-  taskStatus: "",
-  assignedBy: "",
-  projectId: "",
-  queryStatus: "",
-  paymentRange: "",
-});
+    taskNameOrId: "",
+    assignedTo: "",
+    milestone: "",
+    milestoneStatus: "",
+    milestoneCompletionStatus: "",
+    createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+    fromDate: "", // for custom filter
+    toDate: "",
+    days: "",
+    dueDate: "",
+    bucketName: "",
+    taskStatus: "",
+    assignedBy: "",
+    projectId: "",
+    queryStatus: "",
+    paymentRange: "",
+  });
 
   DataTable.use(DT);
 
@@ -48,7 +50,7 @@ function TasksFollowing() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-n3to.onrender.com/api/tasks/following", {
+      const res = await fetch("http://localhost:5000/api/tasks/following", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -86,10 +88,10 @@ function TasksFollowing() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -110,6 +112,11 @@ function TasksFollowing() {
       render: (data, type, row) => `
         <div class="truncate !w-50">
           <small>${row.fld_unique_task_id || "-"}</small>
+          <span 
+  class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
+>
+  <i class="fa fa-clone" aria-hidden="true"></i>
+</span>
           <br>
            <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
              row.fld_title || "-"
@@ -245,34 +252,37 @@ function TasksFollowing() {
       },
     },
     {
-  title: "Created Date",
-  data: "fld_addedon",
-  orderable: true,
-  render: (data) => {
-    if (!data) return "-";
+      title: "Created Date",
+      data: "fld_addedon",
+      orderable: true,
+      render: (data) => {
+        if (!data) return "-";
 
-    const date = new Date(data);
-    if (isNaN(date)) return "-";
+        const date = new Date(data);
+        if (isNaN(date)) return "-";
 
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const year = date.getFullYear();
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = date.toLocaleString("en-US", { month: "short" });
+        const year = date.getFullYear();
 
-    const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    const displayHours = (hours % 12 || 12).toString();
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const displayHours = (hours % 12 || 12).toString();
 
-    return `<div class="text-[11px]">${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}</div>`;
-  },
-},
+        return `<div class="text-[11px]">${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}</div>`;
+      },
+    },
     {
       title: "Assigned By",
       data: null,
       orderable: false,
       render: (data, type, row) => `
+      <div class="flex items-center">
+      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded w-6 h-6 text-[12px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
         <div>
           ${row.added_by_name || "-"}
+        </div>
         </div>
       `,
     },
@@ -286,6 +296,24 @@ function TasksFollowing() {
   const handleViewButtonClick = (task) => {
     setSelectedTask(task);
     setDetailsOpen(true);
+  };
+
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const handleReminderButtonClick = (task) => {
+    setSelectedTask(task);
+    setReminderOpen(true);
+  };
+
+  const handleCopyButtonClick = (task) => {
+    navigator.clipboard
+      .writeText(task.fld_unique_task_id)
+      .then(() => {
+        toast.success("Copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        toast.error("Copy failed.");
+      });
   };
 
   const [filtersVisible, setFiltersVisible] = useState(false);
@@ -309,141 +337,165 @@ function TasksFollowing() {
 
   const resetFilters = () => {
     setFilters({
-  taskNameOrId: "",
-  assignedTo: "",
-  milestone: "",
-  milestoneStatus: "",
-  milestoneCompletionStatus: "",
-  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
-  fromDate: "",      // for custom filter
-  toDate: "",
-  days: "",
-  dueDate: "",
-  bucketName: "",
-  taskStatus: "",
-  assignedBy: "",
-  projectId: "",
-  queryStatus: "",
-  paymentRange: "",
-});
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
     fetchTasks(user, setTasks, setLoading, {
-  taskNameOrId: "",
-  assignedTo: "",
-  milestone: "",
-  milestoneStatus: "",
-  milestoneCompletionStatus: "",
-  createdDate: "",   // stores today/yesterday/7days/etc. or "custom"
-  fromDate: "",      // for custom filter
-  toDate: "",
-  days: "",
-  dueDate: "",
-  bucketName: "",
-  taskStatus: "",
-  assignedBy: "",
-  projectId: "",
-  queryStatus: "",
-  paymentRange: "",
-});
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
   };
 
   return (
-        <div className="">
-          <div className="text-xl font-bold mb-4 flex items-center justify-between">
-            Following Tasks
-            <div className="flex gap-3">
-              <button
-                onClick={resetFilters}
-                className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
-              >
-                <RefreshCcw size={11} className="text-gray-700" />
-              </button>
-            </div>
-          </div>
-
-          {loading ? (
-            <div><TaskLoader rows={10} /></div>
-          ) : tasks.length === 0 ? (
-            <div>No tasks found.</div>
-          ) : (
-            <div className="bg-white w-full f-13 mt-5">
-              <div className="table-scrollable">
-                <DataTable
-                  data={tasks}
-                  columns={columns}
-                  options={{
-                    pageLength: 50,
-                    ordering: false,
-                    createdRow: (row, data) => {
-                      if (data.fld_task_status === "Late") {
-                        $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
-                      }
-                      if (data.fld_task_status === "Completed") {
-                        $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
-                      }
-
-                      $(row)
-                        .find(".view-btn")
-                        .on("click", () => handleViewButtonClick(data));
-
-                      $(row)
-                        .find(".tag-btn")
-                        .on("click", () => {
-                          setSelectedTags(data.task_tag || "");
-                          setSelectedTask(data);
-                          setUpdateTagModalOpen(true);
-                        });
-
-                      $(row)
-                        .find(".bucket-btn")
-                        .on("click", () => {
-                          setFilters({
-                            ...filters,
-                            bucketName: data?.fld_bucket_name || "",
-                          });
-                          setTimeout(() => {
-                            fetchTasks(user, setTasks, setLoading, {
-                              ...filters,
-                              bucketName: data?.fld_bucket_name || "",
-                            });
-                          }, 300);
-                        });
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <AnimatePresence>
-            {detailsOpen && selectedTask && (
-              <TaskDetails
-                taskId={selectedTask?.task_id}
-                onClose={() => {
-                  setDetailsOpen(false);
-                }}
-              />
-            )}
-
-            {updateTagModalOpen && selectedTask && (
-              <AddTags
-                taskId={selectedTask.task_id}
-                tags={selectedTags?.split(",") ?? []}
-                onClose={() => {
-                  setUpdateTagModalOpen(false);
-                }}
-                after={(response) => {
-                  // response.tag_names contains the updated tag names
-                  setTasks((prevTasks) =>
-                    prevTasks.map((task) =>
-                      task.task_id == selectedTask.task_id
-                        ? { ...task, tag_names: response.tag_names, task_tag : response.tag_ids }
-                        : task
-                    )
-                  );
-                }}
-              />
-            )}
-          </AnimatePresence>
+    <div className="">
+      <div className="text-xl font-bold mb-4 flex items-center justify-between">
+        Following Tasks
+        <div className="flex gap-3">
+          <Sort setTasks={setTasks} />
+          <button
+            onClick={resetFilters}
+            className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
+          >
+            <RefreshCcw size={11} className="text-gray-700" />
+          </button>
         </div>
+      </div>
+
+      {loading ? (
+        <div>
+          <TaskLoader rows={10} />
+        </div>
+      ) : tasks.length === 0 ? (
+        <div>No tasks found.</div>
+      ) : (
+        <div className="bg-white w-full f-13 mt-5">
+          <div className="table-scrollable">
+            <DataTable
+              data={tasks}
+              columns={columns}
+              options={{
+                pageLength: 50,
+                ordering: false,
+                createdRow: (row, data) => {
+                  if (data.fld_task_status === "Late") {
+                    $(row).css("background-color", "#fee2e2"); // light red (same as Tailwind bg-red-100)
+                  }
+                  if (data.fld_task_status === "Completed") {
+                    $(row).css("background-color", "#DFF7C5FF"); // light red (same as Tailwind bg-red-100)
+                  }
+
+                  $(row)
+                    .find(".view-btn")
+                    .on("click", () => handleViewButtonClick(data));
+
+                  $(row)
+                    .find(".reminder-btn")
+                    .on("click", () => handleReminderButtonClick(data));
+
+                  $(row)
+                      .find(".copy-btn")
+                      .on("click", () => handleCopyButtonClick(data));
+
+                  $(row)
+                    .find(".tag-btn")
+                    .on("click", () => {
+                      setSelectedTags(data.task_tag || "");
+                      setSelectedTask(data);
+                      setUpdateTagModalOpen(true);
+                    });
+
+                  $(row)
+                    .find(".bucket-btn")
+                    .on("click", () => {
+                      setFilters({
+                        ...filters,
+                        bucketName: data?.fld_bucket_name || "",
+                      });
+                      setTimeout(() => {
+                        fetchTasks(user, setTasks, setLoading, {
+                          ...filters,
+                          bucketName: data?.fld_bucket_name || "",
+                        });
+                      }, 300);
+                    });
+                },
+              }}
+            />
+          </div>
+        </div>
+      )}
+      <AnimatePresence>
+        {detailsOpen && selectedTask && (
+          <TaskDetails
+            taskId={selectedTask?.task_id}
+            onClose={() => {
+              setDetailsOpen(false);
+            }}
+          />
+        )}
+
+        {selectedTask && reminderOpen && (
+          <ReminderModal
+            taskId={selectedTask.task_id}
+            taskUniqueId={selectedTask.fld_unique_task_id}
+            onClose={() => {
+              setReminderOpen(false);
+            }}
+          />
+        )}
+        {updateTagModalOpen && selectedTask && (
+          <AddTags
+            taskId={selectedTask.task_id}
+            tags={selectedTags?.split(",") ?? []}
+            onClose={() => {
+              setUpdateTagModalOpen(false);
+            }}
+            after={(response) => {
+              // response.tag_names contains the updated tag names
+              setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                  task.task_id == selectedTask.task_id
+                    ? {
+                        ...task,
+                        tag_names: response.tag_names,
+                        task_tag: response.tag_ids,
+                      }
+                    : task
+                )
+              );
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

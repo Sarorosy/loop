@@ -24,6 +24,9 @@ import Select from "react-select";
 import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
 import AddTags from "./detailsUtils/AddTags";
 import TaskLoader from "../utils/TaskLoader";
+import ReminderModal from "./ReminderModal";
+import Sort from "./Sort";
+import { useParams } from "react-router-dom";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -55,13 +58,15 @@ function Dashboard() {
 
   DataTable.use(DT);
 
+  const { task_id } = useParams();
+
   // Separate function outside the component
   const fetchTasks = async (user, setTasks, setLoading, filterParam) => {
     //if (!user) return;
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-n3to.onrender.com/api/tasks/get", {
+      const res = await fetch("http://localhost:5000/api/tasks/get", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -99,10 +104,10 @@ function Dashboard() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -123,10 +128,18 @@ function Dashboard() {
       render: (data, type, row) => `
         <div class="truncate !w-50">
           <small>${row.fld_unique_task_id || "-"}</small>
+           <span 
+  class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
+>
+  <i class="fa fa-clone" aria-hidden="true"></i>
+</span>
           <br>
+          
            <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
              row.fld_title || "-"
            }</div>
+          
+
         </div>
       `,
     },
@@ -288,8 +301,11 @@ function Dashboard() {
       data: null,
       orderable: false,
       render: (data, type, row) => `
+      <div class="flex items-center">
+      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded w-6 h-6 text-[12px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
         <div>
           ${row.added_by_name || "-"}
+        </div>
         </div>
       `,
     },
@@ -299,13 +315,54 @@ function Dashboard() {
   const [updateTagModalOpen, setUpdateTagModalOpen] = useState(false);
 
   const [selectedTask, setSelectedTask] = useState(null);
+
   const [detailsOpen, setDetailsOpen] = useState(false);
   const handleViewButtonClick = (task) => {
     setSelectedTask(task);
     setDetailsOpen(true);
   };
 
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const handleReminderButtonClick = (task) => {
+    setSelectedTask(task);
+    setReminderOpen(true);
+  };
+
+  const handleCopyButtonClick = (task) => {
+    navigator.clipboard
+      .writeText(task.fld_unique_task_id)
+      .then(() => {
+        toast.success("Copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        toast.error("Copy failed.");
+      });
+  };
+
   const [filtersVisible, setFiltersVisible] = useState(false);
+
+  const decodeBase64Url = (str) => {
+  try {
+    // Add padding if needed
+    const padded = str.padEnd(str.length + (4 - (str.length % 4)) % 4, '=');
+    const base64 = padded.replace(/-/g, '+').replace(/_/g, '/');
+    return atob(base64);
+  } catch (err) {
+    console.error("Failed to decode task_id:", err);
+    return null;
+  }
+};
+
+useEffect(() => {
+  if (task_id) {
+    const decoded = decodeBase64Url(task_id); 
+    if (decoded) {
+      setSelectedTask({ task_id: decoded });
+      setDetailsOpen(true);
+    }
+  }
+}, [task_id]);
 
   // Initialize DataTable
   useEffect(() => {
@@ -368,6 +425,7 @@ function Dashboard() {
       <div className="text-xl font-bold mb-4 flex items-center justify-between">
         <h2 class="text-[16px] font-semibold">Dashboard</h2>
         <div className="flex gap-3">
+          <Sort setTasks={setTasks} />
           <button
             onClick={resetFilters}
             className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
@@ -543,40 +601,34 @@ function Dashboard() {
             />
           </div>
           {filters.createdDate === "custom" && (
-            
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1">
-                  From Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.fromDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, fromDate: e.target.value })
-                  }
-                />
-              </div>
-              
-            
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1">
+                From Date
+              </label>
+              <input
+                type="date"
+                className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                value={filters.fromDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, fromDate: e.target.value })
+                }
+              />
+            </div>
           )}
           {filters.createdDate === "custom" && (
-            
-              
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1">
-                  To Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.toDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, toDate: e.target.value })
-                  }
-                />
-              </div>
-            
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1">
+                To Date
+              </label>
+              <input
+                type="date"
+                className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                value={filters.toDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, toDate: e.target.value })
+                }
+              />
+            </div>
           )}
 
           <div className="flex flex-col">
@@ -835,7 +887,9 @@ function Dashboard() {
           <TaskLoader rows={10} />
         </div>
       ) : tasks.length === 0 ? (
-        <div className="text-center py-2 text-gray-500 bg-red-50 ">No tasks found.</div>
+        <div className="text-center py-2 text-gray-500 bg-red-50 ">
+          No tasks found.
+        </div>
       ) : (
         <div className="bg-white w-full f-13 mt-5">
           <div className="table-scrollable">
@@ -873,6 +927,12 @@ function Dashboard() {
                     .on("click", () => handleViewButtonClick(data));
 
                   $(row)
+                    .find(".reminder-btn")
+                    .on("click", () => handleReminderButtonClick(data));
+                  $(row)
+                    .find(".copy-btn")
+                    .on("click", () => handleCopyButtonClick(data));
+                  $(row)
                     .find(".tag-btn")
                     .on("click", () => {
                       setSelectedTags(data.tag_names || "");
@@ -894,6 +954,16 @@ function Dashboard() {
             }}
           />
         )}
+
+        {selectedTask && reminderOpen && (
+          <ReminderModal
+            taskId={selectedTask.task_id}
+            taskUniqueId={selectedTask.fld_unique_task_id}
+            onClose={() => {
+              setReminderOpen(false);
+            }}
+          />
+        )}
         {selectedTask && updateTagModalOpen && (
           <AddTags
             taskId={selectedTask?.task_id}
@@ -906,7 +976,11 @@ function Dashboard() {
               setTasks((prevTasks) =>
                 prevTasks.map((task) =>
                   task.task_id === selectedTask.task_id
-                    ? { ...task, tag_names: response.tag_names, task_tag : response.tag_ids }
+                    ? {
+                        ...task,
+                        tag_names: response.tag_names,
+                        task_tag: response.tag_ids,
+                      }
                     : task
                 )
               );

@@ -32,7 +32,7 @@ export default function AddOtherTags({ onClose, after }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://loopback-n3to.onrender.com/api/helper/othertags/create`,
+        `http://localhost:5000/api/helper/othertags/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

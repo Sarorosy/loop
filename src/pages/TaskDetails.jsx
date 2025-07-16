@@ -18,6 +18,8 @@ import {
   ChevronDown,
   ChevronUp,
   Paperclip,
+  Copy,
+  Bell,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import History from "./History";
@@ -28,6 +30,7 @@ import toast from "react-hot-toast";
 import MilestoneInfo from "./detailsUtils/MilestoneInfo";
 import TransferModal from "./detailsUtils/TransferModal";
 import UpdateTaskProgress from "./UpdateTaskProgress";
+import ReminderModal from "./ReminderModal";
 
 export default function TaskDetails({ taskId, onClose }) {
   const [task, setTask] = useState(null);
@@ -50,7 +53,7 @@ export default function TaskDetails({ taskId, onClose }) {
     }
     try {
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/addremarks",
+        "http://localhost:5000/api/helper/addremarks",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -80,7 +83,7 @@ export default function TaskDetails({ taskId, onClose }) {
     try {
       setLoading(true);
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/tasks/details",
+        "http://localhost:5000/api/tasks/details",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -106,7 +109,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsOnGoing = async () => {
     try {
       const response = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/markAsOngoing",
+        "http://localhost:5000/api/helper/markAsOngoing",
         {
           method: "POST",
           headers: {
@@ -132,10 +135,50 @@ export default function TaskDetails({ taskId, onClose }) {
     }
   };
 
+  const handleCopyButtonClick = (task) => {
+    navigator.clipboard
+      .writeText(task.fld_unique_task_id)
+      .then(() => {
+        toast.success("Copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        toast.error("Copy failed.");
+      });
+  };
+
+  const handleCopyLink = (task) => {
+  if (!task?.id) {
+    toast.error("Task ID is missing.");
+    return;
+  }
+
+  const encodeBase64Url = (str) => {
+    return btoa(str)
+      .replace(/\+/g, '-')   // URL safe
+      .replace(/\//g, '_')   // URL safe
+      .replace(/=+$/, '');   // remove padding
+  };
+
+  const encodedId = encodeBase64Url(String(task.id));
+  const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
+
+  navigator.clipboard
+    .writeText(link)
+    .then(() => {
+      toast.success("Link copied!");
+    })
+    .catch((err) => {
+      console.error("Failed to copy link: ", err);
+      toast.error("Copy failed.");
+    });
+};
+
+
   const handleMarkAsCompleted = async () => {
     try {
       const response = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/markAsCompleted",
+        "http://localhost:5000/api/helper/markAsCompleted",
         {
           method: "POST",
           headers: {
@@ -160,6 +203,11 @@ export default function TaskDetails({ taskId, onClose }) {
       toast.error("Error while completing task");
     }
   };
+
+  const [reminderOpen, setReminderOpen] = useState(false);
+    const handleReminderButtonClick = () => {
+      setReminderOpen(true);
+    };
 
   {
     !loading && !task && (
@@ -313,8 +361,13 @@ export default function TaskDetails({ taskId, onClose }) {
                       <h1 className="text-[15px] font-semibold text-gray-900">
                         View Details - {task.fld_title}
                       </h1>
-                      <p className="text-[13px] text-gray-600">
-                        {task.fld_unique_task_id}
+                      <p className="text-[13px] text-gray-600 flex items-center">
+                        {task.fld_unique_task_id} 
+                        <Copy data-tooltip-id="my-tooltip" data-tooltip-content="Copy Task Id" size={22} className="cursor-pointer text-blue-500 hover:bg-gray-100 p-1 rounded ml-2" onClick={()=>{handleCopyButtonClick(task)}}/>
+                        <div className="mx-2 w-px h-5 bg-gray-300 inline-block align-middle" />
+                        <Link data-tooltip-id="my-tooltip" data-tooltip-content="Copy Task Link" size={22} className="cursor-pointer text-blue-500 hover:bg-gray-100 p-1 rounded" onClick={()=>{handleCopyLink(task)}}/>
+                        <div className="mx-2 w-px h-5 bg-gray-300 inline-block align-middle" />
+                        <Bell data-tooltip-id="my-tooltip" data-tooltip-content="Add Reminder" size={22} className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded" onClick={()=>{setReminderOpen(true)}}/>
                       </p>
                     </div>
                   </div>
@@ -849,6 +902,16 @@ export default function TaskDetails({ taskId, onClose }) {
             after={fetchTaskDetails}
             onClose={() => {
               setUpdateTaskModalOpen(false);
+            }}
+          />
+        )}
+
+        { reminderOpen && (
+          <ReminderModal
+            taskId={task.id}
+            taskUniqueId={task.fld_unique_task_id}
+            onClose={() => {
+              setReminderOpen(false);
             }}
           />
         )}

@@ -9,7 +9,7 @@ export default function MilestoneInfo({ taskId }) {
   const fetchMilestones = async () => {
     try {
       const response = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/getTaskMilestones",
+        "http://localhost:5000/api/helper/getTaskMilestones",
         {
           method: "POST",
           headers: {
@@ -65,7 +65,7 @@ export default function MilestoneInfo({ taskId }) {
           </div>
           <span className="text-[13px] leading-none">|</span>
           <div className="text-gray-600 text-[12px] leading-none">
-            Deadline: {formatDate(milestone.deadline)}
+            Deadline: {milestone.deadline ? formatDate(milestone.deadline) : "No deadline set"}
           </div>
         </div>
       ))}

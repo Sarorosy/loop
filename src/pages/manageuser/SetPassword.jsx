@@ -18,7 +18,7 @@ const SetPassword = () => {
     const verifyToken = async () => {
       try {
         const res = await fetch(
-          `https://loopback-n3to.onrender.com/api/users/verify_password_token`,
+          `http://localhost:5000/api/users/verify_password_token`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -51,7 +51,7 @@ const SetPassword = () => {
 
     try {
         setSubmitting(true)
-      const res = await fetch("https://loopback-n3to.onrender.com/api/users/set_password", {
+      const res = await fetch("http://localhost:5000/api/users/set_password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),

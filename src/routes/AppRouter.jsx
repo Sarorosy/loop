@@ -18,7 +18,7 @@ import ManageRequirement from "../pages/requirement/ManageRequirement";
 import ManageCurrency from "../pages/currency/ManageCurrency";
 import ManageOtherTags from "../pages/othertags/ManageOtherTags";
 import MyTasks from "../pages/MyTasks";
-import TeamTasks from "../pages/Teamtasks";
+import TeamTasks from "../pages/TeamTasks";
 import TasksCreatedByMe from "../pages/TasksCreatedByMe";
 import TasksFollowing from "../pages/TasksFollowing";
 import ManageQuery from "../pages/query/ManageQuery";
@@ -39,7 +39,11 @@ export default function AppRouter() {
 
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
+
             <Route path="/" element={<Dashboard />} />
+            <Route path="/admin/view_details/:task_id" element={<Dashboard />} />
+
+            
             <Route path="/tasks/my" element={<MyTasks />} />
             <Route path="/tasks/team" element={<TeamTasks />} />
             <Route path="/tasks/created-by-me" element={<TasksCreatedByMe />} />

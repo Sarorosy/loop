@@ -31,7 +31,7 @@ export default function ManageTeams({ onClose }) {
     }
 
       const response = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/allteams",
+        "http://localhost:5000/api/helper/allteams",
         {
           method: "GET",
           headers: {
@@ -193,7 +193,7 @@ export default function ManageTeams({ onClose }) {
     
     try {
       const response = await fetch(
-        `https://loopback-n3to.onrender.com/api/helper/team/delete/${selectedTeam?.id}`,
+        `http://localhost:5000/api/helper/team/delete/${selectedTeam?.id}`,
         {
           method: "DELETE",
           headers: {

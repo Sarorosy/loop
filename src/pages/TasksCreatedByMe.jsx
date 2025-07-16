@@ -26,6 +26,8 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { formatDate, calculateTaskProgress } from "../helpers/CommonHelper";
 import AddTags from "./detailsUtils/AddTags";
 import TaskLoader from "../utils/TaskLoader";
+import Sort from "./Sort";
+import ReminderModal from "./ReminderModal";
 
 function TasksCreatedByMe() {
   const { user } = useAuth();
@@ -64,7 +66,7 @@ function TasksCreatedByMe() {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/tasks/getmycreatedtasks",
+        "http://localhost:5000/api/tasks/getmycreatedtasks",
         {
           method: "POST",
           headers: {
@@ -104,10 +106,10 @@ function TasksCreatedByMe() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -128,6 +130,11 @@ function TasksCreatedByMe() {
       render: (data, type, row) => `
         <div class="truncate !w-50">
           <small>${row.fld_unique_task_id || "-"}</small>
+          <span 
+  class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
+>
+  <i class="fa fa-clone" aria-hidden="true"></i>
+</span>
           <br>
            <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
              row.fld_title || "-"
@@ -289,8 +296,11 @@ function TasksCreatedByMe() {
       data: null,
       orderable: false,
       render: (data, type, row) => `
+      <div class="flex items-center">
+      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded w-6 h-6 text-[12px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
         <div>
           ${row.added_by_name || "-"}
+        </div>
         </div>
       `,
     },
@@ -317,6 +327,23 @@ function TasksCreatedByMe() {
     setSelectedTask(task);
     setDetailsOpen(true);
   };
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const handleReminderButtonClick = (task) => {
+    setSelectedTask(task);
+    setReminderOpen(true);
+  };
+
+  const handleCopyButtonClick = (task) => {
+    navigator.clipboard
+      .writeText(task.fld_unique_task_id)
+      .then(() => {
+        toast.success("Copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        toast.error("Copy failed.");
+      });
+  };
 
   const navigate = useNavigate();
   const handleEditButtonClick = (task) => {
@@ -334,7 +361,7 @@ function TasksCreatedByMe() {
       return;
     }
     try {
-      const response = await fetch("https://loopback-n3to.onrender.com/api/tasks/delete", {
+      const response = await fetch("http://localhost:5000/api/tasks/delete", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -419,6 +446,7 @@ function TasksCreatedByMe() {
       <div className="text-xl font-bold mb-4 flex items-center justify-between">
         Tasks Created By Me
         <div className="flex gap-3">
+          <Sort setTasks={setTasks} />
           <button
             onClick={resetFilters}
             className="bg-gray-50 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
@@ -499,40 +527,34 @@ function TasksCreatedByMe() {
             />
           </div>
           {filters.createdDate === "custom" && (
-            
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1">
-                  From Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.fromDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, fromDate: e.target.value })
-                  }
-                />
-              </div>
-              
-            
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1">
+                From Date
+              </label>
+              <input
+                type="date"
+                className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                value={filters.fromDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, fromDate: e.target.value })
+                }
+              />
+            </div>
           )}
           {filters.createdDate === "custom" && (
-            
-              
-              <div className="flex flex-col">
-                <label className="text-[11px] font-medium text-gray-600 mb-1">
-                  To Date
-                </label>
-                <input
-                  type="date"
-                  className="px-2 py-2.5 border rounded bg-white border-gray-300"
-                  value={filters.toDate}
-                  onChange={(e) =>
-                    setFilters({ ...filters, toDate: e.target.value })
-                  }
-                />
-              </div>
-            
+            <div className="flex flex-col">
+              <label className="text-[11px] font-medium text-gray-600 mb-1">
+                To Date
+              </label>
+              <input
+                type="date"
+                className="px-2 py-2.5 border rounded bg-white border-gray-300"
+                value={filters.toDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, toDate: e.target.value })
+                }
+              />
+            </div>
           )}
 
           <div className="flex flex-col">
@@ -643,6 +665,10 @@ function TasksCreatedByMe() {
                     $(row)
                       .find(".view-btn")
                       .on("click", () => handleViewButtonClick(data));
+
+                    $(row)
+                      .find(".reminder-btn")
+                      .on("click", () => handleReminderButtonClick(data));
 
                     $(row)
                       .find(".edit-btn")
@@ -757,6 +783,10 @@ function TasksCreatedByMe() {
                     .on("click", () => handleDeleteButtonClick(data));
 
                   $(row)
+                      .find(".copy-btn")
+                      .on("click", () => handleCopyButtonClick(data));
+
+                  $(row)
                     .find(".tag-btn")
                     .on("click", () => {
                       setSelectedTags(data.task_tag || "");
@@ -778,6 +808,15 @@ function TasksCreatedByMe() {
             }}
           />
         )}
+        {selectedTask && reminderOpen && (
+          <ReminderModal
+            taskId={selectedTask.task_id}
+            taskUniqueId={selectedTask.fld_unique_task_id}
+            onClose={() => {
+              setReminderOpen(false);
+            }}
+          />
+        )}
 
         {deleteOpen && selectedTask && (
           <ConfirmationModal
@@ -791,24 +830,28 @@ function TasksCreatedByMe() {
         )}
 
         {updateTagModalOpen && selectedTask && (
-                  <AddTags
-                    taskId={selectedTask.task_id}
-                    tags={selectedTags?.split(",") ?? []}
-                    onClose={() => {
-                      setUpdateTagModalOpen(false);
-                    }}
-                    after={(response) => {
-                      // response.tag_names contains the updated tag names
-                      setTasks((prevTasks) =>
-                        prevTasks.map((task) =>
-                          task.task_id == selectedTask.task_id
-                            ? { ...task, tag_names: response.tag_names, task_tag : response.tag_ids }
-                            : task
-                        )
-                      );
-                    }}
-                  />
-                )}
+          <AddTags
+            taskId={selectedTask.task_id}
+            tags={selectedTags?.split(",") ?? []}
+            onClose={() => {
+              setUpdateTagModalOpen(false);
+            }}
+            after={(response) => {
+              // response.tag_names contains the updated tag names
+              setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                  task.task_id == selectedTask.task_id
+                    ? {
+                        ...task,
+                        tag_names: response.tag_names,
+                        task_tag: response.tag_ids,
+                      }
+                    : task
+                )
+              );
+            }}
+          />
+        )}
       </AnimatePresence>
     </div>
   );

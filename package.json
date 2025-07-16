@@ -18,6 +18,7 @@
     "datatables.net-responsive": "^3.0.5",
     "datatables.net-responsive-dt": "^3.0.5",
     "date-fns": "^4.1.0",
+    "firebase": "^11.10.0",
     "framer-motion": "^12.19.2",
     "idb-keyval": "^6.2.2",
     "jquery": "^3.7.1",

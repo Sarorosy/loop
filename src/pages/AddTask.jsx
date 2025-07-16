@@ -46,10 +46,10 @@ export default function AddTask() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("http://localhost:5000/api/helper/allbuckets"),
+          fetch("http://localhost:5000/api/helper/allbenchmarks"),
+          fetch("http://localhost:5000/api/helper/allprojects"),
+          fetch("http://localhost:5000/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestonesList((await milestonesRes.json())?.data || []);
@@ -275,7 +275,7 @@ export default function AddTask() {
       });
 
       // Make API call
-      const response = await fetch("https://loopback-n3to.onrender.com/api/tasks/create", {
+      const response = await fetch("http://localhost:5000/api/tasks/create", {
         method: "POST",
         body: formDataToSend,
         // Don't set Content-Type header - let browser set it with boundary for FormData

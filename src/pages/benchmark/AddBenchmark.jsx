@@ -22,7 +22,7 @@ export default function AddBenchmark({ onClose, after }) {
     }
 
     try {
-      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/benchmark/create`, {
+      const res = await fetch(`http://localhost:5000/api/helper/benchmark/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
