@@ -53,7 +53,7 @@ export default function TaskDetails({ taskId, onClose }) {
     }
     try {
       const res = await fetch(
-        "http://localhost:5000/api/helper/addremarks",
+        "https://loopback-n3to.onrender.com/api/helper/addremarks",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ export default function TaskDetails({ taskId, onClose }) {
     try {
       setLoading(true);
       const res = await fetch(
-        "http://localhost:5000/api/tasks/details",
+        "https://loopback-n3to.onrender.com/api/tasks/details",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,7 +109,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsOnGoing = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/markAsOngoing",
+        "https://loopback-n3to.onrender.com/api/helper/markAsOngoing",
         {
           method: "POST",
           headers: {
@@ -178,7 +178,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsCompleted = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/markAsCompleted",
+        "https://loopback-n3to.onrender.com/api/helper/markAsCompleted",
         {
           method: "POST",
           headers: {

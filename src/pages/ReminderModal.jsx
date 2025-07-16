@@ -21,7 +21,7 @@ const ReminderModal = ({ taskId, taskUniqueId, onClose }) => {
       user_id: user?.id
     };
     try{
-        const response = await fetch("http://localhost:5000/api/helper/add_reminder",{
+        const response = await fetch("https://loopback-n3to.onrender.com/api/helper/add_reminder",{
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

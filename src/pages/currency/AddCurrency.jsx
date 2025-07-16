@@ -26,7 +26,7 @@ export default function AddCurrency({ onClose, after }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:5000/api/helper/currency/create`,
+        `https://loopback-n3to.onrender.com/api/helper/currency/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

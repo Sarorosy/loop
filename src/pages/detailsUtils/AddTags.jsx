@@ -13,7 +13,7 @@ export default function AddTags({ taskId, tags = [], onClose, after }) {
   // Fetch all tags from the server
   const fetchTags = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/helper/alltags", {
+      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/alltags", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export default function AddTags({ taskId, tags = [], onClose, after }) {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/helper/updateTags", 
+        "https://loopback-n3to.onrender.com/api/helper/updateTags", 
         {
           method: "POST",
           headers: {
