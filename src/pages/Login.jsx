@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, LogInIcon } from "lucide-react";
+import { Eye, EyeOff, LogInIcon, MailIcon } from "lucide-react";
 import { useAuth } from "../utils/idb";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo-new.png";
@@ -57,7 +57,7 @@ const Login = () => {
         payload = { email, password, isGoogle: false };
       }
 
-      const response = await fetch("https://loopback-r9kf.onrender.com/api/users/login", {
+      const response = await fetch("https://loopback-n3to.onrender.com/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,34 +79,41 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#f2f7ff] p-4">
       <form className="bg-white p-4 rounded shadow-md w-full max-w-sm space-y-3">
         <div className="flex justify-center border-b border-gray-300 pb-3">
-          <img src={logo} className="h-5 w-auto" />
+          <img src={logo} className="h-6 w-auto" />
         </div>
         <h2 className="text-[12px] text-gray-400 text-center">
           Sign into your account
         </h2>
-        <div className="space-y-1">
-          <label className="block text-[13px] font-medium">Email</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
-         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-         hover:border-gray-400 
-         active:border-blue-600"
-          />
+        <div className="space-y-1 mb-4">
+          {/* <label className="block text-[13px] font-medium">Email</label> */}
+          <div className="relative">
+            <input
+              type="email"
+              required
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-2 py-1.5 text-[13px] border border-gray-300 rounded  
+                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                hover:border-gray-400 
+                active:border-blue-600"
+            />
+            <div className="absolute inset-y-0 right-2 flex items-center text-gray-500">
+             <MailIcon size={15}  />
+            </div>
+          </div>
         </div>
 
         <div className="space-y-1 relative">
-          <label className="block text-[13px] font-medium">Password</label>
+          {/* <label className="block text-[13px] font-medium">Password</label> */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               required
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+              className="w-full px-2 py-1.5 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
          active:border-blue-600"
@@ -121,7 +128,16 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between mt-5">
+          <div className="">
+            <button
+              onClick={()=>{navigate('/forgot-password')}}
+              type="button"
+              className="text-[13px] text-orange-500 hover:text-orange-700  text-center transition cursor-pointer mx-auto"
+            >
+              Forgot Password ?
+            </button>
+          </div>
           <button
             onClick={(e) => {
               e.preventDefault(); // prevent form submission
@@ -134,15 +150,7 @@ const Login = () => {
           </button>
         </div>
 
-        <div className="flex justify-center">
-          <button
-            onClick={()=>{navigate('/forgot-password')}}
-            type="button"
-            className="text-[13px] text-orange-500  px-2 py-1.5 text-center transition cursor-pointer mx-auto"
-          >
-            Forgot Password ?
-          </button>
-        </div>
+        
 
         {/* <div className="text-center text-sm text-gray-500">or</div>
 

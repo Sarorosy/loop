@@ -18,7 +18,7 @@ export default function AddTag({ onClose, after }) {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/tag/create/`, {
+      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/tag/create/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

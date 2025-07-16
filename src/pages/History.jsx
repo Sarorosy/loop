@@ -15,7 +15,7 @@ export default function History({ taskId }) {
   }, [taskId]);
 
   const fetchRemarks = async () => {
-    const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/getRemarks", {
+    const res = await fetch("https://loopback-n3to.onrender.com/api/helper/getRemarks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task_id: taskId }),
@@ -25,7 +25,7 @@ export default function History({ taskId }) {
   };
 
   const fetchHistory = async () => {
-    const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/getHistory", {
+    const res = await fetch("https://loopback-n3to.onrender.com/api/helper/getHistory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task_id: taskId }),
@@ -35,7 +35,7 @@ export default function History({ taskId }) {
   };
 
   const fetchReminders = async () => {
-    const res = await fetch("https://loopback-r9kf.onrender.com/api/helper/getReminders", {
+    const res = await fetch("https://loopback-n3to.onrender.com/api/helper/getReminders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task_id: taskId, user_id: user?.id }),
@@ -80,7 +80,7 @@ export default function History({ taskId }) {
             className={`px-2 py-1 rounded transition leading-none text-[13px] transition border border-orange-400 ${
               activeTab === tab
                 ? "bg-orange-400 text-white shadow"
-                : "bg-orange-100 text-orange-800 hover:bg-orange-100"
+                : "bg-orange-100 text-orange-800 hover:bg-orange-400 hover:text-white"
             }`}
             onClick={() => setActiveTab(tab)}
           >
@@ -93,7 +93,7 @@ export default function History({ taskId }) {
         {activeTab === "remarks" &&
           renderList(remarks, (item) => (
             <div key={item.id} className="relative pl-4 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-0 before:w-px before:bg-gray-300">
-              <span class="absolute left-[-5.1px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
+              <span class="absolute left-[-6.5px] top-2 w-4 h-4 bg-orange-500 rounded-full border-2 border-white shadow"></span>
               <div className="bg-gray-100 p-2 rounded">
                 <div className="flex justify-between text-[12px]  mb-1">
                   <span>Added by : {item.added_by_name}</span>
@@ -140,7 +140,7 @@ export default function History({ taskId }) {
         {activeTab === "history" &&
           renderList(history, (item) => (
             <div key={item.id} className="relative pl-4 pt-2 pb-0 before:absolute before:top-0 before:bottom-0 before:left-0 before:w-px before:bg-gray-300">
-              <span class="absolute left-[-5.1px] top-2 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></span>
+              <span class="absolute left-[-6.5px] top-2 w-4 h-4 bg-orange-500 rounded-full border-2 border-white shadow"></span>
               <div className="bg-gray-100 p-2 rounded">
                 <div className="flex justify-between f-11 text-gray-500 flex-wrap gap-1">
                   <span className="w-full text-gray-900">{item.fld_history}</span>

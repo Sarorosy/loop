@@ -50,7 +50,7 @@ export default function TaskDetails({ taskId, onClose }) {
     }
     try {
       const res = await fetch(
-        "https://loopback-r9kf.onrender.com/api/helper/addremarks",
+        "https://loopback-n3to.onrender.com/api/helper/addremarks",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -80,7 +80,7 @@ export default function TaskDetails({ taskId, onClose }) {
     try {
       setLoading(true);
       const res = await fetch(
-        "https://loopback-r9kf.onrender.com/api/tasks/details",
+        "https://loopback-n3to.onrender.com/api/tasks/details",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -106,7 +106,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsOnGoing = async () => {
     try {
       const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/helper/markAsOngoing",
+        "https://loopback-n3to.onrender.com/api/helper/markAsOngoing",
         {
           method: "POST",
           headers: {
@@ -135,7 +135,7 @@ export default function TaskDetails({ taskId, onClose }) {
   const handleMarkAsCompleted = async () => {
     try {
       const response = await fetch(
-        "https://loopback-r9kf.onrender.com/api/helper/markAsCompleted",
+        "https://loopback-n3to.onrender.com/api/helper/markAsCompleted",
         {
           method: "POST",
           headers: {
@@ -195,12 +195,13 @@ export default function TaskDetails({ taskId, onClose }) {
   // Example: Replace these with your actual values
   const adminId = user?.id || "";
 
-  // const iframeSrc = `https://apacvault.com/loop_chatapp/?userid=${base64Encode(
-  //   adminId
-  // )}&taskid=${base64Encode(taskId)}`;
-  const iframeSrc = `http://localhost:5174/loop_chatapp/?userid=${base64Encode(
+  const iframeSrc = `https://apacvault.com/loop_chatapp/?userid=${base64Encode(
     adminId
   )}&taskid=${base64Encode(taskId)}`;
+
+  // const iframeSrc = `http://localhost:5174/loop_chatapp/?userid=${base64Encode(
+  //   adminId
+  // )}&taskid=${base64Encode(taskId)}`;
 
   const calculateTaskProgress = (task) => {
     let totalPercent = 0;
@@ -491,12 +492,14 @@ export default function TaskDetails({ taskId, onClose }) {
                     <div className="gap-3">
                       <>
                         {!showRemarksInput ? (
-                          <button
+                          <div className="flex justify-end">
+                            <button
                             className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
                             onClick={() => setShowRemarksInput(true)}
                           >
                             Add Remarks
                           </button>
+                          </div>
                         ) : (
                           <div className="flex flex-col gap-2">
                             <textarea
@@ -506,7 +509,7 @@ export default function TaskDetails({ taskId, onClose }) {
                               value={taskRemarks}
                               onChange={(e) => setTaskRemarks(e.target.value)}
                             ></textarea>
-                            <div className="flex gap-2">
+                            <div className="flex justify-end gap-2">
                               <button
                                 className="bg-green-500 text-white text-xs py-1 px-3 rounded hover:bg-green-600"
                                 onClick={submitRemarks}

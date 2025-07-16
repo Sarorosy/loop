@@ -15,7 +15,7 @@ export default function EditTeam({ onClose, teamData, onUpdate }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("https://loopback-r9kf.onrender.com/api/users/all", {
+        const response = await fetch("https://loopback-n3to.onrender.com/api/users/all", {
           method: "GET",
           headers: { "Content-type": "application/json" },
         });
@@ -58,7 +58,7 @@ export default function EditTeam({ onClose, teamData, onUpdate }) {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`https://loopback-r9kf.onrender.com/api/helper/team/update/${teamData.id}`, {
+      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/team/update/${teamData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

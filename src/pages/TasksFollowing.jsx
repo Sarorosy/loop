@@ -48,7 +48,7 @@ function TasksFollowing() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-r9kf.onrender.com/api/tasks/following", {
+      const res = await fetch("https://loopback-n3to.onrender.com/api/tasks/following", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -86,10 +86,10 @@ function TasksFollowing() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-r9kf.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-r9kf.onrender.com/api/users/allusers"),
+          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
