@@ -547,7 +547,7 @@ export default function TaskDetails({ taskId, onClose }) {
                         {!showRemarksInput ? (
                           <div className="flex justify-end">
                             <button
-                            className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
+                            className="bg-blue-500 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-600 leading-none"
                             onClick={() => setShowRemarksInput(true)}
                           >
                             Add Remarks

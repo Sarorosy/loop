@@ -4,7 +4,7 @@ import Select from "react-select";
 import { format } from "date-fns";
 import { useAuth } from "../utils/idb";
 import { useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { ChevronRight, ChevronsRight, Trash2 } from "lucide-react";
 import { Editor } from "@tinymce/tinymce-react";
 
 export default function AddTask() {
@@ -763,7 +763,7 @@ export default function AddTask() {
                 <button
                   type="button"
                   onClick={addMilestone}
-                  className="inline-flex items-center px-2 py-1 leading-none border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
+                  className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
                 >
                   + Add Milestone
                 </button>
@@ -772,7 +772,7 @@ export default function AddTask() {
                 {milestones.map((m, i) => (
                   <div
                     key={i}
-                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-center gap-3"
+                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-end gap-3"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                       <div>
@@ -819,7 +819,7 @@ export default function AddTask() {
                           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                         />
                       </div> */}
-                      <div className="mt-3 flex justify-end">
+                      <div className="mt-3 flex justify-end items-end">
                         <button
                           type="button"
                           onClick={() => removeMilestone(i)}
@@ -852,7 +852,7 @@ export default function AddTask() {
                 <button
                   type="button"
                   onClick={addFile}
-                  className="inline-flex items-center px-2 py-1 leading-none border border-transparent text-[13px] font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
+                  className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
                 >
                   + Add File
                 </button>
@@ -861,7 +861,7 @@ export default function AddTask() {
                 {files.map((f, i) => (
                   <div
                     key={i}
-                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-center gap-3"
+                    className="bg-gray-50 rounded p-2 border border-gray-200 flex items-end gap-3"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4  w-full">
                       <div>
@@ -917,7 +917,7 @@ export default function AddTask() {
                 onClick={handleSubmit}
                 className="inline-flex items-center px-2 py-1.5 border border-transparent text-[13px] leading-none font-medium rounded shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
               >
-                {creatingTask ? "Creating..." : "Create Task"}
+                {creatingTask ? "Creating..." : "Create Task"} <ChevronsRight size={14} />
               </button>
             </div>
           </form>

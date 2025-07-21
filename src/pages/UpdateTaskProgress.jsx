@@ -231,7 +231,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             </div>
           )}
 
-          <div className="mb-4">
+          <div className="mb-3">
             <label className="text-[13px]">Remarks</label>
             <textarea
               className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
@@ -246,7 +246,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           <div className="mb-4">
             <label className="block text-[13px] font-medium text-gray-700 mb-1">
               File Upload{" "}
-              <span className="text-[11px] text-gray-500">
+              <span className="text-[10px] text-red-500">
                 (Max 25MB per file, Max 3 files)
               </span>
             </label>
@@ -277,9 +277,9 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             <button
               type="button"
               onClick={addFileInput}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
+              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5  rounded text-[13px]  transition-colors duration-200 flex items-center gap-1 leading-none"
             >
-              {files.length > 0 ? "+ Add Another File" : "+ Add File"}
+              {files.length > 0 ? " + Add Another File" : "+ Add File"}
             </button>
 
             {fileError && (

@@ -172,7 +172,7 @@ export default function ManageUser({ onClose }) {
               <tbody>
                 {users.map((u, idx) => (
                   <tr key={u._id || idx} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-2 border border-[#ccc]">
+                    <td className="px-4 py-2 border border-[#ccc] break-all">
                       {u.fld_first_name + " " + u.fld_last_name}
                     </td>
                     <td className="px-4 py-2 border border-[#ccc]">{u.fld_admin_type}</td>
