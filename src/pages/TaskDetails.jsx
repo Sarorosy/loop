@@ -420,6 +420,8 @@ export default function TaskDetails({ taskId, onClose }) {
                   <div className="flex gap-2">
                     <button
                       onClick={fetchTaskDetails}
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content="Refresh"
                       className="bg-gray-700 hover:bg-gray-800 px-1 py-1 rounded flex items-center justify-center gap-1 text-gray-100 text-[11px] leading-none"
                     >
                       <RefreshCcw size={12} />
