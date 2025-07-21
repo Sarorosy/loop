@@ -5,6 +5,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddRequirement from "./AddRequirement";
 import EditRequirement from "./EditRequirement";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageRequirement({ onClose }) {
   const [requirements, setRequirements] = useState([]);
@@ -13,6 +14,7 @@ export default function ManageRequirement({ onClose }) {
   const [selectedRequirement, setSelectedRequirement] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all requirements
   const fetchRequirements = async () => {
@@ -87,9 +89,16 @@ export default function ManageRequirement({ onClose }) {
           </button>
         </div>
       </div>
+       <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by Category or Name"
+      />
+      </div>
 
       {/* Actions */}
-      <div className="bg-white w-full f-13 mt-5 pt-5">
+      <div className="bg-white w-full f-13  pt-5">
         
 
         {/* Table */}
@@ -108,7 +117,16 @@ export default function ManageRequirement({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {requirements.map((requirement, idx) => (
+                {requirements
+                .filter((requirement) =>
+                    requirement.category
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) || 
+                     requirement.name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) 
+                  )
+                .map((requirement, idx) => (
                   <tr key={requirement.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{requirement.category}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{requirement.name}</td>

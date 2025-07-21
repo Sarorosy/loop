@@ -1,6 +1,6 @@
 import { useAuth } from "../utils/idb.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import React,{ useState, useRef, useEffect } from "react";
 import {
   LogOut,
   CircleUserRound,
@@ -44,6 +44,18 @@ function TabDropdown({ title, icon: Icon, children }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+   const enhancedChildren = React.Children.map(children, (child) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        onClick: (...args) => {
+          setOpen(false); // close dropdown
+          if (child.props.onClick) child.props.onClick(...args); // call original onClick
+        },
+      });
+    }
+    return child;
+  });
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -57,7 +69,7 @@ function TabDropdown({ title, icon: Icon, children }) {
       <AnimatePresence>
         {open && (
           <div className="absolute left-0  w-56 bg-white border border-gray-300 rounded shadow text-[13px] z-50">
-            <ul className="py-1 text-gray-700">{children}</ul>
+            <ul className="py-1 text-gray-700">{enhancedChildren}</ul>
           </div>
         )}
       </AnimatePresence>

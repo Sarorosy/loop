@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useAuth } from "../utils/idb";
+import { Editor } from "@tinymce/tinymce-react";
+import { useRef } from "react";
+
+
 
 export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
   const [selectedBenchmarks, setSelectedBenchmarks] = useState(
@@ -12,6 +16,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
   const [files, setFiles] = useState([]);
   const [fileError, setFileError] = useState("");
   const { user } = useAuth();
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const fetchBenchmarks = async () => {
@@ -139,9 +144,9 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4">
+        <form onSubmit={handleSubmit} className="p-4 max-h-[500px] overflow-y-auto">
           {task.fld_benchmark_name && (
-            <div className="form-group col-sm-12 h-48 max-h-48 overflow-y-auto">
+            <div className="">
               <label className="col-form-label">Milestones Completed</label>
               <br />
 
@@ -218,7 +223,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
                         checked={
                           selectedBenchmarks.includes(benchmark) || isChecked
                         }
-                        disabled={isChecked} //|| !canSelect || isDisabled
+                        disabled={isChecked || isDisabled} //|| !canSelect || isDisabled
                         onChange={() => handleCheckboxChange(benchmark)}
                       />
                       <label htmlFor={`checkbox_${index}`} className="ml-2">
@@ -231,18 +236,28 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             </div>
           )}
 
-          <div className="mb-4">
-            <label className="text-[13px]">Remarks</label>
-            <textarea
-              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
-         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-         hover:border-gray-400 
-         active:border-blue-600"
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-            />
-          </div>
-
+         <div className="mb-4">
+  <label className="text-[13px]">Remarks</label>
+  <Editor
+    apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
+    onInit={(evt, editor) => (editorRef.current = editor)}
+    value={remarks}
+    onEditorChange={(newContent) => setRemarks(newContent)}
+    init={{
+      height: 300,
+      menubar: false,
+      plugins: [
+        "advlist autolink lists link charmap preview anchor",
+        "searchreplace visualblocks code fullscreen",
+        "insertdatetime media table paste code help wordcount",
+      ],
+      toolbar:
+        "undo redo | formatselect | bold italic underline | bullist numlist | outdent indent | removeformat",
+      content_style:
+        "body { font-family:Helvetica,Arial,sans-serif; font-size:13px }",
+    }}
+  />
+</div>
           <div className="mb-4">
             <label className="block text-[13px] font-medium text-gray-700 mb-1">
               File Upload{" "}

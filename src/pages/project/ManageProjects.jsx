@@ -5,6 +5,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddProject from "./AddProject";
 import EditProject from "./EditProject";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageProjects({ onClose }) {
   const [projects, setProjects] = useState([]);
@@ -13,6 +14,7 @@ export default function ManageProjects({ onClose }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all projects
   const fetchProjects = async () => {
@@ -88,8 +90,16 @@ export default function ManageProjects({ onClose }) {
         </div>
       </div>
 
+       <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by Project Name"
+      />
+      </div>
+
       {/* Actions */}
-      <div className="bg-white w-full f-13 mt-5 pt-5">
+      <div className="bg-white w-full f-13  pt-5">
         
 
         {/* Content */}
@@ -109,7 +119,13 @@ export default function ManageProjects({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {projects.map((project, idx) => (
+                {projects
+                .filter((project) =>
+                    project.fld_project_name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  )
+                .map((project, idx) => (
                   <tr key={project.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{project.fld_project_name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{project.project_creator}</td>

@@ -20,6 +20,7 @@ import {
   Paperclip,
   Copy,
   Bell,
+  ArrowLeftRight,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import History from "./History";
@@ -52,18 +53,15 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch(
-        "https://loopback-skci.onrender.com/api/helper/addremarks",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            task_id: taskId,
-            remarks: taskRemarks,
-            user_id: user?.id,
-          }),
-        }
-      );
+      const res = await fetch("https://loopback-skci.onrender.com/api/helper/addremarks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task_id: taskId,
+          remarks: taskRemarks,
+          user_id: user?.id,
+        }),
+      });
       const data = await res.json();
       if (data.status) {
         fetchTaskDetails();
@@ -82,14 +80,11 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://loopback-skci.onrender.com/api/tasks/details",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task_id: taskId }),
-        }
-      );
+      const res = await fetch("https://loopback-skci.onrender.com/api/tasks/details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_id: taskId }),
+      });
       const data = await res.json();
       if (data.status) setTask(data.data);
       else console.error("Error fetching task:", data.message);
@@ -102,9 +97,9 @@ export default function TaskDetails({ taskId, onClose }) {
   useEffect(() => {
     fetchTaskDetails();
   }, [taskId]);
-  useEffect(()=>{
-    console.log(task)
-  },[task])
+  useEffect(() => {
+    console.log(task);
+  }, [task]);
 
   const handleMarkAsOnGoing = async () => {
     try {
@@ -148,32 +143,31 @@ export default function TaskDetails({ taskId, onClose }) {
   };
 
   const handleCopyLink = (task) => {
-  if (!task?.id) {
-    toast.error("Task ID is missing.");
-    return;
-  }
+    if (!task?.id) {
+      toast.error("Task ID is missing.");
+      return;
+    }
 
-  const encodeBase64Url = (str) => {
-    return btoa(str)
-      .replace(/\+/g, '-')   // URL safe
-      .replace(/\//g, '_')   // URL safe
-      .replace(/=+$/, '');   // remove padding
+    const encodeBase64Url = (str) => {
+      return btoa(str)
+        .replace(/\+/g, "-") // URL safe
+        .replace(/\//g, "_") // URL safe
+        .replace(/=+$/, ""); // remove padding
+    };
+
+    const encodedId = encodeBase64Url(String(task.id));
+    const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
+
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        toast.success("Link copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy link: ", err);
+        toast.error("Copy failed.");
+      });
   };
-
-  const encodedId = encodeBase64Url(String(task.id));
-  const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
-
-  navigator.clipboard
-    .writeText(link)
-    .then(() => {
-      toast.success("Link copied!");
-    })
-    .catch((err) => {
-      console.error("Failed to copy link: ", err);
-      toast.error("Copy failed.");
-    });
-};
-
 
   const handleMarkAsCompleted = async () => {
     try {
@@ -205,9 +199,9 @@ export default function TaskDetails({ taskId, onClose }) {
   };
 
   const [reminderOpen, setReminderOpen] = useState(false);
-    const handleReminderButtonClick = () => {
-      setReminderOpen(true);
-    };
+  const handleReminderButtonClick = () => {
+    setReminderOpen(true);
+  };
 
   {
     !loading && !task && (
@@ -362,12 +356,36 @@ export default function TaskDetails({ taskId, onClose }) {
                         View Details - {task.fld_title}
                       </h1>
                       <p className="text-[13px] text-gray-600 flex items-center">
-                        {task.fld_unique_task_id} 
-                        <Copy data-tooltip-id="my-tooltip" data-tooltip-content="Copy Task Id" size={22} className="cursor-pointer text-blue-500 hover:bg-gray-100 p-1 rounded ml-2" onClick={()=>{handleCopyButtonClick(task)}}/>
+                        {task.fld_unique_task_id}
+                        <Copy
+                          data-tooltip-id="my-tooltip"
+                          data-tooltip-content="Copy Task Id"
+                          size={22}
+                          className="cursor-pointer text-blue-500 hover:bg-gray-100 p-1 rounded ml-2"
+                          onClick={() => {
+                            handleCopyButtonClick(task);
+                          }}
+                        />
                         <div className="mx-2 w-px h-5 bg-gray-300 inline-block align-middle" />
-                        <Link data-tooltip-id="my-tooltip" data-tooltip-content="Copy Task Link" size={22} className="cursor-pointer text-blue-500 hover:bg-gray-100 p-1 rounded" onClick={()=>{handleCopyLink(task)}}/>
+                        <Link
+                          data-tooltip-id="my-tooltip"
+                          data-tooltip-content="Copy Task Link"
+                          size={22}
+                          className="cursor-pointer text-blue-500 hover:bg-gray-100 p-1 rounded"
+                          onClick={() => {
+                            handleCopyLink(task);
+                          }}
+                        />
                         <div className="mx-2 w-px h-5 bg-gray-300 inline-block align-middle" />
-                        <Bell data-tooltip-id="my-tooltip" data-tooltip-content="Add Reminder" size={22} className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded" onClick={()=>{setReminderOpen(true)}}/>
+                        <Bell
+                          data-tooltip-id="my-tooltip"
+                          data-tooltip-content="Add Reminder"
+                          size={22}
+                          className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded"
+                          onClick={() => {
+                            setReminderOpen(true);
+                          }}
+                        />
                       </p>
                     </div>
                   </div>
@@ -399,12 +417,21 @@ export default function TaskDetails({ taskId, onClose }) {
                   </div>
                 </div>
                 <div className="flex items-end flex-col gap-9 justify-between">
-                  <button
-                    onClick={onClose}
-                    className="bg-gray-700 hover:bg-gray-800 px-1 py-1 rounded flex items-center justify-center gap-1 text-gray-100 text-[11px] leading-none"
-                  >
-                    <ArrowLeft size={12} className="" /> Back
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={fetchTaskDetails}
+                      className="bg-gray-700 hover:bg-gray-800 px-1 py-1 rounded flex items-center justify-center gap-1 text-gray-100 text-[11px] leading-none"
+                    >
+                      <RefreshCcw size={12} />
+                    </button>
+                    <button
+                      onClick={onClose}
+                      className="bg-gray-700 hover:bg-gray-800 px-1 py-1 rounded flex items-center justify-center gap-1 text-gray-100 text-[11px] leading-none"
+                    >
+                      <ArrowLeft size={12} /> Back
+                    </button>
+                  </div>
+
                   <div className="flex items-center justify-between space-x-2">
                     <div className="flex items-center space-x-1 leading-none">
                       {task.tag_names &&
@@ -455,7 +482,7 @@ export default function TaskDetails({ taskId, onClose }) {
                           data-tooltip-content="Transfer"
                           className="px-2 py-1 f-11 bg-yellow-600 text-white rounded flex items-center leading-none"
                         >
-                          <RefreshCcw size={13} />
+                          <ArrowLeftRight size={13} />
                         </button>
                       )}
 
@@ -547,11 +574,11 @@ export default function TaskDetails({ taskId, onClose }) {
                         {!showRemarksInput ? (
                           <div className="flex justify-end">
                             <button
-                            className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
-                            onClick={() => setShowRemarksInput(true)}
-                          >
-                            Add Remarks
-                          </button>
+                              className="bg-blue-500 text-white text-xs py-1 px-3 rounded hover:bg-blue-600"
+                              onClick={() => setShowRemarksInput(true)}
+                            >
+                              Add Remarks
+                            </button>
                           </div>
                         ) : (
                           <div className="flex flex-col gap-2">
@@ -671,11 +698,7 @@ export default function TaskDetails({ taskId, onClose }) {
                     )}
                   </div>
                 )}
-                <iframe
-                  className="chat-hub"
-                  src={iframeSrc}
-                  
-                />
+                <iframe className="chat-hub" src={iframeSrc} />
               </div>
               <div className="w-[30%] flex flex-col gap-3">
                 {/* Right Side */}
@@ -837,8 +860,8 @@ export default function TaskDetails({ taskId, onClose }) {
                   </div>
                 )}
                 <div className=" flex">
-                <History taskId={taskId} />
-              </div>
+                  <History taskId={taskId} />
+                </div>
               </div>
             </div>
 
@@ -906,7 +929,7 @@ export default function TaskDetails({ taskId, onClose }) {
           />
         )}
 
-        { reminderOpen && (
+        {reminderOpen && (
           <ReminderModal
             taskId={task.id}
             taskUniqueId={task.fld_unique_task_id}

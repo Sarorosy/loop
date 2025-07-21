@@ -7,6 +7,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import { useAuth } from "../../utils/idb";
 import DeleteOrTransferModal from "./DeleteOrTransferModal";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageUser({ onClose }) {
   const [users, setUsers] = useState([]);
@@ -16,6 +17,7 @@ export default function ManageUser({ onClose }) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteUserName, setDeleteUserName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
 
   // Fetch all users
@@ -141,8 +143,15 @@ export default function ManageUser({ onClose }) {
         </div>
       </div>
 
+      <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search User"
+      />
+      </div>
       {/* Content */}
-      <div className="bg-white w-full f-13 mt-5 pt-5">
+      <div className="bg-white w-full f-13 pt-5">
         
         {loading ? (
           <p className="text-center text-[13px] text-gray-500">Loading users...</p>
@@ -170,7 +179,18 @@ export default function ManageUser({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {users.map((u, idx) => (
+                {users
+                 .filter((u) =>
+                    u.fld_first_name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                      u.fld_last_name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) || 
+                      u.fld_email
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  ).map((u, idx) => (
                   <tr key={u._id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">
                       {u.fld_first_name + " " + u.fld_last_name}

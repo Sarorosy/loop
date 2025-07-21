@@ -128,9 +128,11 @@ export default function History({ taskId }) {
                 </div>
               )}
 
-              {item.fld_benchmarks && (
-                <div className="mt-1 f-11 text-green-600">
-                  Benchmark: {item.fld_benchmarks}
+              {item.benchmark_names && (
+                <div className="mt-1 f-11 ">
+                  Milestone: {item.benchmark_names.split(",").map((name,index,arr) =>(
+                    <small key={index} className=" text-green-800  rounded f-11">{name} {index !== arr.length - 1 ? "|" : ""} </small>
+                  ))}
                 </div>
               )}
             </div>

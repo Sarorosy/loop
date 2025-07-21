@@ -5,6 +5,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddBucket from "./AddBucket";
 import EditBucket from "./EditBucket";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageBucket({ onClose }) {
   const [buckets, setBuckets] = useState([]);
@@ -13,6 +14,7 @@ export default function ManageBucket({ onClose }) {
   const [selectedBucket, setSelectedBucket] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all buckets
   const fetchBuckets = async () => {
@@ -88,8 +90,16 @@ export default function ManageBucket({ onClose }) {
         </div>
       </div>
 
+      <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by Bucket Name"
+      />
+      </div>
+
       {/* Actions */}
-      <div className="bg-white w-full f-13 mt-5 pt-5">
+      <div className="bg-white w-full f-13 pt-5">
         
 
         {/* Content */}
@@ -109,7 +119,12 @@ export default function ManageBucket({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {buckets.map((bucket, idx) => (
+                {buckets
+                 .filter((bucket) =>
+                    bucket.fld_bucket_name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  ).map((bucket, idx) => (
                   <tr key={bucket.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{bucket.fld_bucket_name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{bucket.bucket_creator}</td>

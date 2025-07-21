@@ -41,6 +41,7 @@ export default function AppRouter() {
           <Route element={<Layout />}>
 
             <Route path="/" element={<Dashboard />} />
+             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin/view_details/:task_id" element={<Dashboard />} />
 
             

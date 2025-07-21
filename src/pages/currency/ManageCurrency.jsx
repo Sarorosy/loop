@@ -5,6 +5,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddCurrency from "./AddCurrency";
 import EditCurrency from "./EditCurrency";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageCurrency({ onClose }) {
   const [currency, setCurrency] = useState([]);
@@ -13,6 +14,7 @@ export default function ManageCurrency({ onClose }) {
   const [selectedCurrency, setSelectedCurrency] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all requirements
   const fetchCurrency = async () => {
@@ -88,8 +90,16 @@ export default function ManageCurrency({ onClose }) {
         </div>
       </div>
 
+      <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by Currency Name"
+      />
+      </div>
+
       {/* Actions */}
-      <div className="bg-white w-full f-13 mt-5 pt-5">
+      <div className="bg-white w-full f-13  pt-5">
         
 
         {/* Table */}
@@ -107,7 +117,12 @@ export default function ManageCurrency({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {currency.map((currency, idx) => (
+                {currency
+                 .filter((currency) =>
+                    currency.name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  ).map((currency, idx) => (
                   <tr key={currency.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{currency.name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">

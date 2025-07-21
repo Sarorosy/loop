@@ -5,6 +5,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddOtherTags from "./AddOtherTags";
 import EditOtherTags from "./EditOtherTags";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageOtherTags({ onClose }) {
   const [tags, setTags] = useState([]);
@@ -13,6 +14,7 @@ export default function ManageOtherTags({ onClose }) {
   const [selectedTag, setSelectedTag] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch all tags
   const fetchTags = async () => {
@@ -88,8 +90,16 @@ export default function ManageOtherTags({ onClose }) {
         </div>
       </div>
 
+      <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by Category and Name"
+      />
+      </div>
+
       {/* Actions */}
-      <div className="bg-white w-full f-13 mt-5 pt-5">
+      <div className="bg-white w-full f-13 pt-5">
         
 
         {/* Table */}
@@ -109,7 +119,15 @@ export default function ManageOtherTags({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {tags.map((tag, idx) => (
+                {tags
+                 .filter((tag) =>
+                    tag.category
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                     tag.tag_name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) 
+                  ).map((tag, idx) => (
                   <tr key={tag.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{tag.category}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{tag.tag_name}</td>

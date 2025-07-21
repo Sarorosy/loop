@@ -5,6 +5,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddBenchmark from "./AddBenchmark";
 import EditBenchmark from "./EditBenchmark";
+import SearchBar from "../../components/SearchBar";
 
 export default function ManageBenchmark({ onClose }) {
   const [benchmarks, setBenchmarks] = useState([]);
@@ -13,7 +14,7 @@ export default function ManageBenchmark({ onClose }) {
   const [selectedBenchmark, setSelectedBenchmark] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
   // Fetch all benchmarks
   const fetchBenchmarks = async () => {
     try {
@@ -88,6 +89,14 @@ export default function ManageBenchmark({ onClose }) {
         </div>
       </div>
 
+      <div className="flex items-end justify-end gap-2 mt-2">
+        <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Search by Milestone Name"
+      />
+      </div>
+
       {/* Actions */}
       <div className="bg-white w-full f-13 mt-5 pt-5">
         
@@ -109,7 +118,12 @@ export default function ManageBenchmark({ onClose }) {
                 </tr>
               </thead>
               <tbody>
-                {benchmarks.map((benchmark) => (
+                {benchmarks
+                 .filter((benchmark) =>
+                    benchmark.fld_benchmark_name
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  ).map((benchmark) => (
                   <tr key={benchmark.id} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{benchmark.fld_benchmark_name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{benchmark.milestone_creator}</td>

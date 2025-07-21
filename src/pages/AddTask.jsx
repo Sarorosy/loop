@@ -6,6 +6,9 @@ import { useAuth } from "../utils/idb";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { Editor } from "@tinymce/tinymce-react";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import dayjs from "dayjs";
 
 export default function AddTask() {
   const [buckets, setBuckets] = useState([]);
@@ -34,6 +37,18 @@ export default function AddTask() {
     googleLink: "",
     additionalLink: "",
   });
+
+   const dateRef = useRef();
+   useEffect(() => {
+    flatpickr(dateRef.current, {
+      dateFormat: "d/m/Y", // Display format
+      defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
+      onChange: (selectedDates) => {
+        const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
+        setFormData({ ...formData, dueDate: formatted });
+      }
+    });
+  }, []);
 
   const [milestones, setMilestones] = useState([]);
   const [files, setFiles] = useState([]);
@@ -412,12 +427,14 @@ export default function AddTask() {
                           (o) => o.value === formData.bucketId
                         ) || null
                       }
-                      onChange={(option) =>
-                        setFormData({
-                          ...formData,
-                          bucketId: option?.value || "",
-                        })
-                      }
+                      onChange={(option) => {
+  const selectedBucket = buckets.find((b) => b.id === option?.value);
+  setFormData((prev) => ({
+    ...prev,
+    bucketId: option?.value || "",
+    description: selectedBucket?.fld_default_description || prev.description,
+  }));
+}}
                       placeholder="Select Bucket"
                     />
                   </div>
@@ -549,13 +566,14 @@ export default function AddTask() {
                     <Editor
                       apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
                       onInit={(evt, editor) => (editorRef.current = editor)}
+                      value={formData.description}
                       onEditorChange={(newContent) =>
                         setFormData((prev) => ({
                           ...prev,
                           description: newContent,
                         }))
                       }
-                      initialValue=""
+                     
                       init={{
                         height: 500,
                         menubar: true,
@@ -586,15 +604,14 @@ export default function AddTask() {
                     <label className="block text-[13px] font-medium text-gray-700 mb-1">
                       Due Date
                     </label>
-                    <input
-                      type="date"
-                      name="dueDate"
-                      value={formData.dueDate}
-                      onChange={(e) =>
-                        setFormData({ ...formData, dueDate: e.target.value })
-                      }
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                    />
+                     <input
+        type="text"
+        name="dueDate"
+        ref={dateRef}
+        value={formData.dueDate ? dayjs(formData.dueDate).format("DD/MM/YYYY") : ""}
+        readOnly
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+      />
                   </div>
 
                   <div>
