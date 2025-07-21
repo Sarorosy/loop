@@ -22,7 +22,7 @@ export default function EditBenchmark({ onClose, benchmarkData, onUpdate }) {
     setSuccessMsg("");
 
     try {
-      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/benchmark/update/${benchmarkData.id}`, {
+      const res = await fetch(`https://loopback-skci.onrender.com/api/helper/benchmark/update/${benchmarkData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

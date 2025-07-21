@@ -18,7 +18,7 @@ export default function ManageBenchmark({ onClose }) {
   const fetchBenchmarks = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks", {
+      const response = await fetch("https://loopback-skci.onrender.com/api/helper/allbenchmarks", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageBenchmark({ onClose }) {
     }
     try {
       const response = await fetch(
-        `https://loopback-n3to.onrender.com/api/helper/benchmark/delete/${selectedBenchmark.id}`,
+        `https://loopback-skci.onrender.com/api/helper/benchmark/delete/${selectedBenchmark.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

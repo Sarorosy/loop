@@ -9,7 +9,7 @@ export default function MilestoneInfo({ taskId }) {
   const fetchMilestones = async () => {
     try {
       const response = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/getTaskMilestones",
+        "https://loopback-skci.onrender.com/api/helper/getTaskMilestones",
         {
           method: "POST",
           headers: {

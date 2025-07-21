@@ -29,7 +29,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 
 export default function AppRouter() {
   return (
-    <Router basename="/v2">
+    <Router >
       <ScrollToTop />
       <Routes>
         {/* Public Restaurant Routes (NO layout) */}

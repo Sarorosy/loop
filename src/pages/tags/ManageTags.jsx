@@ -18,7 +18,7 @@ export default function ManageTags({ onClose }) {
   const fetchTags = async () => {
     try {
       setLoading(true);
-      const response = await fetch("https://loopback-n3to.onrender.com/api/helper/alltags", {
+      const response = await fetch("https://loopback-skci.onrender.com/api/helper/alltags", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -47,7 +47,7 @@ export default function ManageTags({ onClose }) {
     }
     try {
       const response = await fetch(
-        `https://loopback-n3to.onrender.com/api/helper/tag/delete/${selectedTag?.id}`,
+        `https://loopback-skci.onrender.com/api/helper/tag/delete/${selectedTag?.id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

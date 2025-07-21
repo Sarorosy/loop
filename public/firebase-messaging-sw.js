@@ -46,7 +46,7 @@ self.addEventListener('notificationclick', function (event) {
 
   const data = event.notification.data;
 
-  const targetUrl = `https://apacvault.com/v2/`;
+  const targetUrl = `https://apacvault.com/`;
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

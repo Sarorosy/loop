@@ -63,7 +63,7 @@ function MyTasks() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-n3to.onrender.com/api/tasks/getmytasks", {
+      const res = await fetch("https://loopback-skci.onrender.com/api/tasks/getmytasks", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -101,10 +101,10 @@ function MyTasks() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-skci.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);

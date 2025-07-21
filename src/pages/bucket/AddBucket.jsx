@@ -22,7 +22,7 @@ export default function AddBucket({ onClose, after }) {
   const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
-    fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks")
+    fetch("https://loopback-skci.onrender.com/api/helper/allbenchmarks")
       .then(res => res.json())
       .then(data => setMilestones(data.data))
       .catch(err => console.error("Failed to fetch milestones", err));
@@ -51,7 +51,7 @@ export default function AddBucket({ onClose, after }) {
     }
 
     try {
-      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/bucket/create`, {
+      const res = await fetch(`https://loopback-skci.onrender.com/api/helper/bucket/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

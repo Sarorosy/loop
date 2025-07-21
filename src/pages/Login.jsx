@@ -57,7 +57,7 @@ const Login = () => {
         payload = { email, password, isGoogle: false };
       }
 
-      const response = await fetch("https://loopback-n3to.onrender.com/api/users/login", {
+      const response = await fetch("https://loopback-skci.onrender.com/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

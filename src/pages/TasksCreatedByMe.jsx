@@ -66,7 +66,7 @@ function TasksCreatedByMe() {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/tasks/getmycreatedtasks",
+        "https://loopback-skci.onrender.com/api/tasks/getmycreatedtasks",
         {
           method: "POST",
           headers: {
@@ -106,10 +106,10 @@ function TasksCreatedByMe() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbenchmarks"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allbenchmarks"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-skci.onrender.com/api/users/allusers"),
         ]);
       setBuckets((await bucketsRes.json())?.data || []);
       setMilestones((await milestonesRes.json())?.data || []);
@@ -361,7 +361,7 @@ function TasksCreatedByMe() {
       return;
     }
     try {
-      const response = await fetch("https://loopback-n3to.onrender.com/api/tasks/delete", {
+      const response = await fetch("https://loopback-skci.onrender.com/api/tasks/delete", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

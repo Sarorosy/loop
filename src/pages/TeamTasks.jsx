@@ -53,7 +53,7 @@ function TeamTasks() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-n3to.onrender.com/api/tasks/getteamtasks", {
+      const res = await fetch("https://loopback-skci.onrender.com/api/tasks/getteamtasks", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -91,10 +91,10 @@ function TeamTasks() {
     try {
       const [bucketsRes, milestonesRes, projectsRes, usersRes] =
         await Promise.all([
-          fetch("https://loopback-n3to.onrender.com/api/helper/allbuckets"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allteams"),
-          fetch("https://loopback-n3to.onrender.com/api/helper/allprojects"),
-          fetch("https://loopback-n3to.onrender.com/api/users/allusers"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allbuckets"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allteams"),
+          fetch("https://loopback-skci.onrender.com/api/helper/allprojects"),
+          fetch("https://loopback-skci.onrender.com/api/users/allusers"),
         ]);
 
       const bucketsData = (await bucketsRes.json())?.data || [];

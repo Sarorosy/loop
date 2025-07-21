@@ -124,7 +124,7 @@ export default function Header() {
   const fetchNotifications = async () => {
     try {
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/helper/notifications",
+        "https://loopback-skci.onrender.com/api/helper/notifications",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -151,7 +151,7 @@ export default function Header() {
     if (!selectedNotificationId) return;
 
     try {
-      const res = await fetch("https://loopback-n3to.onrender.com/api/helper/read-notification", {
+      const res = await fetch("https://loopback-skci.onrender.com/api/helper/read-notification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notification_id: selectedNotificationId }),
@@ -206,7 +206,7 @@ const [permissionGranted, setPermissionGranted] = useState(false);
             };
 
             const response = await fetch(
-              "https://loopback-n3to.onrender.com/api/saveFcmToken",
+              "https://loopback-skci.onrender.com/api/saveFcmToken",
               {
                 method: "POST",
                 headers: {

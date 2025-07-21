@@ -18,7 +18,7 @@ export default function AddTeam({ onClose, after }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("https://loopback-n3to.onrender.com/api/users/all", {
+        const response = await fetch("https://loopback-skci.onrender.com/api/users/all", {
           method: "GET",
           headers: { "Content-type": "application/json" },
         });
@@ -60,7 +60,7 @@ export default function AddTeam({ onClose, after }) {
 
     try {
       setLoading(true);
-      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/team/create`, {
+      const res = await fetch(`https://loopback-skci.onrender.com/api/helper/team/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -35,7 +35,7 @@ export default function EditRequirement({ onClose, requirementData, onUpdate }) 
 
     setLoading(true);
     try {
-      const res = await fetch(`https://loopback-n3to.onrender.com/api/helper/requirement/update/${requirementData.id}`, {
+      const res = await fetch(`https://loopback-skci.onrender.com/api/helper/requirement/update/${requirementData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, category }),

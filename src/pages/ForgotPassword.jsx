@@ -22,7 +22,7 @@ const ForgotPassword = () => {
     setMessage("");
     try {
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/users/forgot-password-email",
+        "https://loopback-skci.onrender.com/api/users/forgot-password-email",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
     setMessage("");
     try {
       const res = await fetch(
-        "https://loopback-n3to.onrender.com/api/users/send-password-email",
+        "https://loopback-skci.onrender.com/api/users/send-password-email",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
