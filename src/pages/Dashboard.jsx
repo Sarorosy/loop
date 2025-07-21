@@ -127,7 +127,7 @@ function Dashboard() {
       orderable: false,
       render: (data, type, row) => `
         <div class="truncate !w-50">
-          <small>${row.fld_unique_task_id || "-"}</small>
+          <small class="text-[13px]">${row.fld_unique_task_id || "-"}</small>
            <span 
   class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
 >
@@ -135,7 +135,7 @@ function Dashboard() {
 </span>
           <br>
           
-           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
+           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[11px] truncate ">${
              row.fld_title || "-"
            }</div>
           
@@ -171,7 +171,7 @@ function Dashboard() {
         const progress = calculateTaskProgress(row);
         const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
 
-        const size = 28; // Circle size
+        const size = 35; // Circle size
         const strokeWidth = 3;
         const radius = (size - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;
@@ -210,7 +210,7 @@ function Dashboard() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 8px;
+          font-size: 10px;
           color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
           font-weight: bold;
         ">
@@ -293,7 +293,7 @@ function Dashboard() {
         const ampm = hours >= 12 ? "PM" : "AM";
         const displayHours = (hours % 12 || 12).toString();
 
-        return `<div class="text-[11px]">${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}</div>`;
+        return `<div class="text-[11px] whitespace-nowrap">${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}</div>`;
       },
     },
     {
@@ -302,8 +302,8 @@ function Dashboard() {
       orderable: false,
       render: (data, type, row) => `
       <div class="flex items-center">
-      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded w-6 h-6 text-[12px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
-        <div>
+      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded  text-[11px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
+        <div class="text-[12px]">
           ${row.added_by_name || "-"}
         </div>
         </div>

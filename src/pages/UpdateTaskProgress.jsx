@@ -5,8 +5,6 @@ import { useAuth } from "../utils/idb";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRef } from "react";
 
-
-
 export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
   const [selectedBenchmarks, setSelectedBenchmarks] = useState(
     task.completedBenchmarks || []
@@ -140,11 +138,15 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
         className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4"
       >
         <div className="flex justify-between items-center px-4 py-3 bg-[#224d68]  rounded-t">
-          <h2 className="text-[15px] font-semibold text-white">Update Task Progress</h2>
-          
+          <h2 className="text-[15px] font-semibold text-white">
+            Update Task Progress
+          </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 max-h-[500px] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 max-h-[500px] overflow-y-auto"
+        >
           {task.fld_benchmark_name && (
             <div className="">
               <label className="col-form-label">Milestones Completed</label>
@@ -236,32 +238,32 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             </div>
           )}
 
-         <div className="mb-4">
-  <label className="text-[13px]">Remarks</label>
-  <Editor
-    apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
-    onInit={(evt, editor) => (editorRef.current = editor)}
-    value={remarks}
-    onEditorChange={(newContent) => setRemarks(newContent)}
-    init={{
-      height: 300,
-      menubar: false,
-      plugins: [
-        "advlist autolink lists link charmap preview anchor",
-        "searchreplace visualblocks code fullscreen",
-        "insertdatetime media table paste code help wordcount",
-      ],
-      toolbar:
-        "undo redo | formatselect | bold italic underline | bullist numlist | outdent indent | removeformat",
-      content_style:
-        "body { font-family:Helvetica,Arial,sans-serif; font-size:13px }",
-    }}
-  />
-</div>
+          <div className="mb-4">
+            <label className="text-[13px]">Remarks</label>
+            <Editor
+              apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
+              onInit={(evt, editor) => (editorRef.current = editor)}
+              value={remarks}
+              onEditorChange={(newContent) => setRemarks(newContent)}
+              init={{
+                height: 300,
+                menubar: false,
+                plugins: [
+                  "advlist autolink lists link charmap preview anchor",
+                  "searchreplace visualblocks code fullscreen",
+                  "insertdatetime media table paste code help wordcount",
+                ],
+                toolbar:
+                  "undo redo | formatselect | bold italic underline | bullist numlist | outdent indent | removeformat",
+                content_style:
+                  "body { font-family:Helvetica,Arial,sans-serif; font-size:13px }",
+              }}
+            />
+          </div>
           <div className="mb-4">
             <label className="block text-[13px] font-medium text-gray-700 mb-1">
               File Upload{" "}
-              <span className="text-[11px] text-gray-500">
+              <span className="text-[10px] text-red-500">
                 (Max 25MB per file, Max 3 files)
               </span>
             </label>
@@ -292,9 +294,9 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             <button
               type="button"
               onClick={addFileInput}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
+              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5  rounded text-[13px]  transition-colors duration-200 flex items-center gap-1 leading-none"
             >
-              {files.length > 0 ? "+ Add Another File" : "+ Add File"}
+              {files.length > 0 ? " + Add Another File" : "+ Add File"}
             </button>
 
             {fileError && (
