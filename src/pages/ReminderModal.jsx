@@ -49,17 +49,22 @@ const ReminderModal = ({ taskId, taskUniqueId, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000073]">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
-        className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl relative"
+        className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4"
       >
-        <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-black">
-          <X size={20} />
-        </button>
-        <h2 className="text-xl font-semibold mb-4">Set Reminder</h2>
+        <div className="flex justify-between items-center px-4 py-3 bg-[#224d68]  rounded-t">
+          <h2 className="text-[15px] font-semibold text-white">Set Reminder</h2>
+          <div className="">
+            <button onClick={onClose} className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded">
+              <X size={13} />
+            </button>
+          </div>
+        </div>
+        <div className="p-4">
         <form  className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -70,7 +75,10 @@ const ReminderModal = ({ taskId, taskUniqueId, onClose }) => {
               min={getMinDateTime()}
               value={reminderDate}
               onChange={(e) => setReminderDate(e.target.value)}
-              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
               required
             />
           </div>
@@ -81,7 +89,10 @@ const ReminderModal = ({ taskId, taskUniqueId, onClose }) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any additional notes..."
-              className="w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
             />
           </div>
           <div className="flex justify-end">
@@ -89,12 +100,13 @@ const ReminderModal = ({ taskId, taskUniqueId, onClose }) => {
           <button
             type="button"
             onClick={handleSubmit}
-            className="w-24 bg-orange-600 text-white py-1 f-11 rounded-md hover:bg-orange-700 transition"
+            className="bg-blue-600 text-white py-1.5 px-2 rounded hover:bg-blue-700 text-[11px] leading-none flex gap-1 items-center"
           >
             Save Reminder
           </button>
           </div>
         </form>
+        </div>
       </motion.div>
     </div>
   );
