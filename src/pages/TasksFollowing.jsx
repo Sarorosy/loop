@@ -111,16 +111,39 @@ function TasksFollowing() {
       orderable: false,
       render: (data, type, row) => `
         <div class="truncate !w-50">
-          <small>${row.fld_unique_task_id || "-"}</small>
-          <span 
-  class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
->
-  <i class="fa fa-clone" aria-hidden="true"></i>
-</span>
-          <br>
-           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
-             row.fld_title || "-"
-           }</div>
+          <div class="flex justify-between items-center">
+            <div class="leading-none">
+              <small class="text-[12px]">${row.fld_unique_task_id || "-"}</small>
+              <span 
+                class="copy-btn cursor-pointer text-gray-500 hover:text-black text-[10px] ml-1 rounded hover:bg-gray-100 transition"
+              >
+                <i class="fa fa-clone" aria-hidden="true"></i>
+              </span>
+               <span 
+            class="copy-task-link cursor-pointer text-blue-500 hover:text-black text-[10px] ml-1 rounded hover:bg-gray-100 transition"
+            data-tasklinkid="${row.id}"
+            data-tooltip-id="my-tooltip"
+            data-tooltip-content="Copy Task Link"
+          >
+            <i class="fa fa-link" aria-hidden="true"></i>
+          </span>
+            </div>
+            
+              ${
+                row.fld_reopen == 1
+                ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
+                : ""
+              }
+           
+          </div>
+
+          
+          <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate mt-1.5">
+          ${
+            row.fld_title || "-"
+          }
+          </div>
+            
         </div>
       `,
     },
@@ -144,7 +167,7 @@ function TasksFollowing() {
     `;
       },
     },
-    {
+   {
       title: "Progress",
       data: null,
       orderable: false,
@@ -152,53 +175,53 @@ function TasksFollowing() {
         const progress = calculateTaskProgress(row);
         const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
 
-        const size = 28; // Circle size
+        const size = 35; // Circle size
         const strokeWidth = 3;
         const radius = (size - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;
         const progressOffset = circumference * (1 - progress / 100);
 
         return `
-          <div style="position: relative; margin:auto; width: ${size}px; height: ${size}px;">
-            <svg width="${size}" height="${size}" >
-              <circle
-                cx="${size / 2}"
-                cy="${size / 2}"
-                r="${radius}"
-                stroke="${displayText == "0%" ? "#FF0000FF" : "#FFFFFFFF"}"
-                stroke-width="${strokeWidth}"
-                fill="none"
-              />
-              <circle
-                cx="${size / 2}"
-                cy="${size / 2}"
-                r="${radius}"
-                stroke="#0C7733FF"
-                stroke-width="${strokeWidth}"
-                fill="none"
-                stroke-linecap="round"
-                stroke-dasharray="${circumference}"
-                stroke-dashoffset="${progressOffset}"
-                transform="rotate(-90 ${size / 2} ${size / 2})"
-              />
-            </svg>
-            <div style="
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: ${size}px;
-              height: ${size}px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 8px;
-              color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
-              font-weight: bold;
-            ">
-              ${displayText}
-            </div>
-          </div>
-        `;
+      <div style="position: relative; margin:auto; width: ${size}px; height: ${size}px;">
+        <svg width="${size}" height="${size}" >
+          <circle
+            cx="${size / 2}"
+            cy="${size / 2}"
+            r="${radius}"
+            stroke="${displayText == "0%" ? "#FF0000FF" : "#e0e0e0ff"}"
+            stroke-width="${strokeWidth}"
+            fill="none"
+          />
+          <circle
+            cx="${size / 2}"
+            cy="${size / 2}"
+            r="${radius}"
+            stroke="#0C7733FF"
+            stroke-width="${strokeWidth}"
+            fill="none"
+            stroke-linecap="round"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${progressOffset}"
+            transform="rotate(-90 ${size / 2} ${size / 2})"
+          />
+        </svg>
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: ${size}px;
+          height: ${size}px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          color: ${displayText == "0%" ? "#FF0000FF" : "#0C7733FF"};
+          font-weight: bold;
+        ">
+          ${displayText}
+        </div>
+      </div>
+    `;
       },
     },
     {
@@ -316,6 +339,35 @@ function TasksFollowing() {
       });
   };
 
+  const handleCopyLink = (task) => {
+  if (!task?.task_id) {
+    toast.error("Task ID is missing.");
+    return;
+  }
+
+  const taskIdToCopyUrl = task.task_id;
+
+  const encodeBase64Url = (str) => {
+    return btoa(str)
+      .replace(/\+/g, "-") // URL safe
+      .replace(/\//g, "_") // URL safe
+      .replace(/=+$/, ""); // remove padding
+  };
+
+  const encodedId = encodeBase64Url(String(taskIdToCopyUrl));
+  const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
+
+  navigator.clipboard
+    .writeText(link)
+    .then(() => {
+      toast.success("Link copied!");
+    })
+    .catch((err) => {
+      console.error("Failed to copy link: ", err);
+      toast.error("Copy failed.");
+    });
+};
+
   const [filtersVisible, setFiltersVisible] = useState(false);
 
   // Initialize DataTable
@@ -423,6 +475,10 @@ function TasksFollowing() {
                   $(row)
                       .find(".copy-btn")
                       .on("click", () => handleCopyButtonClick(data));
+
+                   $(row)
+                      .find(".copy-task-link")
+                      .on("click", () => handleCopyLink(data));
 
                   $(row)
                     .find(".tag-btn")

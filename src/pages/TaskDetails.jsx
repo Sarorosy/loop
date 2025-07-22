@@ -45,6 +45,8 @@ export default function TaskDetails({ taskId, onClose }) {
 
   const [showRemarksInput, setShowRemarksInput] = useState(false);
   const [taskRemarks, setTaskRemarks] = useState("");
+  const [marking, setMarking] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   // Example submit handler
   const submitRemarks = async () => {
@@ -53,15 +55,18 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch("https://loopback-skci.onrender.com/api/helper/addremarks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          task_id: taskId,
-          remarks: taskRemarks,
-          user_id: user?.id,
-        }),
-      });
+      const res = await fetch(
+        "https://loopback-skci.onrender.com/api/helper/addremarks",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            task_id: taskId,
+            remarks: taskRemarks,
+            user_id: user?.id,
+          }),
+        }
+      );
       const data = await res.json();
       if (data.status) {
         fetchTaskDetails();
@@ -80,11 +85,14 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://loopback-skci.onrender.com/api/tasks/details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: taskId }),
-      });
+      const res = await fetch(
+        "https://loopback-skci.onrender.com/api/tasks/details",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task_id: taskId }),
+        }
+      );
       const data = await res.json();
       if (data.status) setTask(data.data);
       else console.error("Error fetching task:", data.message);
@@ -102,6 +110,7 @@ export default function TaskDetails({ taskId, onClose }) {
   }, [task]);
 
   const handleMarkAsOnGoing = async () => {
+    setMarking(true);
     try {
       const response = await fetch(
         "https://loopback-skci.onrender.com/api/helper/markAsOngoing",
@@ -127,6 +136,8 @@ export default function TaskDetails({ taskId, onClose }) {
     } catch (error) {
       console.error("Error marking", error);
       toast.error("Error while marking");
+    } finally {
+      setMarking(false);
     }
   };
 
@@ -170,6 +181,7 @@ export default function TaskDetails({ taskId, onClose }) {
   };
 
   const handleMarkAsCompleted = async () => {
+    setCompleting(true);
     try {
       const response = await fetch(
         "https://loopback-skci.onrender.com/api/helper/markAsCompleted",
@@ -195,6 +207,8 @@ export default function TaskDetails({ taskId, onClose }) {
     } catch (error) {
       console.error("Error completing task", error);
       toast.error("Error while completing task");
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -452,10 +466,15 @@ export default function TaskDetails({ taskId, onClose }) {
                             task.fld_task_status != "Completed" && (
                               <button
                                 onClick={handleMarkAsCompleted}
-                                className="px-2 py-1 f-11 bg-green-600 text-white rounded flex items-center leading-none"
+                                disabled={completing}
+                                className={`px-2 py-1 f-11 ${
+                                  completing ? "bg-gray-400" : "bg-green-600"
+                                } text-white rounded flex items-center leading-none`}
                               >
-                                <CheckCircle size={13} className="mr-1" /> Mark
-                                As Complete
+                                <CheckCircle size={13} className="mr-1" />
+                                {completing
+                                  ? "Completing..."
+                                  : "Mark As Complete"}
                               </button>
                             )}
                           {task.ongoing_by_name ? (
@@ -466,12 +485,15 @@ export default function TaskDetails({ taskId, onClose }) {
                         </div>
                       ) : (
                         <button
-                          onClick={() => {
-                            handleMarkAsOnGoing();
-                          }}
-                          className="px-2 py-1 f-11 bg-green-600 text-white rounded leading-none"
+                          onClick={handleMarkAsOnGoing}
+                          disabled={marking}
+                          className={`px-2 py-1 f-11 rounded leading-none ${
+                            marking
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-green-600 text-white"
+                          }`}
                         >
-                          Mark As Ongoing
+                          {marking ? "Marking..." : "Mark As Ongoing"}
                         </button>
                       )}
                       {(task.fld_assign_to == user?.id ||
@@ -567,7 +589,7 @@ export default function TaskDetails({ taskId, onClose }) {
                     }}
                   />
                 </div>
-                
+
                 {(task.fld_google_sheets_or_docs_link ||
                   task.fld_asana_link) && (
                   <div className="flex gap-3">
@@ -821,11 +843,11 @@ export default function TaskDetails({ taskId, onClose }) {
                         {!showRemarksInput ? (
                           <div className="flex justify-end">
                             <button
-                            className="bg-blue-500 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-600 leading-none"
-                            onClick={() => setShowRemarksInput(true)}
-                          >
-                            Add Remarks
-                          </button>
+                              className="bg-blue-500 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-600 leading-none"
+                              onClick={() => setShowRemarksInput(true)}
+                            >
+                              Add Remarks
+                            </button>
                           </div>
                         ) : (
                           <div className="flex flex-col gap-2">
