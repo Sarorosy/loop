@@ -39,16 +39,20 @@ export default function AddTask() {
   });
 
    const dateRef = useRef();
-   useEffect(() => {
-    flatpickr(dateRef.current, {
-      dateFormat: "d/m/Y", // Display format
-      defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
-      onChange: (selectedDates) => {
-        const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
-        setFormData({ ...formData, dueDate: formatted });
-      }
-    });
-  }, []);
+ useEffect(() => {
+  flatpickr(dateRef.current, {
+    dateFormat: "d/m/Y",
+    defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
+    onChange: (selectedDates) => {
+      const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
+      setFormData((prev) => ({
+        ...prev,
+        dueDate: formatted
+      }));
+    }
+  });
+}, []);
+
 
   const [milestones, setMilestones] = useState([]);
   const [files, setFiles] = useState([]);
@@ -427,13 +431,26 @@ export default function AddTask() {
                           (o) => o.value === formData.bucketId
                         ) || null
                       }
-                      onChange={(option) => {
+                    onChange={(option) => {
   const selectedBucket = buckets.find((b) => b.id === option?.value);
+  const benchmarkIds = selectedBucket?.fld_default_benchmark
+    ? selectedBucket.fld_default_benchmark.split(",").map((id) => parseInt(id)) // Make sure IDs are numbers
+    : [];
+
+  const newMilestones = benchmarkIds.map((id) => ({
+    milestoneId: id,
+    milestoneDueDate: todayDateTime,
+  }));
+
   setFormData((prev) => ({
     ...prev,
     bucketId: option?.value || "",
     description: selectedBucket?.fld_default_description || prev.description,
   }));
+
+  if (milestonesList.length > 0) {
+    setMilestones(newMilestones);
+  }
 }}
                       placeholder="Select Bucket"
                     />
@@ -807,7 +824,7 @@ export default function AddTask() {
                             selectOptions(
                               milestonesList,
                               "fld_benchmark_name"
-                            ).find((o) => o.value === m.milestoneId) || null
+                            ).find((o) => o.value == m.milestoneId) || null
                           }
                           onChange={(option) =>
                             handleMilestoneChange(

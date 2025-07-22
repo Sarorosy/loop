@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import AddProject from "./AddProject";
 import EditProject from "./EditProject";
 import SearchBar from "../../components/SearchBar";
+import { formatDate } from "../../helpers/CommonHelper";
 
 export default function ManageProjects({ onClose }) {
   const [projects, setProjects] = useState([]);
@@ -129,7 +130,7 @@ export default function ManageProjects({ onClose }) {
                   <tr key={project.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{project.fld_project_name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{project.project_creator}</td>
-                    <td className="px-4 py-2 border border-[#ccc]">{project.created_at}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{formatDate(project.created_at)}</td>
                     <td className="px-4 py-2 border border-[#ccc]">
                       <div className="flex items-center space-x-2">
                         <button

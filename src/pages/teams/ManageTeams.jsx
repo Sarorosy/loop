@@ -8,6 +8,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import toast from "react-hot-toast";
 import AddTeam from "./AddTeam";
 import EditTeam from "./EditTeam";
+import { formatDate } from "../../helpers/CommonHelper";
 
 export default function ManageTeams({ onClose }) {
   const [teams, setTeams] = useState([]);
@@ -109,7 +110,7 @@ export default function ManageTeams({ onClose }) {
         return `
           <div class="flex items-center gap-2">
            
-            <span class="text-[13px]">${date.toLocaleDateString()}</span>
+            <span class="text-[13px]">${formatDate(date.toLocaleDateString())}</span>
           </div>
         `;
       },

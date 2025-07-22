@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import AddTag from "./AddTag";
 import EditTag from "./EditTag";
 import SearchBar from "../../components/SearchBar";
+import { formatDate } from "../../helpers/CommonHelper";
 
 export default function ManageTags({ onClose }) {
   const [tags, setTags] = useState([]);
@@ -148,7 +149,7 @@ export default function ManageTags({ onClose }) {
                         {tag.fld_first_name + " " + tag.fld_last_name}
                       </td>
                       <td className="px-4 py-2 border border-[#ccc]">
-                        {tag.created_at}
+                        {formatDate(tag.created_at)}
                       </td>
                       <td className="px-4 py-2 border border-[#ccc]">
                         <div className="flex items-center space-x-2">

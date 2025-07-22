@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import AddBenchmark from "./AddBenchmark";
 import EditBenchmark from "./EditBenchmark";
 import SearchBar from "../../components/SearchBar";
+import { formatDate } from "../../helpers/CommonHelper";
 
 export default function ManageBenchmark({ onClose }) {
   const [benchmarks, setBenchmarks] = useState([]);
@@ -127,7 +128,7 @@ export default function ManageBenchmark({ onClose }) {
                   <tr key={benchmark.id} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{benchmark.fld_benchmark_name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{benchmark.milestone_creator}</td>
-                    <td className="px-4 py-2 border border-[#ccc]">{benchmark.fld_addedon}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{formatDate(benchmark.fld_addedon)}</td>
                     <td className="px-4 py-2 border border-[#ccc]">
                       <div className="flex items-center space-x-2">
                         <button

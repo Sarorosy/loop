@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../utils/idb";
 import DeleteOrTransferModal from "./DeleteOrTransferModal";
 import SearchBar from "../../components/SearchBar";
+import { formatDate } from "../../helpers/CommonHelper";
 
 export default function ManageUser({ onClose }) {
   const [users, setUsers] = useState([]);
@@ -204,7 +205,7 @@ export default function ManageUser({ onClose }) {
                         {u.fld_decrypt_password}
                       </td>
                     )}
-                    <td className="px-4 py-2 border border-[#ccc]">{u.fld_addedon}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{formatDate(u.fld_addedon)}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{u.status}</td>
                     {(user?.fld_admin_type == "SUPERADMIN" ||
                       user?.fld_admin_type == "SUBADMIN") && (

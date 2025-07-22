@@ -108,7 +108,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     try {
       setSubmitting(true);
       const response = await fetch(
-        "https://loopback-skci.onrender.com/api/tasks/closetask",
+        "http://loopback-skci.onrender.com/api/tasks/closetask",
         {
           method: "POST",
           body: formData,

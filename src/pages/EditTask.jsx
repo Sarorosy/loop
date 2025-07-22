@@ -43,15 +43,19 @@ export default function EditTask() {
 
    const dateRef = useRef();
    useEffect(() => {
-    flatpickr(dateRef.current, {
-      dateFormat: "d/m/Y", // Display format
-      defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
-      onChange: (selectedDates) => {
-        const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
-        setFormData({ ...formData, dueDate: formatted });
-      }
-    });
-  }, []);
+  flatpickr(dateRef.current, {
+    dateFormat: "d/m/Y", // Display format
+    defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
+    onChange: (selectedDates) => {
+      const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
+      setFormData((prev) => ({
+        ...prev,
+        dueDate: formatted,
+      }));
+    }
+  });
+}, []);
+
 
   const [milestones, setMilestones] = useState([]);
   const [files, setFiles] = useState([]);
@@ -216,15 +220,13 @@ export default function EditTask() {
         errors.push("Please assign the task to at least one user");
       }
 
-      if (!formData.dueDate) {
-        errors.push("Due date is required");
-      }
+      
 
       // Validate due date is not in the past
       if (formData.dueDate) {
         const today = new Date().toISOString().split("T")[0];
         if (formData.dueDate < today) {
-          // errors.push("Due date cannot be in the past");
+          errors.push("Due date cannot be in the past");
         }
       }
 
@@ -261,9 +263,7 @@ export default function EditTask() {
         if (!milestone.milestoneId) {
           errors.push(`Milestone ${i + 1}: Please select a milestone`);
         }
-        if (!milestone.milestoneDueDate) {
-          errors.push(`Milestone ${i + 1}: Due date is required`);
-        }
+       
       }
 
       // Validate files

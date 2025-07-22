@@ -10,6 +10,7 @@ import "./query.css";
 import Select from "react-select";
 import AssignQuery from "./AssignQuery";
 import AssignMultipleQuery from "./AssignMultipleQuery";
+import { formatDate } from "../../helpers/CommonHelper";
 
 function ManageQuery() {
   const { user } = useAuth();
@@ -303,7 +304,7 @@ function ManageQuery() {
       data: "date",
       orderable: true,
       render: (data) => {
-        return data ? `<div class="n-word-break">` +  data + `</div>` : "-";
+        return data ? `<div class="n-word-break">` +  formatDate(data) + `</div>` : "-";
       },
     },
     {
