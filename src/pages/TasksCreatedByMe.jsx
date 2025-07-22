@@ -129,21 +129,31 @@ function TasksCreatedByMe() {
       orderable: false,
       render: (data, type, row) => `
         <div class="truncate !w-50">
-          <small>${row.fld_unique_task_id || "-"}</small>
-          <span 
-  class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
->
-  <i class="fa fa-clone" aria-hidden="true"></i>
-</span>
-          <br>
-           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
-             row.fld_title || "-"
-           }</div>
-           ${
-          row.fld_reopen == 1
-            ? `<span class="inline-block mt-1 bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
-            : ""
-        }
+          <div class="flex justify-between items-center">
+            <div class="leading-none">
+              <small class="text-[12px]">${row.fld_unique_task_id || "-"}</small>
+              <span 
+                class="copy-btn cursor-pointer text-gray-500 hover:text-black text-[10px] ml-1 rounded hover:bg-gray-100 transition"
+              >
+                <i class="fa fa-clone" aria-hidden="true"></i>
+              </span>
+            </div>
+            
+              ${
+                row.fld_reopen == 1
+                ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
+                : ""
+              }
+           
+          </div>
+
+          
+          <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate mt-1.5">
+          ${
+            row.fld_title || "-"
+          }
+          </div>
+            
         </div>
       `,
     },
@@ -231,7 +241,7 @@ function TasksCreatedByMe() {
       render: (data, type, row) => {
         const dueDate = row.fld_due_date || "-";
         const dueTime = row.fld_due_time || "";
-        return `${formatDate(dueDate)} ${dueTime}`.trim();
+        return `<div class="text-[11px] whitespace-nowrap">${formatDate(dueDate)} ${dueTime}</div>`.trim();
       },
     },
     {
@@ -271,7 +281,7 @@ function TasksCreatedByMe() {
         let color = "#6B7280"; // default gray
         if (status === "Completed") color = "#10B981";
         else if (status === "Pending") color = "#EF4444";
-        return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
+        return `<span class="text-[11px]" style="color: ${color}; font-weight: bold;">${status}</span>`;
       },
     },
     {
@@ -293,7 +303,7 @@ function TasksCreatedByMe() {
         const ampm = hours >= 12 ? "PM" : "AM";
         const displayHours = (hours % 12 || 12).toString();
 
-        return `${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}`;
+        return `<div class="text-[11px] whitespace-nowrap">${day} ${month} ${year}, ${displayHours}:${minutes} ${ampm}</di>`;
       },
     },
     {
@@ -302,8 +312,8 @@ function TasksCreatedByMe() {
       orderable: false,
       render: (data, type, row) => `
       <div class="flex items-center">
-      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded w-6 h-6 text-[12px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
-        <div>
+      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded  text-[11px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
+        <div class="text-[12px]">
           ${row.added_by_name || "-"}
         </div>
         </div>
