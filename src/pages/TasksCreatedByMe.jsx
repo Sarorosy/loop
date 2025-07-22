@@ -408,7 +408,7 @@ const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone =
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/tasks/reopen", {
+      const response = await fetch("https://loopback-skci.onrender.com/api/tasks/reopen", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
