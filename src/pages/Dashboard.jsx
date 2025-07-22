@@ -127,19 +127,31 @@ function Dashboard() {
       orderable: false,
       render: (data, type, row) => `
         <div class="truncate !w-50">
-          <small class="text-[13px]">${row.fld_unique_task_id || "-"}</small>
-           <span 
-  class="copy-btn cursor-pointer text-gray-500 hover:text-black text-xs p-1 rounded hover:bg-gray-100 transition"
->
-  <i class="fa fa-clone" aria-hidden="true"></i>
-</span>
-          <br>
-          
-           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[11px] truncate ">${
-             row.fld_title || "-"
-           }</div>
-          
+          <div class="flex justify-between items-center">
+            <div class="leading-none">
+              <small class="text-[12px]">${row.fld_unique_task_id || "-"}</small>
+              <span 
+                class="copy-btn cursor-pointer text-gray-500 hover:text-black text-[10px] ml-1 rounded hover:bg-gray-100 transition"
+              >
+                <i class="fa fa-clone" aria-hidden="true"></i>
+              </span>
+            </div>
+            
+              ${
+                row.fld_reopen == 1
+                ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
+                : ""
+              }
+           
+          </div>
 
+          
+          <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate mt-1.5">
+          ${
+            row.fld_title || "-"
+          }
+          </div>
+            
         </div>
       `,
     },
