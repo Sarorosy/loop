@@ -57,3 +57,5 @@ export const calculateTaskProgress = (task) => {
 
     return Math.min(totalPercent, 100); // Make sure it doesn't exceed 100
   };
+
+  

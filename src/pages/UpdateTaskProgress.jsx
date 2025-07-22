@@ -246,7 +246,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
               value={remarks}
               onEditorChange={(newContent) => setRemarks(newContent)}
               init={{
-                height: 300,
+                height: 200,
                 menubar: false,
                 plugins: [
                   "advlist autolink lists link charmap preview anchor",
