@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../utils/idb";
 import { Editor } from "@tinymce/tinymce-react";
 import { useRef } from "react";
+import { X } from "lucide-react";
 
 export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
   const [selectedBenchmarks, setSelectedBenchmarks] = useState(
@@ -141,6 +142,13 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           <h2 className="text-[15px] font-semibold text-white">
             Update Task Progress
           </h2>
+          <button
+              type="button"
+              onClick={onClose}
+              className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
+            >
+              <X size={13} />
+            </button>
         </div>
 
         <form
@@ -304,14 +312,8 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             )}
           </div>
 
-          <div className="flex justify-between gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
-            >
-              Cancel
-            </button>
+          <div className="flex justify-end gap-2">
+            
             <button
               type="submit"
               disabled={submitting}
