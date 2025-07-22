@@ -131,7 +131,9 @@ function TasksCreatedByMe() {
         <div class="truncate !w-50">
           <div class="flex justify-between items-center">
             <div class="leading-none">
-              <small class="text-[12px]">${row.fld_unique_task_id || "-"}</small>
+              <small class="text-[12px]">${
+                row.fld_unique_task_id || "-"
+              }</small>
               <span 
                 class="copy-btn cursor-pointer text-gray-500 hover:text-black text-[10px] ml-1 rounded hover:bg-gray-100 transition"
               >
@@ -149,17 +151,15 @@ function TasksCreatedByMe() {
             
               ${
                 row.fld_reopen == 1
-                ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
-                : ""
+                  ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
+                  : ""
               }
            
           </div>
 
           
           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate mt-1.5">
-          ${
-            row.fld_title || "-"
-          }
+          ${row.fld_title || "-"}
           </div>
             
         </div>
@@ -185,7 +185,7 @@ function TasksCreatedByMe() {
     `;
       },
     },
-     {
+    {
       title: "Progress",
       data: null,
       orderable: false,
@@ -249,7 +249,9 @@ function TasksCreatedByMe() {
       render: (data, type, row) => {
         const dueDate = row.fld_due_date || "-";
         const dueTime = row.fld_due_time || "";
-        return `<div class="text-[11px] whitespace-nowrap">${formatDate(dueDate)} ${dueTime}</div>`.trim();
+        return `<div class="text-[11px] whitespace-nowrap">${formatDate(
+          dueDate
+        )} ${dueTime}</div>`.trim();
       },
     },
     {
@@ -363,181 +365,197 @@ function TasksCreatedByMe() {
   const [selectedReopenMilestone, setSelectedReopenMilestone] = useState("");
 
   const handleReopenModalOpen = (task) => {
-    setSelectedReopenMilestone(task.fld_benchmark_name||[]);
-   // console.log("Selected Reopen Milestone:", task);
+    setSelectedReopenMilestone(task.fld_benchmark_name || []);
+    // console.log("Selected Reopen Milestone:", task);
     setSelectedTaskId(task.task_id);
     setReopenModalOpen(true);
   };
 
-const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone = [] }) => {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [selectedMilestones, setSelectedMilestones] = useState([""]);
-  const [comment, setComment] = useState("");
+  const ReopenModal = ({
+    isOpen,
+    onClose,
+    taskid,
+    milestones = [],
+    taskMilestone = [],
+  }) => {
+    const [selectedOption, setSelectedOption] = useState("");
+    const [selectedMilestones, setSelectedMilestones] = useState([""]);
+    const [comment, setComment] = useState("");
 
-  if (!isOpen) return null;
+    if (!isOpen) return null;
 
-  const handleAddMilestone = () => {
-    setSelectedMilestones([...selectedMilestones, ""]);
-  };
+    const handleAddMilestone = () => {
+      setSelectedMilestones([...selectedMilestones, ""]);
+    };
 
-  const handleMilestoneChange = (value, index) => {
-    const updated = [...selectedMilestones];
-    updated[index] = value;
-    setSelectedMilestones(updated);
-  };
+    const handleMilestoneChange = (value, index) => {
+      const updated = [...selectedMilestones];
+      updated[index] = value;
+      setSelectedMilestones(updated);
+    };
 
-  const handleReopenSubmit = async () => {
-    if (!comment.trim()) {
-      toast.error("Please enter a comment.");
-      return;
-    }
-
-    if (taskMilestone.length > 0) {
-      if (!selectedOption) {
-        toast.error("Please select a reopen option.");
+    const handleReopenSubmit = async () => {
+      if (!comment.trim()) {
+        toast.error("Please enter a comment.");
         return;
       }
 
-      if (selectedOption === "custom") {
-        const isValid = selectedMilestones.every((ms) => ms !== "");
-        if (!isValid) {
-          toast.error("Please select all milestone(s).");
+      if (taskMilestone.length > 0) {
+        if (!selectedOption) {
+          toast.error("Please select a reopen option.");
           return;
         }
-      }
-    }
 
-    const payload = {
-      user_id: user?.id,
-      taskId: taskid,
-      option: selectedOption,
-      milestones: selectedOption === "custom" ? selectedMilestones : [],
-      reopen_comments: comment.trim(),
+        if (selectedOption === "custom") {
+          const isValid = selectedMilestones.every((ms) => ms !== "");
+          if (!isValid) {
+            toast.error("Please select all milestone(s).");
+            return;
+          }
+        }
+      }
+
+      const payload = {
+        user_id: user?.id,
+        taskId: taskid,
+        option: selectedOption,
+        milestones: selectedOption === "custom" ? selectedMilestones : [],
+        reopen_comments: comment.trim(),
+      };
+
+      try {
+        const response = await fetch(
+          "https://loopback-skci.onrender.com/api/tasks/reopen",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to reopen task");
+        }
+
+        const result = await response.json();
+        toast.success("Task reopened successfully!");
+
+        onClose();
+        fetchTasks(user, setTasks, setLoading, filters);
+      } catch (error) {
+        console.error("Reopen Error:", error);
+        toast.error(error.message || "Something went wrong!");
+      }
     };
 
-    try {
-      const response = await fetch("https://loopback-skci.onrender.com/api/tasks/reopen", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to reopen task");
-      }
-
-      const result = await response.json();
-      toast.success("Task reopened successfully!");
-      
-      onClose();
-      fetchTasks(user, setTasks, setLoading, filters);
-    } catch (error) {
-      console.error("Reopen Error:", error);
-      toast.error(error.message || "Something went wrong!");
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000073]">
-      <div className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4">
-        {/* Header */}
-        <div className="flex justify-between items-center px-4 py-3 bg-[#224d68] rounded-t">
-          <h2 className="text-[15px] font-semibold text-white">Reopen Task</h2>
-          <button
-            className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
-            onClick={onClose}
-          >
-            <X size={13} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="p-4 text-[13px] flex flex-col gap-4">
-          {taskMilestone.length > 0 ? (
-            <>
-              {/* Reopen Options */}
-              <div className="flex flex-col gap-2">
-                {[
-                  { value: "all", label: "Open All Milestones" },
-                  { value: "last", label: "Open Last Milestone" },
-                  { value: "custom", label: "Open with Additional Milestone(s)" },
-                ].map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="reopenOption"
-                      value={opt.value}
-                      checked={selectedOption === opt.value}
-                      onChange={(e) => setSelectedOption(e.target.value)}
-                    />
-                    {opt.label}
-                  </label>
-                ))}
-              </div>
-
-              {/* Custom Milestone Selectors */}
-              {selectedOption === "custom" && (
-                <div className="mt-2">
-                  {selectedMilestones.map((selected, index) => (
-                    <select
-                      key={index}
-                      value={selected}
-                      onChange={(e) => handleMilestoneChange(e.target.value, index)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 mb-2 text-sm"
-                    >
-                      <option value="">Select Milestone</option>
-                      {milestones.map((ms) => (
-                        <option key={ms.id} value={ms.id}>
-                          {ms.fld_benchmark_name}
-                        </option>
-                      ))}
-                    </select>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={handleAddMilestone}
-                    className="flex items-center text-blue-600 hover:underline text-sm mt-1"
-                  >
-                    <Plus className="w-4 h-4 mr-1" /> Add Milestone
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <p className="text-sm text-gray-500">No milestones found. Only comment required.</p>
-          )}
-
-          {/* Comment Box */}
-          <div>
-            <label className="block mb-1 text-sm font-medium">Comment</label>
-            <textarea
-              className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-              rows={3}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Enter reason for reopening..."
-            />
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000073]">
+        <div className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4">
+          {/* Header */}
+          <div className="flex justify-between items-center px-4 py-3 bg-[#224d68] rounded-t">
+            <h2 className="text-[15px] font-semibold text-white">
+              Reopen Task
+            </h2>
+            <button
+              className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
+              onClick={onClose}
+            >
+              <X size={13} />
+            </button>
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end mt-2 gap-2">
-            <button
-              onClick={handleReopenSubmit}
-              className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition text-sm"
-            >
-              Confirm
-            </button>
+          {/* Body */}
+          <div className="p-4 text-[13px] flex flex-col gap-4">
+            {taskMilestone.length > 0 ? (
+              <>
+                {/* Reopen Options */}
+                <div className="flex flex-col gap-2">
+                  {[
+                    { value: "all", label: "Open All Milestones" },
+                    { value: "last", label: "Open Last Milestone" },
+                    {
+                      value: "custom",
+                      label: "Open with Additional Milestone(s)",
+                    },
+                  ].map((opt) => (
+                    <label key={opt.value} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="reopenOption"
+                        value={opt.value}
+                        checked={selectedOption === opt.value}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                      />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
+
+                {/* Custom Milestone Selectors */}
+                {selectedOption === "custom" && (
+                  <div className="mt-2">
+                    {selectedMilestones.map((selected, index) => (
+                      <select
+                        key={index}
+                        value={selected}
+                        onChange={(e) =>
+                          handleMilestoneChange(e.target.value, index)
+                        }
+                        className="w-full border border-gray-300 rounded px-2 py-1 mb-2 text-sm"
+                      >
+                        <option value="">Select Milestone</option>
+                        {milestones.map((ms) => (
+                          <option key={ms.id} value={ms.id}>
+                            {ms.fld_benchmark_name}
+                          </option>
+                        ))}
+                      </select>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={handleAddMilestone}
+                      className="flex items-center text-blue-600 hover:underline text-sm mt-1"
+                    >
+                      <Plus className="w-4 h-4 mr-1" /> Add Milestone
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-gray-500">
+                No milestones found. Only comment required.
+              </p>
+            )}
+
+            {/* Comment Box */}
+            <div>
+              <label className="block mb-1 text-sm font-medium">Comment</label>
+              <textarea
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                rows={3}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Enter reason for reopening..."
+              />
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end mt-2 gap-2">
+              <button
+                onClick={handleReopenSubmit}
+                className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition text-sm"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-
+    );
+  };
 
   const handleViewButtonClick = (task) => {
     setSelectedTask(task);
@@ -562,33 +580,33 @@ const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone =
   };
 
   const handleCopyLink = (task) => {
-  if (!task?.task_id) {
-    toast.error("Task ID is missing.");
-    return;
-  }
+    if (!task?.task_id) {
+      toast.error("Task ID is missing.");
+      return;
+    }
 
-  const taskIdToCopyUrl = task.task_id;
+    const taskIdToCopyUrl = task.task_id;
 
-  const encodeBase64Url = (str) => {
-    return btoa(str)
-      .replace(/\+/g, "-") // URL safe
-      .replace(/\//g, "_") // URL safe
-      .replace(/=+$/, ""); // remove padding
+    const encodeBase64Url = (str) => {
+      return btoa(str)
+        .replace(/\+/g, "-") // URL safe
+        .replace(/\//g, "_") // URL safe
+        .replace(/=+$/, ""); // remove padding
+    };
+
+    const encodedId = encodeBase64Url(String(taskIdToCopyUrl));
+    const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
+
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        toast.success("Link copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy link: ", err);
+        toast.error("Copy failed.");
+      });
   };
-
-  const encodedId = encodeBase64Url(String(taskIdToCopyUrl));
-  const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
-
-  navigator.clipboard
-    .writeText(link)
-    .then(() => {
-      toast.success("Link copied!");
-    })
-    .catch((err) => {
-      console.error("Failed to copy link: ", err);
-      toast.error("Copy failed.");
-    });
-};
 
   const navigate = useNavigate();
   const handleEditButtonClick = (task) => {
@@ -918,7 +936,7 @@ const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone =
                       .find(".reopen-btnnn")
                       .on("click", () => handleReopenModalOpen(data));
 
-                     $(row)
+                    $(row)
                       .find(".copy-task-link")
                       .on("click", () => handleCopyLink(data));
 
@@ -1034,9 +1052,9 @@ const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone =
                     .find(".reopen-btnnn")
                     .on("click", () => handleReopenModalOpen(data));
 
-                   $(row)
-                      .find(".copy-task-link")
-                      .on("click", () => handleCopyLink(data));
+                  $(row)
+                    .find(".copy-task-link")
+                    .on("click", () => handleCopyLink(data));
 
                   $(row)
                     .find(".edit-btn")
@@ -1045,6 +1063,10 @@ const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone =
                   $(row)
                     .find(".delete-btn")
                     .on("click", () => handleDeleteButtonClick(data));
+
+                  $(row)
+                    .find(".reminder-btn")
+                    .on("click", () => handleReminderButtonClick(data));
 
                   $(row)
                     .find(".copy-btn")
@@ -1119,17 +1141,20 @@ const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone =
       </AnimatePresence>
 
       <ReopenModal
-  isOpen={reopenModalOpen}
-  onClose={() => setReopenModalOpen(false)}
-  taskid={selectedTaskId}
-  milestones={milestones}
- taskMilestone={
-    typeof selectedReopenMilestone === 'string' && selectedReopenMilestone.trim() !== ''
-      ? selectedReopenMilestone.split(',').map((b) => b.trim()).filter(Boolean)
-      : []
-  }
-/>
-
+        isOpen={reopenModalOpen}
+        onClose={() => setReopenModalOpen(false)}
+        taskid={selectedTaskId}
+        milestones={milestones}
+        taskMilestone={
+          typeof selectedReopenMilestone === "string" &&
+          selectedReopenMilestone.trim() !== ""
+            ? selectedReopenMilestone
+                .split(",")
+                .map((b) => b.trim())
+                .filter(Boolean)
+            : []
+        }
+      />
     </div>
   );
 }
