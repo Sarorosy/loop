@@ -6,7 +6,7 @@ import DT from "datatables.net-dt";
 import $ from "jquery";
 import TaskDetails from "./TaskDetails";
 import { AnimatePresence } from "framer-motion";
-import { Filter, Layers2, RefreshCcw, User2 } from "lucide-react";
+import { Filter, Layers2, Plus, RefreshCcw, User2, X } from "lucide-react";
 import {
   Tag,
   User,
@@ -139,6 +139,11 @@ function TasksCreatedByMe() {
            <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate ">${
              row.fld_title || "-"
            }</div>
+           ${
+          row.fld_reopen == 1
+            ? `<span class="inline-block mt-1 bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
+            : ""
+        }
         </div>
       `,
     },
@@ -308,12 +313,21 @@ function TasksCreatedByMe() {
       title: "Actions",
       data: null,
       orderable: false,
-      render: (data, type, row) => `
-      <div class="flex gap-2">
-        <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">Edit</button>
-        <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">Delete</button>
-      </div>
-    `,
+      render: (data, type, row) => {
+        const showReopen = row.fld_task_status == "Completed";
+        return `
+          <div class="flex gap-2 items-center">
+            
+            <button class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium">Edit</button>
+            <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">Delete</button>
+            ${
+              showReopen
+                ? `<button class="reopen-btnnn bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">Reopen</button>`
+                : ""
+            }
+          </div>
+        `;
+      },
     },
   ];
 
@@ -323,6 +337,190 @@ function TasksCreatedByMe() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const [reopenModalOpen, setReopenModalOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [reopenOption, setReopenOption] = useState("open_all");
+  const [selectedMilestones, setSelectedMilestones] = useState([""]);
+  const [selectedReopenMilestone, setSelectedReopenMilestone] = useState("");
+
+  const handleReopenModalOpen = (task) => {
+    setSelectedReopenMilestone(task.fld_benchmark_name||[]);
+   // console.log("Selected Reopen Milestone:", task);
+    setSelectedTaskId(task.task_id);
+    setReopenModalOpen(true);
+  };
+
+const ReopenModal = ({ isOpen, onClose, taskid, milestones = [], taskMilestone = [] }) => {
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedMilestones, setSelectedMilestones] = useState([""]);
+  const [comment, setComment] = useState("");
+
+  if (!isOpen) return null;
+
+  const handleAddMilestone = () => {
+    setSelectedMilestones([...selectedMilestones, ""]);
+  };
+
+  const handleMilestoneChange = (value, index) => {
+    const updated = [...selectedMilestones];
+    updated[index] = value;
+    setSelectedMilestones(updated);
+  };
+
+  const handleReopenSubmit = async () => {
+    if (!comment.trim()) {
+      toast.error("Please enter a comment.");
+      return;
+    }
+
+    if (taskMilestone.length > 0) {
+      if (!selectedOption) {
+        toast.error("Please select a reopen option.");
+        return;
+      }
+
+      if (selectedOption === "custom") {
+        const isValid = selectedMilestones.every((ms) => ms !== "");
+        if (!isValid) {
+          toast.error("Please select all milestone(s).");
+          return;
+        }
+      }
+    }
+
+    const payload = {
+      user_id: user?.id,
+      taskId: taskid,
+      option: selectedOption,
+      milestones: selectedOption === "custom" ? selectedMilestones : [],
+      reopen_comments: comment.trim(),
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/tasks/reopen", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to reopen task");
+      }
+
+      const result = await response.json();
+      toast.success("Task reopened successfully!");
+      
+      onClose();
+      fetchTasks(user, setTasks, setLoading, filters);
+    } catch (error) {
+      console.error("Reopen Error:", error);
+      toast.error(error.message || "Something went wrong!");
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000073]">
+      <div className="bg-white text-black rounded shadow-xl w-full max-w-md mx-4">
+        {/* Header */}
+        <div className="flex justify-between items-center px-4 py-3 bg-[#224d68] rounded-t">
+          <h2 className="text-[15px] font-semibold text-white">Reopen Task</h2>
+          <button
+            className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
+            onClick={onClose}
+          >
+            <X size={13} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-4 text-[13px] flex flex-col gap-4">
+          {taskMilestone.length > 0 ? (
+            <>
+              {/* Reopen Options */}
+              <div className="flex flex-col gap-2">
+                {[
+                  { value: "all", label: "Open All Milestones" },
+                  { value: "last", label: "Open Last Milestone" },
+                  { value: "custom", label: "Open with Additional Milestone(s)" },
+                ].map((opt) => (
+                  <label key={opt.value} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="reopenOption"
+                      value={opt.value}
+                      checked={selectedOption === opt.value}
+                      onChange={(e) => setSelectedOption(e.target.value)}
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+
+              {/* Custom Milestone Selectors */}
+              {selectedOption === "custom" && (
+                <div className="mt-2">
+                  {selectedMilestones.map((selected, index) => (
+                    <select
+                      key={index}
+                      value={selected}
+                      onChange={(e) => handleMilestoneChange(e.target.value, index)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 mb-2 text-sm"
+                    >
+                      <option value="">Select Milestone</option>
+                      {milestones.map((ms) => (
+                        <option key={ms.id} value={ms.id}>
+                          {ms.fld_benchmark_name}
+                        </option>
+                      ))}
+                    </select>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleAddMilestone}
+                    className="flex items-center text-blue-600 hover:underline text-sm mt-1"
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Add Milestone
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">No milestones found. Only comment required.</p>
+          )}
+
+          {/* Comment Box */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">Comment</label>
+            <textarea
+              className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              rows={3}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Enter reason for reopening..."
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-end mt-2 gap-2">
+            <button
+              onClick={handleReopenSubmit}
+              className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition text-sm"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
   const handleViewButtonClick = (task) => {
     setSelectedTask(task);
     setDetailsOpen(true);
@@ -361,15 +559,18 @@ function TasksCreatedByMe() {
       return;
     }
     try {
-      const response = await fetch("https://loopback-skci.onrender.com/api/tasks/delete", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          task_id: selectedTask?.task_id,
-        }),
-      });
+      const response = await fetch(
+        "https://loopback-skci.onrender.com/api/tasks/delete",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            task_id: selectedTask?.task_id,
+          }),
+        }
+      );
       const data = await response.json();
       if (data.status) {
         toast.success(data.message || "Task Deleted Succesfully");
@@ -667,6 +868,10 @@ function TasksCreatedByMe() {
                       .on("click", () => handleViewButtonClick(data));
 
                     $(row)
+                      .find(".reopen-btnnn")
+                      .on("click", () => handleReopenModalOpen(data));
+
+                    $(row)
                       .find(".reminder-btn")
                       .on("click", () => handleReminderButtonClick(data));
 
@@ -775,6 +980,10 @@ function TasksCreatedByMe() {
                     .on("click", () => handleViewButtonClick(data));
 
                   $(row)
+                    .find(".reopen-btnnn")
+                    .on("click", () => handleReopenModalOpen(data));
+
+                  $(row)
                     .find(".edit-btn")
                     .on("click", () => handleEditButtonClick(data)); // <-- Edit button
 
@@ -783,8 +992,8 @@ function TasksCreatedByMe() {
                     .on("click", () => handleDeleteButtonClick(data));
 
                   $(row)
-                      .find(".copy-btn")
-                      .on("click", () => handleCopyButtonClick(data));
+                    .find(".copy-btn")
+                    .on("click", () => handleCopyButtonClick(data));
 
                   $(row)
                     .find(".tag-btn")
@@ -853,6 +1062,19 @@ function TasksCreatedByMe() {
           />
         )}
       </AnimatePresence>
+
+      <ReopenModal
+  isOpen={reopenModalOpen}
+  onClose={() => setReopenModalOpen(false)}
+  taskid={selectedTaskId}
+  milestones={milestones}
+ taskMilestone={
+    typeof selectedReopenMilestone === 'string' && selectedReopenMilestone.trim() !== ''
+      ? selectedReopenMilestone.split(',').map((b) => b.trim()).filter(Boolean)
+      : []
+  }
+/>
+
     </div>
   );
 }

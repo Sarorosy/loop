@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import AddBucket from "./AddBucket";
 import EditBucket from "./EditBucket";
 import SearchBar from "../../components/SearchBar";
+import { formatDate } from "../../helpers/CommonHelper";
 
 export default function ManageBucket({ onClose }) {
   const [buckets, setBuckets] = useState([]);
@@ -128,7 +129,7 @@ export default function ManageBucket({ onClose }) {
                   <tr key={bucket.id || idx} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-2 border border-[#ccc]">{bucket.fld_bucket_name}</td>
                     <td className="px-4 py-2 border border-[#ccc]">{bucket.bucket_creator}</td>
-                    <td className="px-4 py-2 border border-[#ccc]">{bucket.fld_addedon}</td>
+                    <td className="px-4 py-2 border border-[#ccc]">{formatDate(bucket.fld_addedon)}</td>
                     <td className="px-4 py-2 border border-[#ccc]">
                       <div className="flex items-center space-x-2">
                         <button
