@@ -100,7 +100,7 @@ export default function History({ taskId }) {
                   <span className="text-[10px] text-gray-500">{formatDateTime(item.fld_addedon)}</span>
                 </div>
               <div
-                className="!text-[12px] text-gray-600 inner-content"
+                className="!text-[12px] text-gray-600 inner-content break-all"
                 dangerouslySetInnerHTML={{ __html: item.fld_remark }}
               />
               {item.fld_file && (

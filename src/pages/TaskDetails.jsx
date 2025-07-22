@@ -347,12 +347,12 @@ export default function TaskDetails({ taskId, onClose }) {
               <div className="flex justify-between items-start w-full space-x-2">
                 {/* Left Side */}
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3 mb-2">
                     {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                     <Target size={13} className="text-white" />
                   </div> */}
                     <div>
-                      <h1 className="text-[15px] font-semibold text-gray-900">
+                      <h1 className="text-[15px] font-semibold text-gray-900 mb-2">
                         View Details - {task.fld_title}
                       </h1>
                       <p className="text-[13px] text-gray-600 flex items-center">
@@ -567,58 +567,13 @@ export default function TaskDetails({ taskId, onClose }) {
                     }}
                   />
                 </div>
-                {task.fld_task_status !== "updated" &&
-                  task.fld_task_status !== "Completed" &&
-                  (task.fld_assign_to == user?.id ||
-                    task.fld_follower?.split(",").includes(user?.id)) && (
-                    <div className="gap-3">
-                      <>
-                        {!showRemarksInput ? (
-                          <div className="flex justify-end">
-                            <button
-                            className="bg-blue-500 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-600 leading-none"
-                            onClick={() => setShowRemarksInput(true)}
-                          >
-                            Add Remarks
-                          </button>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-2">
-                            <textarea
-                              rows={4}
-                              className="border border-gray-300 rounded p-2 text-[13px] bg-white"
-                              placeholder="Enter your remarks here..."
-                              value={taskRemarks}
-                              onChange={(e) => setTaskRemarks(e.target.value)}
-                            ></textarea>
-                            <div className="flex justify-end gap-2">
-                              <button
-                                className="bg-green-500 text-white text-xs py-1 px-3 rounded hover:bg-green-600"
-                                onClick={submitRemarks}
-                              >
-                                Submit
-                              </button>
-                              <button
-                                className="bg-gray-300 text-gray-800 text-xs py-1 px-3 rounded hover:bg-gray-400"
-                                onClick={() => {
-                                  setShowRemarksInput(false);
-                                  setTaskRemarks("");
-                                }}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    </div>
-                  )}
+                
                 {(task.fld_google_sheets_or_docs_link ||
                   task.fld_asana_link) && (
                   <div className="flex gap-3">
                     {/* DOC link */}
                     {task.fld_google_sheets_or_docs_link && (
-                      <div className="bg-white border border-gray-200 rounded p-2 min-w-[50%] truncate">
+                      <div className="bg-white border border-gray-200 rounded p-2 flex-1 truncate">
                         <div className=" gap-3 text-[13px]">
                           <div className="flex items-end">
                             <span className="font-medium leading-none flex items-end gap-1">
@@ -641,7 +596,7 @@ export default function TaskDetails({ taskId, onClose }) {
 
                     {/* ASANA URL */}
                     {task.fld_asana_link && (
-                      <div className="bg-white border border-gray-200 rounded- p-2 truncate">
+                      <div className="bg-white border border-gray-200 rounded flex-1 p-2 truncate">
                         <div className="gap-3 text-[13px]">
                           <div className="flex items-end">
                             <span className="font-medium text-orange-600 flex items-end gap-1 leading-none">
@@ -856,6 +811,53 @@ export default function TaskDetails({ taskId, onClose }) {
                     </div>
                   </div>
                 )}
+
+                {task.fld_task_status !== "updated" &&
+                  task.fld_task_status !== "Completed" &&
+                  (task.fld_assign_to == user?.id ||
+                    task.fld_follower?.split(",").includes(user?.id)) && (
+                    <div className="gap-3">
+                      <>
+                        {!showRemarksInput ? (
+                          <div className="flex justify-end">
+                            <button
+                            className="bg-blue-500 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-600 leading-none"
+                            onClick={() => setShowRemarksInput(true)}
+                          >
+                            Add Remarks
+                          </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <textarea
+                              rows={4}
+                              className="border border-gray-300 rounded p-2 text-[13px] bg-white"
+                              placeholder="Enter your remarks here..."
+                              value={taskRemarks}
+                              onChange={(e) => setTaskRemarks(e.target.value)}
+                            ></textarea>
+                            <div className="flex justify-end gap-2">
+                              <button
+                                className="bg-green-500 text-white text-xs py-1 px-3 rounded hover:bg-green-600"
+                                onClick={submitRemarks}
+                              >
+                                Submit
+                              </button>
+                              <button
+                                className="bg-gray-300 text-gray-800 text-xs py-1 px-3 rounded hover:bg-gray-400"
+                                onClick={() => {
+                                  setShowRemarksInput(false);
+                                  setTaskRemarks("");
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    </div>
+                  )}
                 {task.fld_benchmark_name && (
                   <div className="bg-white border border-gray-200 rounded p-2 ">
                     <MilestoneInfo taskId={taskId} />
