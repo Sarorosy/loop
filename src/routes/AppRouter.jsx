@@ -24,6 +24,7 @@ import TasksFollowing from "../pages/TasksFollowing";
 import ManageQuery from "../pages/query/ManageQuery";
 import SetPassword from "../pages/manageuser/SetPassword";
 import ForgotPassword from "../pages/ForgotPassword";
+import DirectTasks from "../pages/DirectTasks";
 
 
 
@@ -49,6 +50,7 @@ export default function AppRouter() {
             <Route path="/tasks/team" element={<TeamTasks />} />
             <Route path="/tasks/created-by-me" element={<TasksCreatedByMe />} />
             <Route path="/tasks/following" element={<TasksFollowing />} />
+            <Route path="/tasks/direct" element={<DirectTasks />} />
 
 
             <Route path="/tasks/add" element={<AddTask />} />

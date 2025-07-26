@@ -504,6 +504,13 @@ const [permissionGranted, setPermissionGranted] = useState(false);
               icon={ListTodo}
               onClick={() => navigate("/tasks/following")}
             />
+            {user?.fld_admin_type == "SUPERADMIN" && (
+              <TabLink
+                label="Direct Tasks"
+                icon={ListTodo}
+                onClick={() => navigate("/tasks/direct")}
+              />
+            )}
           </TabDropdown>
           {(user?.fld_admin_type == "SUPERADMIN" ||
             (user?.fld_admin_type == "SUBADMIN" &&
