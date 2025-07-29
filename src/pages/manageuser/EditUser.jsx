@@ -233,6 +233,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
         {/* 5 Access Checkboxes */}
         <Checkbox name="scopeadmin" checked={form.scopeadmin} onChange={handleChange} label="Ask for Scope Admin Access" />
+        <Checkbox name="addquery_access" checked={form.addquery_access} onChange={handleChange} label="Query Access" />
         <Checkbox name="scopetagaccess" checked={form.scopetagaccess} onChange={handleChange} label="Ask for Scope Tag Access" />
         <Checkbox name="feasibility_access" checked={form.feasibility_access} onChange={handleChange} label="Feasibility Access" />
         <Checkbox name="tl" checked={form.tl} onChange={handleChange} label="Team Leader" />
