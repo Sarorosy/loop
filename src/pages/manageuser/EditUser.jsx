@@ -10,7 +10,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
     email: "",
     password: "",
     role: "TEAM MEMBER",
-    team: "",
+    team: [],
     addprojectaccess: false,
     team_access_type: "",
     selectedTeams: [],
@@ -48,7 +48,16 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
   // Populate form with userData
   useEffect(() => {
-    if (userData) {
+    if (userData && teams.length > 0) {
+      const userTeamIds = teams
+        .filter((team) => {
+          const members = team.team_members
+            ?.split(",")
+            .map((id) => parseInt(id.trim(), 10));
+          return members?.includes(userData.id);
+        })
+        .map((team) => team.id);
+
       setForm((prev) => ({
         ...prev,
         first_name: userData.fld_first_name || "",
@@ -56,7 +65,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
         email: userData.fld_email || "",
         password: userData.fld_decrypt_password || "",
         role: userData.fld_admin_type || "TEAM MEMBER",
-        team: userData.team || "",
+        team: userTeamIds || "",
         addprojectaccess: userData.canaddproject == 1,
         team_access_type: userData.fld_team_access_type || "",
         selectedTeams: userData.fld_assigned_team?.split(",").map(Number) || [],
@@ -72,7 +81,7 @@ export default function EditUser({ onClose, userData, onUpdate }) {
           : [],
       }));
     }
-  }, [userData]);
+  }, [userData, teams]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -91,6 +100,20 @@ export default function EditUser({ onClose, userData, onUpdate }) {
     value: u.id,
     label: `${u.fld_first_name} ${u.fld_last_name}`,
   }));
+
+ 
+
+  const handleTeamChange = (selectedOptions) => {
+    const selectedIds = selectedOptions.map((option) => option.value);
+    setForm((prev) => ({
+      ...prev,
+      team: selectedIds, 
+    }));
+  };
+
+  const selectedValues = teamOptions.filter((opt) =>
+    form.team.includes(opt.value)
+  );
 
   const shouldShowTlUsers =
     form.feasibility_access || form.tl || form.transferaccess;
@@ -122,11 +145,14 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 
       if (!form.addquery_access) return setError("Please select query access");
 
-      if(form.tl && !form.tl_type){
-        setError("Pls select Tl Type")
+      if (form.tl && !form.tl_type) {
+        setError("Pls select Tl Type");
         return;
       }
-      if((form.tl || form.feasibility_access || form.transferaccess) && form.selectedTlUsers.length == 0){
+      if (
+        (form.tl || form.feasibility_access || form.transferaccess) &&
+        form.selectedTlUsers.length == 0
+      ) {
         setError("Pls select users");
         return;
       }
@@ -186,107 +212,213 @@ export default function EditUser({ onClose, userData, onUpdate }) {
         transition={{ duration: 0.3 }}
         className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto"
       >
-      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto">
-      <div className="flex items-center justify-between px-4 py-3 bg-[#224d68] text-white">
-        <h2 className="text-[16px] font-semibold">Edit User</h2>
-        <button
-          className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
-          onClick={onClose}>
-            <X size={13} />
-          </button>
-      </div>
-      
+        <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-lg z-50 overflow-y-auto">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#224d68] text-white">
+            <h2 className="text-[16px] font-semibold">Edit User</h2>
+            <button
+              className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
+              onClick={onClose}
+            >
+              <X size={13} />
+            </button>
+          </div>
 
-      <form className="p-4 space-y-4">
-        {/* Basic Details */}
-        <InputField label="First Name" name="first_name" value={form.first_name} onChange={handleChange} />
-        <InputField label="Last Name" name="last_name" value={form.last_name} onChange={handleChange} />
-        <InputField label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
-        <InputField label="Password" name="password" value={form.password} onChange={handleChange} placeholder="Leave blank to keep existing password" />
+          <form className="p-4 space-y-4">
+            {/* Basic Details */}
+            <InputField
+              label="First Name"
+              name="first_name"
+              value={form.first_name}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Last Name"
+              name="last_name"
+              value={form.last_name}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Email"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Leave blank to keep existing password"
+            />
 
-        {/* Role Selection */}
-        <div>
-          <label className="block text-[13px] mb-1">Role</label>
-          <select name="role" value={form.role} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+            {/* Role Selection */}
+            <div>
+              <label className="block text-[13px] mb-1">Role</label>
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
-         active:border-blue-600">
-            <option value="TEAM MEMBER">TEAM MEMBER</option>
-            <option value="SUBADMIN">SUBADMIN</option>
-          </select>
-        </div>
-
-        {/* TEAM MEMBER Options */}
-        {form.role === "TEAM MEMBER" && (
-          <>
-            <SelectTeam teams={teams} form={form} handleChange={handleChange} />
-            <Checkbox name="addprojectaccess" checked={form.addprojectaccess} onChange={handleChange} label="Assign Project Management Access" />
-          </>
-        )}
-
-        {/* SUBADMIN Options */}
-        {form.role === "SUBADMIN" && (
-          <>
-            <TeamAccess form={form} handleChange={handleChange} teamOptions={teamOptions} />
-          </>
-        )}
-
-        {/* 5 Access Checkboxes */}
-        <Checkbox name="scopeadmin" checked={form.scopeadmin} onChange={handleChange} label="Ask for Scope Admin Access" />
-        <Checkbox name="addquery_access" checked={form.addquery_access} onChange={handleChange} label="Query Access" />
-        <Checkbox name="scopetagaccess" checked={form.scopetagaccess} onChange={handleChange} label="Ask for Scope Tag Access" />
-        <Checkbox name="feasibility_access" checked={form.feasibility_access} onChange={handleChange} label="Feasibility Access" />
-        <Checkbox name="tl" checked={form.tl} onChange={handleChange} label="Team Leader" />
-        <Checkbox name="transferaccess" checked={form.transferaccess} onChange={handleChange} label="Transfer Access" />
-
-        {/* TL Type Radio Buttons */}
-        {form.tl && (
-          <div>
-            <label className="block text-[13px] mb-1">Team Leader Type</label>
-            <div className="flex space-x-3">
-              <RadioButton name="tl_type" value="1" checked={form.tl_type === "1"} onChange={handleChange} label="CRM Team Leader" />
-              <RadioButton name="tl_type" value="2" checked={form.tl_type === "2"} onChange={handleChange} label="Ops Team Leader" />
-              <RadioButton name="tl_type" value="3" checked={form.tl_type === "3"} onChange={handleChange} label="CRM & Ops Team Leader" />
+         active:border-blue-600"
+              >
+                <option value="TEAM MEMBER">TEAM MEMBER</option>
+                <option value="SUBADMIN">SUBADMIN</option>
+              </select>
             </div>
-          </div>
-        )}
 
-        {/* Select TL Users */}
-        {shouldShowTlUsers && (
-          <div>
-            <label className="block text-[13px] mb-1">Select TL Users</label>
-            <Select
-              isMulti
-              options={tlUserOptions}
-              value={tlUserOptions.filter((u) => form.selectedTlUsers.includes(u.value))}
-              onChange={(selected) => {
-                setForm((prev) => ({
-                  ...prev,
-                  selectedTlUsers: selected.map((u) => u.value),
-                }));
-              }}
-              className="text-[13px]"
-              classNamePrefix="react-select"
+            {/* TEAM MEMBER Options */}
+            {form.role === "TEAM MEMBER" && (
+              <>
+                <div>
+                  <label className="block text-[13px] mb-1">
+                    Select Team(s)
+                  </label>
+                  <Select
+                    isMulti
+                    name="team"
+                    options={teamOptions}
+                    value={selectedValues}
+                    onChange={handleTeamChange}
+                    className="text-sm"
+                    classNamePrefix="select"
+                  />
+                </div>
+                <Checkbox
+                  name="addprojectaccess"
+                  checked={form.addprojectaccess}
+                  onChange={handleChange}
+                  label="Assign Project Management Access"
+                />
+              </>
+            )}
+
+            {/* SUBADMIN Options */}
+            {form.role === "SUBADMIN" && (
+              <>
+                <TeamAccess
+                  form={form}
+                  handleChange={handleChange}
+                  teamOptions={teamOptions}
+                />
+              </>
+            )}
+
+            {/* 5 Access Checkboxes */}
+            <Checkbox
+              name="scopeadmin"
+              checked={form.scopeadmin}
+              onChange={handleChange}
+              label="Ask for Scope Admin Access"
             />
-          </div>
-        )}
+            <Checkbox
+              name="addquery_access"
+              checked={form.addquery_access}
+              onChange={handleChange}
+              label="Query Access"
+            />
+            <Checkbox
+              name="scopetagaccess"
+              checked={form.scopetagaccess}
+              onChange={handleChange}
+              label="Ask for Scope Tag Access"
+            />
+            <Checkbox
+              name="feasibility_access"
+              checked={form.feasibility_access}
+              onChange={handleChange}
+              label="Feasibility Access"
+            />
+            <Checkbox
+              name="tl"
+              checked={form.tl}
+              onChange={handleChange}
+              label="Team Leader"
+            />
+            <Checkbox
+              name="transferaccess"
+              checked={form.transferaccess}
+              onChange={handleChange}
+              label="Transfer Access"
+            />
 
-        {error && <p className="text-[13px] text-red-500">{error}</p>}
-        {successMsg && <p className="text-[13px] text-green-600">{successMsg}</p>}
+            {/* TL Type Radio Buttons */}
+            {form.tl && (
+              <div>
+                <label className="block text-[13px] mb-1">
+                  Team Leader Type
+                </label>
+                <div className="flex space-x-3">
+                  <RadioButton
+                    name="tl_type"
+                    value="1"
+                    checked={form.tl_type === "1"}
+                    onChange={handleChange}
+                    label="CRM Team Leader"
+                  />
+                  <RadioButton
+                    name="tl_type"
+                    value="2"
+                    checked={form.tl_type === "2"}
+                    onChange={handleChange}
+                    label="Ops Team Leader"
+                  />
+                  <RadioButton
+                    name="tl_type"
+                    value="3"
+                    checked={form.tl_type === "3"}
+                    onChange={handleChange}
+                    label="CRM & Ops Team Leader"
+                  />
+                </div>
+              </div>
+            )}
 
-        <div className="flex justify-end">
-          <button
-            type="button"
-            disabled={loading}
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white py-1.5 px-2 rounded hover:bg-blue-700 text-[11px] leading-none flex gap-1 items-center"
-          >
-            {loading ? "Updating..." : "Update User"}<ChevronsRightIcon size={11} className="" />
-          </button>
+            {/* Select TL Users */}
+            {shouldShowTlUsers && (
+              <div>
+                <label className="block text-[13px] mb-1">
+                  Select TL Users
+                </label>
+                <Select
+                  isMulti
+                  options={tlUserOptions}
+                  value={tlUserOptions.filter((u) =>
+                    form.selectedTlUsers.includes(u.value)
+                  )}
+                  onChange={(selected) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      selectedTlUsers: selected.map((u) => u.value),
+                    }));
+                  }}
+                  className="text-[13px]"
+                  classNamePrefix="react-select"
+                />
+              </div>
+            )}
+
+            {error && <p className="text-[13px] text-red-500">{error}</p>}
+            {successMsg && (
+              <p className="text-[13px] text-green-600">{successMsg}</p>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleSubmit}
+                className="bg-blue-600 text-white py-1.5 px-2 rounded hover:bg-blue-700 text-[11px] leading-none flex gap-1 items-center"
+              >
+                {loading ? "Updating..." : "Update User"}
+                <ChevronsRightIcon size={11} className="" />
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
-      </div>
-    </motion.div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -295,10 +427,13 @@ export default function EditUser({ onClose, userData, onUpdate }) {
 const InputField = ({ label, ...props }) => (
   <div>
     <label className="block text-[13px] mb-1">{label}</label>
-    <input {...props} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+    <input
+      {...props}
+      className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
-         active:border-blue-600" />
+         active:border-blue-600"
+    />
   </div>
 );
 
@@ -316,31 +451,53 @@ const RadioButton = ({ label, ...props }) => (
   </label>
 );
 
-const SelectTeam = ({ teams, form, handleChange }) => (
-  <div>
-    <label className="block text-[13px] mb-1">Select Team</label>
-    <select name="team" value={form.team} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
-         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-         hover:border-gray-400 
-         active:border-blue-600">
-      <option value="">Select a Team</option>
-      {teams.map((team) => (
-        <option key={team.id} value={team.id}>
-          {team.team_name}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+const SelectTeam = ({ teams, form, setForm }) => {
+  const teamOptions = teams.map((team) => ({
+    value: team.id,
+    label: team.team_name,
+  }));
+
+  const handleTeamChange = (selectedOptions) => {
+    const selectedIds = selectedOptions.map((option) => option.value);
+    setForm((prev) => ({
+      ...prev,
+      team: selectedIds,
+    }));
+  };
+
+  const selectedValues = teamOptions.filter((opt) =>
+    form.team.includes(opt.value)
+  );
+
+  return (
+    <div>
+      <label className="block text-[13px] mb-1">Select Team(s)</label>
+      <Select
+        isMulti
+        name="team"
+        options={teamOptions}
+        value={selectedValues}
+        onChange={handleTeamChange}
+        className="text-sm"
+        classNamePrefix="select"
+      />
+    </div>
+  );
+};
 
 const TeamAccess = ({ form, handleChange, teamOptions }) => (
   <>
     <div>
       <label className="block text-[13px] mb-1">Team Access Type</label>
-      <select name="team_access_type" value={form.team_access_type} onChange={handleChange} className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
+      <select
+        name="team_access_type"
+        value={form.team_access_type}
+        onChange={handleChange}
+        className="w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
          focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
          hover:border-gray-400 
-         active:border-blue-600">
+         active:border-blue-600"
+      >
         <option value="">Select Access Type</option>
         <option value="All team access">All team access</option>
         <option value="Specific team access">Specific team access</option>
@@ -353,10 +510,14 @@ const TeamAccess = ({ form, handleChange, teamOptions }) => (
         <Select
           isMulti
           options={teamOptions}
-          value={teamOptions.filter((option) => form.selectedTeams.includes(option.value))}
+          value={teamOptions.filter((option) =>
+            form.selectedTeams.includes(option.value)
+          )}
           onChange={(selected) => {
             const selectedValues = selected.map((option) => option.value);
-            handleChange({ target: { name: "selectedTeams", value: selectedValues } });
+            handleChange({
+              target: { name: "selectedTeams", value: selectedValues },
+            });
           }}
           className="text-[13px]"
           classNamePrefix="react-select"
