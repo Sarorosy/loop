@@ -38,21 +38,20 @@ export default function AddTask() {
     additionalLink: "",
   });
 
-   const dateRef = useRef();
- useEffect(() => {
-  flatpickr(dateRef.current, {
-    dateFormat: "d/m/Y",
-    defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
-    onChange: (selectedDates) => {
-      const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
-      setFormData((prev) => ({
-        ...prev,
-        dueDate: formatted
-      }));
-    }
-  });
-}, []);
-
+  const dateRef = useRef();
+  useEffect(() => {
+    flatpickr(dateRef.current, {
+      dateFormat: "d/m/Y",
+      defaultDate: formData.dueDate ? dayjs(formData.dueDate).toDate() : null,
+      onChange: (selectedDates) => {
+        const formatted = dayjs(selectedDates[0]).format("YYYY-MM-DD");
+        setFormData((prev) => ({
+          ...prev,
+          dueDate: formatted,
+        }));
+      },
+    });
+  }, []);
 
   const [milestones, setMilestones] = useState([]);
   const [files, setFiles] = useState([]);
@@ -294,11 +293,14 @@ export default function AddTask() {
       });
 
       // Make API call
-      const response = await fetch("https://loopback-skci.onrender.com/api/tasks/create", {
-        method: "POST",
-        body: formDataToSend,
-        // Don't set Content-Type header - let browser set it with boundary for FormData
-      });
+      const response = await fetch(
+        "https://loopback-skci.onrender.com/api/tasks/create",
+        {
+          method: "POST",
+          body: formDataToSend,
+          // Don't set Content-Type header - let browser set it with boundary for FormData
+        }
+      );
 
       const result = await response.json();
 
@@ -431,27 +433,34 @@ export default function AddTask() {
                           (o) => o.value === formData.bucketId
                         ) || null
                       }
-                    onChange={(option) => {
-  const selectedBucket = buckets.find((b) => b.id === option?.value);
-  const benchmarkIds = selectedBucket?.fld_default_benchmark
-    ? selectedBucket.fld_default_benchmark.split(",").map((id) => parseInt(id)) // Make sure IDs are numbers
-    : [];
+                      onChange={(option) => {
+                        const selectedBucket = buckets.find(
+                          (b) => b.id === option?.value
+                        );
+                        const benchmarkIds =
+                          selectedBucket?.fld_default_benchmark
+                            ? selectedBucket.fld_default_benchmark
+                                .split(",")
+                                .map((id) => parseInt(id)) // Make sure IDs are numbers
+                            : [];
 
-  const newMilestones = benchmarkIds.map((id) => ({
-    milestoneId: id,
-    milestoneDueDate: todayDateTime,
-  }));
+                        const newMilestones = benchmarkIds.map((id) => ({
+                          milestoneId: id,
+                          milestoneDueDate: todayDateTime,
+                        }));
 
-  setFormData((prev) => ({
-    ...prev,
-    bucketId: option?.value || "",
-    description: selectedBucket?.fld_default_description || prev.description,
-  }));
+                        setFormData((prev) => ({
+                          ...prev,
+                          bucketId: option?.value || "",
+                          description:
+                            selectedBucket?.fld_default_description ||
+                            prev.description,
+                        }));
 
-  if (milestonesList.length > 0) {
-    setMilestones(newMilestones);
-  }
-}}
+                        if (milestonesList.length > 0) {
+                          setMilestones(newMilestones);
+                        }
+                      }}
                       placeholder="Select Bucket"
                     />
                   </div>
@@ -590,7 +599,6 @@ export default function AddTask() {
                           description: newContent,
                         }))
                       }
-                     
                       init={{
                         height: 500,
                         menubar: true,
@@ -621,14 +629,18 @@ export default function AddTask() {
                     <label className="block text-[13px] font-medium text-gray-700 mb-1">
                       Due Date
                     </label>
-                     <input
-        type="text"
-        name="dueDate"
-        ref={dateRef}
-        value={formData.dueDate ? dayjs(formData.dueDate).format("DD/MM/YYYY") : ""}
-        readOnly
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-      />
+                    <input
+                      type="text"
+                      name="dueDate"
+                      ref={dateRef}
+                      value={
+                        formData.dueDate
+                          ? dayjs(formData.dueDate).format("DD/MM/YYYY")
+                          : ""
+                      }
+                      readOnly
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    />
                   </div>
 
                   <div>
@@ -902,13 +914,28 @@ export default function AddTask() {
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
                           Select File
                         </label>
-                        <input
+                        {/* <input
                           type="file"
                           onChange={(e) =>
                             handleFileChange(i, "file", e.target.files[0])
                           }
                           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                        />
+                        /> */}
+                        <div className="flex items-center w-full border border-gray-300 rounded-lg  text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                          <label className="relative cursor-pointer bg-gray-500 text-white px-2 py-2 rounded hover:bg-blue-600 whitespace-nowrap">
+                            Choose File
+                            <input
+                              type="file"
+                              onChange={(e) =>
+                                handleFileChange(i, "file", e.target.files[0])
+                              }
+                              className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                          </label>
+                          <span className="ml-3 text-gray-600  truncate w-100">
+                            {files[i]?.file?.name || "No file chosen"}
+                          </span>
+                        </div>
                       </div>
                       <div>
                         <label className="block text-[13px] font-medium text-gray-700 mb-1">
@@ -951,7 +978,8 @@ export default function AddTask() {
                 onClick={handleSubmit}
                 className="inline-flex items-center px-2 py-1.5 border border-transparent text-[13px] leading-none font-medium rounded shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
               >
-                {creatingTask ? "Creating..." : "Create Task"} <ChevronsRight size={14} />
+                {creatingTask ? "Creating..." : "Create Task"}{" "}
+                <ChevronsRight size={14} />
               </button>
             </div>
           </form>

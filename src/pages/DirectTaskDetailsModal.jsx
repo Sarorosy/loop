@@ -115,7 +115,7 @@ const DirectTaskDetailsModal = ({ taskId, onClose, finalFunction }) => {
   if (!task || loading) {
     return (
       <div className="fixed inset-0 bg-[#0000005c] flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded shadow text-sm">Loading...</div>
+        <div className="bg-white p-6 rounded shadow ">Loading...</div>
       </div>
     );
   }
@@ -147,33 +147,39 @@ const DirectTaskDetailsModal = ({ taskId, onClose, finalFunction }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative"
+        className="bg-white text-black rounded shadow-xl w-full max-w-2xl mx-4"
       >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-black"
-        >
-          <X size={18} />
-        </button>
+        <div className="flex justify-between items-center px-4 py-3 bg-[#224d68]  rounded-t">
+            <h2 className="text-[15px] font-semibold text-white">View & Assign </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-white bg-red-600 hover:bg-red-700 py-1 px-1 rounded"
+            >
+              <X size={13} />
+            </button>
+          </div>
+          <div className="p-4 text-[13px]">
+        
 
         {/* Tabs */}
-        <div className="flex border-b text-sm font-medium mb-4">
+        <div className="flex gap-1 font-medium">
           <button
             onClick={() => setActiveTab("view")}
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 rounded-t leading-none ${
               activeTab === "view"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500"
+                ? "text-white  bg-orange-600"
+                : "text-gray-500 hover:bg-orange-200 hover:text-black"
             }`}
           >
             View
           </button>
           <button
             onClick={() => setActiveTab("assign")}
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 rounded-t leading-none ${
               activeTab === "assign"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500"
+                ? "text-white  bg-orange-600"
+                : "text-gray-500 hover:bg-orange-200 hover:text-black"
             }`}
           >
             Assign
@@ -182,35 +188,35 @@ const DirectTaskDetailsModal = ({ taskId, onClose, finalFunction }) => {
 
         {/* Tab Contents */}
         {activeTab === "view" && (
-          <div className="space-y-2 text-sm">
-            <p>
-              <strong>Subject:</strong> {task.subject}
-            </p>
-            <div>
-              <strong>Body:</strong>
+          <div className="space-y-3 p-4 border border-orange-600">
+            <div className="flex gap-2 flex-wrap items-center">
+              <div className="font-semibold">Subject:</div> {task.subject}
+            </div>
+            <div className="flex gap-2 flex-wrap items-center">
+              <div className="font-semibold">Body:</div>
               <div
-                className="mt-1 text-sm"
+                className=""
                 dangerouslySetInnerHTML={{ __html: task.body }}
               />
             </div>
-            <p>
-              <strong>From:</strong> {task.fromname} ({task.fromemail})
-            </p>
-            <p>
-              <strong>To:</strong> {task.toemail}
-            </p>
-            <p>
-              <strong>Project:</strong> {task.fld_project_name || "N/A"}
-            </p>
-            <p>
-              <strong>Received:</strong>{" "}
+            <div className="flex gap-2 flex-wrap items-center">
+              <div className="font-semibold">From:</div> {task.fromname} ({task.fromemail})
+            </div>
+            <div className="flex gap-2 flex-wrap items-center">
+              <div className="font-semibold">To:</div> {task.toemail}
+            </div>
+            <div className="flex gap-2 flex-wrap items-center">
+              <div className="font-semibold">Project:</div> {task.fld_project_name || "N/A"}
+            </div>
+            <div className="flex gap-2 flex-wrap items-center">
+              <div className="font-semibold">Received:</div>{" "}
               {new Date(task.received_at).toLocaleString()}
-            </p>
+            </div>
           </div>
         )}
 
         {activeTab === "assign" && (
-          <div className="text-sm space-y-4">
+          <div className="space-y-4 p-4 border border-orange-600">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label>Assign To</label>
@@ -288,7 +294,10 @@ const DirectTaskDetailsModal = ({ taskId, onClose, finalFunction }) => {
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="border rounded w-full p-1"
+                  className="w-full px-2 py-2 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
                 />
               </div>
               <div>
@@ -297,7 +306,10 @@ const DirectTaskDetailsModal = ({ taskId, onClose, finalFunction }) => {
                   type="time"
                   value={dueTime}
                   onChange={(e) => setDueTime(e.target.value)}
-                  className="border rounded w-full p-1"
+                  className="w-full px-2 py-2 text-[13px] border border-gray-300 rounded  
+         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+         hover:border-gray-400 
+         active:border-blue-600"
                 />
               </div>
             </div>
@@ -305,13 +317,14 @@ const DirectTaskDetailsModal = ({ taskId, onClose, finalFunction }) => {
             <div className="flex justify-end">
               <button
                 onClick={handleAssignSubmit}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center"
+                className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 flex items-center"
               >
-                Assign Task <CheckCircle size={15} className="ml-1" />
+                Assign Task <CheckCircle size={13} className="ml-1" />
               </button>
             </div>
           </div>
         )}
+         </div>
       </motion.div>
     </div>
   );

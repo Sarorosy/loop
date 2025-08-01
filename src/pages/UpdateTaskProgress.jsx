@@ -72,6 +72,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
     }
   };
 
+
   const addFileInput = () => {
     if (files.length >= 3) {
       setFileError("You can upload a maximum of 3 files.");
@@ -279,15 +280,21 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
             <div className="space-y-2">
               {files.map((file, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept=".doc, .docx, .pdf, .gif, .jpeg, .jpg, .png, .xlsx, .csv, .rar, .zip, .odt"
-                    onChange={(e) => handleFileChange(e, index)}
-                    className="flex-1 w-full px-2 py-1 text-[13px] border border-gray-300 rounded  
-         focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-         hover:border-gray-400 
-         active:border-blue-600"
-                  />
+                  
+                  <div className="flex items-center w-full border border-gray-300 rounded-lg  text-[13px] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                    <label className="relative cursor-pointer bg-gray-500 text-white px-2 py-2 rounded hover:bg-blue-600 whitespace-nowrap">
+                      Choose File
+                      <input
+                        type="file"
+                        accept=".doc,.docx,.pdf,.gif,.jpeg,.jpg,.png,.xlsx,.csv,.rar,.zip,.odt"
+                        onChange={(e) => handleFileChange(e, index)}
+                        className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                    </label>
+                    <span className="ml-3 text-gray-600  truncate w-70">
+                      {file?.name || "No file chosen"}
+                    </span>
+                  </div>
                   <button
                     type="button"
                     onClick={() => removeFileInput(index)}

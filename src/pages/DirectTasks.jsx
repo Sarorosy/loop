@@ -66,7 +66,7 @@ function DirectTasks() {
 
   return (
     <div className="">
-      <div className="text-xl font-bold mb-4 flex items-center justify-between">
+      <div className="font-bold mb-4 flex items-center justify-between">
         <h2 class="text-[16px] font-semibold">Direct Tasks</h2>
         <div className="flex gap-3">
           <button
@@ -87,20 +87,20 @@ function DirectTasks() {
           No tasks found.
         </div>
       ) : (
-        <div className="bg-white w-full f-13 mt-5">
-          <div className="table-scrollable">
+        <div className="bg-white w-full f-13">
+          <div className="overflow-x-auto h-screen">
             <div className=" rounded shadow border border-gray-200">
-              <table className="min-w-full table-auto">
-                <thead className="bg-blue-200 text-black text-sm">
+              <table className="min-w-full text-[13px] ">
+                <thead className="bg-[#e4eaff]">
                   <tr>
-                    <th className="p-2 text-left">Title</th>
-                    <th className="p-2 text-left">Body</th>
-                    <th className="p-2 text-center">Attachments</th>
-                    <th className="p-2 text-center">Received At</th>
-                    <th className="p-2 text-center">Action</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Title</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Body</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Attachments</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Received At</th>
+                    <th className="px-4 py-2 text-left border border-[#ccc]">Action</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm">
+                <tbody className="">
                   {tasks.length > 0 ? (
                     tasks.map((task) => {
                       const titleWords = task.subject.split(" ");
@@ -111,45 +111,46 @@ function DirectTasks() {
                       return (
                         <tr
                           key={task.id}
-                          className="border-b hover:bg-gray-100"
+                          className="border-t hover:bg-gray-50"
                         >
-                          <td className="p-2">
+                          <td className="px-4 py-2 border border-[#ccc]">
                             {titleWords.slice(0, 10).join(" ")}
                             {titleWords.length > 10 ? "..." : ""}
                           </td>
-                          <td className="p-2 max-w-xs truncate">
+                          <td className="px-4 py-2 border border-[#ccc] max-w-xs truncate">
                             {bodyWords.slice(0, 15).join(" ")}
                             {bodyWords.length > 15 ? "..." : ""}
                           </td>
-                          <td className="p-2 text-center space-x-1">
+                          <td className="px-4 py-2 border border-[#ccc] space-x-1">
                             {hasAttachments ? (
-                              <span className="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">
+                              <span className="bg-green-200 text-green-800 px-2 py-1 rounded text-[11px]">
                                 Has Attachments
                               </span>
                             ) : (
-                              <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs">
+                              <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-[11px]">
                                 No Attachments
                               </span>
                             )}
                             {hasProject && (
-                              <span className="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">
+                              <span className="bg-green-200 text-green-800 px-2 py-1 rounded text-[11px]">
                                 Has Project
                               </span>
                             )}
                           </td>
-                          <td className="p-2 text-center">
+                          <td className="px-4 py-2 text-left border border-[#ccc]">
                             {moment(task.received_at).format(
                               "DD MMM YYYY, hh:mm A"
                             )}
                           </td>
-                          <td className="p-2 text-center space-x-2">
+                          <td className="px-4 py-2 border border-[#ccc] text-center space-x-2 relative">
+                            <div className="flex gap-1">
                             <div
-                              className="relative inline-block"
+                              className="inline-block"
                               onMouseEnter={() => setHoveredTaskId(task.id)}
                               onMouseLeave={() => setHoveredTaskId(null)}
                             >
-                              <button className="text-blue-600 hover:text-blue-800">
-                                <UserRound size={20} />
+                              <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+                                <UserRound size={11} />
                               </button>
 
                               <AnimatePresence>
@@ -182,10 +183,11 @@ function DirectTasks() {
                               onClick={() =>
                                 openModal(task.id)
                               }
-                              className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-2 py-1 rounded"
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-[11px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
                             >
                               View & Assign
                             </button>
+                            </div>
                           </td>
                         </tr>
                       );
