@@ -30,6 +30,7 @@ import ReminderModal from "./ReminderModal";
 function MyTasks() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const tableRef = useRef(null);
   const [buckets, setBuckets] = useState([]);
@@ -63,18 +64,21 @@ function MyTasks() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://loopback-skci.onrender.com/api/tasks/getmytasks", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: user?.id,
-          user_type: user?.fld_admin_type,
-          assigned_team: user?.fld_assigned_team,
-          filters: filterParam,
-        }),
-      });
+      const res = await fetch(
+        "https://loopback-skci.onrender.com/api/tasks/getmytasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user?.id,
+            user_type: user?.fld_admin_type,
+            assigned_team: user?.fld_assigned_team,
+            filters: filterParam,
+          }),
+        }
+      );
       const data = await res.json();
       if (data.status) {
         setTasks(data?.data);
@@ -88,9 +92,62 @@ function MyTasks() {
     }
   };
 
+  const fetchTasksCount = async (
+    user,
+    setAllTasks,
+    setLoading,
+    filterParam
+  ) => {
+    //if (!user) return;
+
+    try {
+      const res = await fetch(
+        "https://loopback-skci.onrender.com/api/tasks/getmytasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user?.id,
+            user_type: user?.fld_admin_type,
+            assigned_team: user?.fld_assigned_team,
+            filters: filterParam,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (data.status) {
+        setAllTasks(data?.data);
+      } else {
+        toast.error(data.message || "Failed to fetch tasks");
+      }
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+    }
+  };
+
   // Usage inside the component
   useEffect(() => {
     fetchTasks(user, setTasks, setLoading, filters);
+    fetchTasksCount(user, setAllTasks, setLoading, {
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "",
+      fromDate: "",
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
   }, [user]);
 
   useEffect(() => {
@@ -126,7 +183,9 @@ function MyTasks() {
         <div class="truncate !w-50">
           <div class="flex justify-between items-center">
             <div class="leading-none">
-              <small class="text-[12px]">${row.fld_unique_task_id || "-"}</small>
+              <small class="text-[12px]">${
+                row.fld_unique_task_id || "-"
+              }</small>
               <span 
                 class="copy-btn cursor-pointer text-gray-500 hover:text-black text-[10px] ml-1 rounded hover:bg-gray-100 transition"
               >
@@ -144,17 +203,15 @@ function MyTasks() {
             
               ${
                 row.fld_reopen == 1
-                ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
-                : ""
+                  ? `<span class="inline-block leading-none bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">Reopened</span>`
+                  : ""
               }
            
           </div>
 
           
           <div class="view-btn hover:cursor-pointer hover:underline text-blue-700 text-[12px] truncate mt-1.5">
-          ${
-            row.fld_title || "-"
-          }
+          ${row.fld_title || "-"}
           </div>
             
         </div>
@@ -354,33 +411,33 @@ function MyTasks() {
   };
 
   const handleCopyLink = (task) => {
-  if (!task?.task_id) {
-    toast.error("Task ID is missing.");
-    return;
-  }
+    if (!task?.task_id) {
+      toast.error("Task ID is missing.");
+      return;
+    }
 
-  const taskIdToCopyUrl = task.task_id;
+    const taskIdToCopyUrl = task.task_id;
 
-  const encodeBase64Url = (str) => {
-    return btoa(str)
-      .replace(/\+/g, "-") // URL safe
-      .replace(/\//g, "_") // URL safe
-      .replace(/=+$/, ""); // remove padding
+    const encodeBase64Url = (str) => {
+      return btoa(str)
+        .replace(/\+/g, "-") // URL safe
+        .replace(/\//g, "_") // URL safe
+        .replace(/=+$/, ""); // remove padding
+    };
+
+    const encodedId = encodeBase64Url(String(taskIdToCopyUrl));
+    const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
+
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        toast.success("Link copied!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy link: ", err);
+        toast.error("Copy failed.");
+      });
   };
-
-  const encodedId = encodeBase64Url(String(taskIdToCopyUrl));
-  const link = `https://www.apacvault.com/admin/view_details/${encodedId}`;
-
-  navigator.clipboard
-    .writeText(link)
-    .then(() => {
-      toast.success("Link copied!");
-    })
-    .catch((err) => {
-      console.error("Failed to copy link: ", err);
-      toast.error("Copy failed.");
-    });
-};
 
   const [filtersVisible, setFiltersVisible] = useState(false);
 
@@ -421,6 +478,24 @@ function MyTasks() {
       paymentRange: "",
     });
     fetchTasks(user, setTasks, setLoading, {
+      taskNameOrId: "",
+      assignedTo: "",
+      milestone: "",
+      milestoneStatus: "",
+      milestoneCompletionStatus: "",
+      createdDate: "", // stores today/yesterday/7days/etc. or "custom"
+      fromDate: "", // for custom filter
+      toDate: "",
+      days: "",
+      dueDate: "",
+      bucketName: "",
+      taskStatus: "",
+      assignedBy: "",
+      projectId: "",
+      queryStatus: "",
+      paymentRange: "",
+    });
+    fetchTasksCount(user, setAllTasks, setLoading, {
       taskNameOrId: "",
       assignedTo: "",
       milestone: "",
@@ -679,6 +754,83 @@ function MyTasks() {
               ]}
             />
           </div>
+
+          {/* Status Filter - Radio Buttons */}
+          <div className="p-3 bg-gray-100 rounded-md shadow-sm">
+            <label className="text-[11px] font-medium text-gray-700 mb-2 flex items-center gap-1">
+              <ClipboardList size={13} className="text-gray-600" />
+              Filter by Task Status
+            </label>
+
+            <div className="flex flex-col gap-2 text-[12px]">
+              {Object.entries(
+                allTasks.reduce((acc, task) => {
+                  const status = task.fld_task_status || "Unknown";
+                  acc[status] = (acc[status] || 0) + 1;
+                  return acc;
+                }, {})
+              ).map(([status, count]) => (
+                <label
+                  key={status}
+                  className={`flex items-center justify-between px-1 py-0.5 rounded-md cursor-pointer
+          ${
+            filters.taskStatus === status
+              ? "bg-gray-300 text-gray-900"
+              : "bg-white text-gray-800 hover:bg-gray-200"
+          }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="statusFilter"
+                      value={status}
+                      checked={filters.taskStatus === status}
+                      onChange={(e) => {
+                        setFilters({ ...filters, taskStatus: e.target.value });
+                        fetchTasks(user, setTasks, setLoading, {
+                          ...filters,
+                          taskStatus: e.target.value,
+                        });
+                      }}
+                      className="accent-black"
+                    />
+                    <span className="capitalize font-medium">{status}</span>
+                  </div>
+                  <span className="w-5 h-5 flex items-center justify-center text-[11px] font-semibold text-orange-600 border border-orange-500 rounded-full">
+                    {count}
+                  </span>
+                </label>
+              ))}
+
+              {/* Clear Filter */}
+              <label
+                className={`flex items-center justify-between px-1 py-0.5 rounded-md cursor-pointer 
+        ${
+          filters.taskStatus === ""
+            ? "bg-gray-300 text-gray-900"
+            : "bg-white text-gray-800 hover:bg-gray-200"
+        }`}
+              >
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="statusFilter"
+                    value=""
+                    checked={filters.taskStatus === ""}
+                    onChange={(e) => {
+                      setFilters({ ...filters, taskStatus: "" });
+                      fetchTasks(user, setTasks, setLoading, {
+                        ...filters,
+                        taskStatus: "",
+                      });
+                    }}
+                    className="accent-black"
+                  />
+                  <span className="capitalize font-medium">All</span>
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
 
         <div className="w-full flex items-center justify-end">
@@ -723,12 +875,12 @@ function MyTasks() {
                     .on("click", () => handleReminderButtonClick(data));
 
                   $(row)
-                      .find(".copy-btn")
-                      .on("click", () => handleCopyButtonClick(data));
+                    .find(".copy-btn")
+                    .on("click", () => handleCopyButtonClick(data));
 
-                   $(row)
-                      .find(".copy-task-link")
-                      .on("click", () => handleCopyLink(data));
+                  $(row)
+                    .find(".copy-task-link")
+                    .on("click", () => handleCopyLink(data));
 
                   $(row)
                     .find(".tag-btn")

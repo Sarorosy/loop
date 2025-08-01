@@ -21,6 +21,7 @@ import {
   Copy,
   Bell,
   ArrowLeftRight,
+  TriangleAlert,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import History from "./History";
@@ -55,18 +56,15 @@ export default function TaskDetails({ taskId, onClose }) {
       return;
     }
     try {
-      const res = await fetch(
-        "https://loopback-skci.onrender.com/api/helper/addremarks",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            task_id: taskId,
-            remarks: taskRemarks,
-            user_id: user?.id,
-          }),
-        }
-      );
+      const res = await fetch("https://loopback-skci.onrender.com/api/helper/addremarks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task_id: taskId,
+          remarks: taskRemarks,
+          user_id: user?.id,
+        }),
+      });
       const data = await res.json();
       if (data.status) {
         fetchTaskDetails();
@@ -85,14 +83,11 @@ export default function TaskDetails({ taskId, onClose }) {
   const fetchTaskDetails = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://loopback-skci.onrender.com/api/tasks/details",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task_id: taskId }),
-        }
-      );
+      const res = await fetch("https://loopback-skci.onrender.com/api/tasks/details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_id: taskId }),
+      });
       const data = await res.json();
       if (data.status) setTask(data.data);
       else console.error("Error fetching task:", data.message);
@@ -105,9 +100,25 @@ export default function TaskDetails({ taskId, onClose }) {
   useEffect(() => {
     fetchTaskDetails();
   }, [taskId]);
-  useEffect(() => {
-    console.log(task);
-  }, [task]);
+  const [hasAccess, setHasAccess] = useState(true);
+
+useEffect(() => {
+  if (!task || loading || !user?.id) return;
+
+  const isSuperAdmin = user.fld_admin_type === "SUPERADMIN";
+  const isAddedBy = task.fld_added_by == user.id;
+  const isAssigned = task.fld_assign_to == user.id;
+  const isFollower = task.fld_follower
+    ?.split(",")
+    .map((id) => id.trim())
+    .includes(String(user.id));
+
+
+  const access = isSuperAdmin || isAddedBy || isAssigned || isFollower;
+
+  setHasAccess(access);
+}, [task, user, loading]);
+
 
   const handleMarkAsOnGoing = async () => {
     setMarking(true);
@@ -230,6 +241,39 @@ export default function TaskDetails({ taskId, onClose }) {
       </motion.div>
     );
   }
+
+ if (!hasAccess) {
+  return (
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto flex items-center justify-center text-red-600 font-semibold text-[14px]"
+    >
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white bg-red-500 rounded p-1 transition"
+        aria-label="Close"
+      >
+       <X  size={15}/>
+      </button>
+
+      {/* Content */}
+      <div className="flex flex-col items-center justify-center h-[100px] bg-orange-50 rounded-md text-center p-6 border border-orange-200">
+        <div className="text-orange-500 mb-2">
+          <TriangleAlert />
+        </div>
+        <h3 className="text-sm font-medium text-orange-700">
+          Umm... You don’t have access to this task.
+        </h3>
+      </div>
+    </motion.div>
+  );
+}
+
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -697,7 +741,17 @@ export default function TaskDetails({ taskId, onClose }) {
                           <div className="flex justify-end items-center">
                             <button
                               onClick={() => {
-                                setUpdateTaskModalOpen(true);
+                                console.log(task.tag_names)
+                                const hasTags =
+                                  task.tag_names
+                                    ?.split(",")
+                                    .filter((tag) => tag.trim() !== "").length >
+                                  0;
+                                if (hasTags) {
+                                  setUpdateTaskModalOpen(true);
+                                } else {
+                                  toast.error("Please add at least one tag!");
+                                }
                               }}
                               className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-[10px] leading-none"
                             >
