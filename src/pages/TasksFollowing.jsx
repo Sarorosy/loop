@@ -13,6 +13,7 @@ import AddTags from "./detailsUtils/AddTags";
 import TaskLoader from "../utils/TaskLoader";
 import Sort from "./Sort";
 import ReminderModal from "./ReminderModal";
+import SocketHandler from '../hooks/SocketHandler';
 
 function TasksFollowing() {
   const { user } = useAuth();
@@ -302,7 +303,15 @@ function TasksFollowing() {
       orderable: false,
       render: (data, type, row) => `
       <div class="flex items-center">
-      <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded w-6 h-6 text-[12px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
+      ${(row.hasReminder && row.hasReminder == 1) ? 
+        `
+        <div class=" hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded  text-[11px] truncate flex items-center justify-center mr-2">
+        <svg width="15px" height="15px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:none;stroke:#FFFFFFFF;stroke-miterlimit:10;stroke-width:1.91px;}</style></defs><path class="cls-1" d="M20.59,14.86V10.09A8.6,8.6,0,0,0,12,1.5h0a8.6,8.6,0,0,0-8.59,8.59v4.77L1.5,16.77v1.91h21V16.77Z"/><path class="cls-1" d="M14.69,18.68a2.55,2.55,0,0,1,.17,1,2.86,2.86,0,0,1-5.72,0,2.55,2.55,0,0,1,.17-1"/><polyline class="cls-1" points="14.7 8.34 10.57 12.48 8.34 10.25"/></svg>
+        </div>
+        ` : 
+        `
+        <div class="reminder-btn hover:cursor-pointer hover:underline text-white bg-orange-500 p-1 rounded  text-[11px] truncate flex items-center justify-center mr-2"><i class="fa fa-bell" aria-hidden="true"></i></div>
+        `}
         <div>
           ${row.added_by_name || "-"}
         </div>
@@ -428,6 +437,7 @@ function TasksFollowing() {
 
   return (
     <div className="">
+      <SocketHandler setTasks={setTasks} page="following" />
       <div className="text-xl font-bold mb-4 flex items-center justify-between">
         Following Tasks
         <div className="flex gap-3">

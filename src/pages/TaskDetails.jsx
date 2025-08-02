@@ -22,6 +22,8 @@ import {
   Bell,
   ArrowLeftRight,
   TriangleAlert,
+  Check,
+  BellRing,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import History from "./History";
@@ -67,7 +69,7 @@ export default function TaskDetails({ taskId, onClose }) {
       });
       const data = await res.json();
       if (data.status) {
-        fetchTaskDetails();
+        fetchTaskDetails(false);
         toast.success("Added!");
         setShowRemarksInput(false);
         setTaskRemarks("");
@@ -80,13 +82,18 @@ export default function TaskDetails({ taskId, onClose }) {
   };
 
   const [showFollowers, setShowFollowers] = useState(true);
-  const fetchTaskDetails = async () => {
+  const [fetchAgain, setFetchAgain] = useState(true);
+  const fetchTaskDetails = async (needToLoad = true) => {
     try {
-      setLoading(true);
+      if(needToLoad){
+
+        setLoading(true);
+      }
+      setFetchAgain(true);
       const res = await fetch("https://loopback-skci.onrender.com/api/tasks/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: taskId }),
+        body: JSON.stringify({ task_id: taskId, user_id : user?.id }),
       });
       const data = await res.json();
       if (data.status) setTask(data.data);
@@ -94,7 +101,10 @@ export default function TaskDetails({ taskId, onClose }) {
     } catch (err) {
       console.error("Failed to fetch task details", err);
     } finally {
-      setLoading(false);
+      if(needToLoad){
+        setLoading(false);
+      }
+      setFetchAgain(false);
     }
   };
   useEffect(() => {
@@ -120,6 +130,7 @@ useEffect(() => {
 }, [task, user, loading]);
 
 
+
   const handleMarkAsOnGoing = async () => {
     setMarking(true);
     try {
@@ -140,7 +151,7 @@ useEffect(() => {
       const data = await response.json();
       if (data.status) {
         toast.success("Marked");
-        fetchTaskDetails();
+        fetchTaskDetails(false);
       } else {
         toast.error(data.message || "Error while Marking");
       }
@@ -211,7 +222,7 @@ useEffect(() => {
       const data = await response.json();
       if (data.status) {
         toast.success("Done");
-        fetchTaskDetails();
+        fetchTaskDetails(false);
       } else {
         toast.error(data.message || "Error while completing task");
       }
@@ -224,10 +235,7 @@ useEffect(() => {
   };
 
   const [reminderOpen, setReminderOpen] = useState(false);
-  const handleReminderButtonClick = () => {
-    setReminderOpen(true);
-  };
-
+ 
   {
     !loading && !task && (
       <motion.div
@@ -435,6 +443,17 @@ useEffect(() => {
                           }}
                         />
                         <div className="mx-2 w-px h-5 bg-gray-300 inline-block align-middle" />
+                          {(task.hasReminder && task.hasReminder == 1) ? (
+                            
+                              <BellRing
+                          data-tooltip-id="my-tooltip"
+                          data-tooltip-content="Reminder Active"
+                          size={25}
+                          className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded"
+                          
+                        />
+                          ) : (
+
                         <Bell
                           data-tooltip-id="my-tooltip"
                           data-tooltip-content="Add Reminder"
@@ -444,6 +463,8 @@ useEffect(() => {
                             setReminderOpen(true);
                           }}
                         />
+                          )}
+
                       </p>
                     </div>
                   </div>
@@ -936,11 +957,11 @@ useEffect(() => {
                   )}
                 {task.fld_benchmark_name && (
                   <div className="bg-white border border-gray-200 rounded p-2 ">
-                    <MilestoneInfo taskId={taskId} />
+                    <MilestoneInfo taskId={taskId} fetchAgain={fetchAgain} />
                   </div>
                 )}
                 <div className=" flex">
-                  <History taskId={taskId} />
+                  <History taskId={taskId} fetchAgain={fetchAgain} />
                 </div>
               </div>
             </div>
@@ -975,7 +996,7 @@ useEffect(() => {
             onClose={() => {
               setAddFollowersOpen(false);
             }}
-            after={fetchTaskDetails}
+            after={()=>{fetchTaskDetails(false)}}
           />
         )}
 
@@ -986,7 +1007,7 @@ useEffect(() => {
             onClose={() => {
               setAddTagsOpen(false);
             }}
-            after={fetchTaskDetails}
+           after={()=>{fetchTaskDetails(false)}}
           />
         )}
         {transferModalOpen && (
@@ -995,14 +1016,14 @@ useEffect(() => {
             onClose={() => {
               setTransferModalOpen(false);
             }}
-            after={fetchTaskDetails}
+            after={()=>{fetchTaskDetails(false)}}
           />
         )}
         {updateTaskModalOpen && (
           <UpdateTaskProgress
             taskId={taskId}
             task={task}
-            after={fetchTaskDetails}
+            after={()=>{fetchTaskDetails(false)}}
             onClose={() => {
               setUpdateTaskModalOpen(false);
             }}

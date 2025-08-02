@@ -7,8 +7,8 @@
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
-const reminderIcon = 'http://localhost:5173/v2/reminder.png'; 
-const notificationIcon = 'http://localhost:5173/v2/notification.png';
+const reminderIcon = 'http://localhost:5173/reminder.png'; 
+const notificationIcon = 'http://localhost:5173/notification.png';
 
 firebase.initializeApp({
   apiKey: "AIzaSyDUY9r6GGobs7j3GsZCYcdGuO5oASXlNIw",
@@ -29,7 +29,7 @@ messaging.onBackgroundMessage((payload) => {
 
   const title =
   payload.data.type === 'reminder'
-    ? payload.notification?.title || 'Task Reminder'
+    ? payload.data?.title || 'Task Reminder'
     : payload.data.title || 'New Message';
 
   const options = {
@@ -51,7 +51,7 @@ self.addEventListener('notificationclick', function (event) {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url.includes('/v2') && 'focus' in client) {
+        if (client.url.includes('/') && 'focus' in client) {
           client.postMessage({ type: 'open_task', payload: data });
           return client.focus();
         }

@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { FlagIcon } from "lucide-react";
 
-export default function MilestoneInfo({ taskId }) {
+export default function MilestoneInfo({ taskId, fetchAgain }) {
   const [milestones, setMilestones] = useState([]);
 
   const fetchMilestones = async () => {
@@ -32,7 +32,7 @@ export default function MilestoneInfo({ taskId }) {
 
   useEffect(() => {
     fetchMilestones();
-  }, [taskId]);
+  }, [taskId, fetchAgain]);
 
   const formatDate = (dateStr) => {
     try {

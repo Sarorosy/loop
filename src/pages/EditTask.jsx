@@ -81,6 +81,7 @@ export default function EditTask() {
         },
         body: JSON.stringify({
           task_id: taskId,
+          user_id : user?.id
         }),
       });
 

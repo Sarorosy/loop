@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../utils/idb";
 
-export default function History({ taskId }) {
+export default function History({ taskId, fetchAgain }) {
   const [remarks, setRemarks] = useState([]);
   const [history, setHistory] = useState([]);
   const [reminders, setReminders] = useState([]);
@@ -12,7 +12,7 @@ export default function History({ taskId }) {
     fetchRemarks();
     fetchHistory();
     fetchReminders();
-  }, [taskId]);
+  }, [taskId, fetchAgain]);
 
   const fetchRemarks = async () => {
     const res = await fetch("https://loopback-skci.onrender.com/api/helper/getRemarks", {

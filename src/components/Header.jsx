@@ -1,6 +1,6 @@
 import { useAuth } from "../utils/idb.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import React,{ useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   LogOut,
   CircleUserRound,
@@ -18,6 +18,8 @@ import {
   FileQuestion,
   ChevronDown,
   AtSign,
+  XIcon,
+  Bell,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import ManageUser from "../pages/manageuser/ManageUser.jsx";
@@ -28,8 +30,10 @@ import { getToken } from "firebase/messaging";
 import { messaging } from "../../firebase-config.js";
 import { onMessage } from "firebase/messaging";
 
-import notificationIcon from '../assets/notification.png';
-import reminderIconIcon from '../assets/reminder.png';
+import notificationIcon from "../assets/notification.png";
+import reminderIconIcon from "../assets/reminder.png";
+import toast from "react-hot-toast";
+import { getSocket } from "../utils/Socket.jsx";
 
 // Dropdown Tab Component
 function TabDropdown({ title, icon: Icon, children }) {
@@ -44,7 +48,7 @@ function TabDropdown({ title, icon: Icon, children }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-   const enhancedChildren = React.Children.map(children, (child) => {
+  const enhancedChildren = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       return React.cloneElement(child, {
         onClick: (...args) => {
@@ -92,6 +96,7 @@ function TabLink({ label, icon: Icon, onClick }) {
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const socket = getSocket();
   const navigate = useNavigate();
   const [openedTab, setOpenedTab] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -108,7 +113,9 @@ export default function Header() {
   }, []);
 
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [remindersOpen, setRemindersOpen] = useState(false);
   const commentsRef = useRef(null);
+  const remindersRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -124,6 +131,10 @@ export default function Header() {
       if (commentsRef.current && !commentsRef.current.contains(event.target)) {
         setCommentsOpen(false);
       }
+
+      if (remindersRef.current && !remindersRef.current.contains(event.target)) {
+      setRemindersOpen(false);
+    }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -152,37 +163,74 @@ export default function Header() {
     }
   };
 
+  const [reminders, setReminders] = useState([]);
+  const fetchReminders = async () => {
+    try {
+      const res = await fetch(
+        "https://loopback-skci.onrender.com/api/helper/all-reminders",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user?.id }),
+        }
+      );
+      const data = await res.json();
+      if (data.status) setReminders(data.data);
+      else console.error("Error fetching reminders:", data.message);
+    } catch (err) {
+      console.error("Failed to fetch reminders", err);
+    } finally {
+    }
+  };
+
   const { pathname } = useLocation();
 
   useEffect(() => {
     fetchNotifications();
+    fetchReminders();
   }, [pathname]);
 
+ 
+
   useEffect(() => {
-  const markNotificationAsRead = async () => {
-    if (!selectedNotificationId) return;
-
-    try {
-      const res = await fetch("https://loopback-skci.onrender.com/api/helper/read-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notification_id: selectedNotificationId }),
-      });
-
-      const data = await res.json();
-      if (!data.status) {
-        console.error("Failed to mark notification as read:", data.message);
+    socket.on("newReminder", (data) => {
+      if (data.user_id == user?.id) {
+        fetchReminders();
       }
-    } catch (err) {
-      console.error("Error marking notification as read:", err);
-    }
-  };
+    });
 
-  markNotificationAsRead();
-}, [selectedNotificationId]);
+    return () => {
+      socket.off("newReminder"); // Clean up on component unmount
+    };
+  }, [user]);
 
+  useEffect(() => {
+    const markNotificationAsRead = async () => {
+      if (!selectedNotificationId) return;
 
-const [permissionGranted, setPermissionGranted] = useState(false);
+      try {
+        const res = await fetch(
+          "https://loopback-skci.onrender.com/api/helper/read-notification",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notification_id: selectedNotificationId }),
+          }
+        );
+
+        const data = await res.json();
+        if (!data.status) {
+          console.error("Failed to mark notification as read:", data.message);
+        }
+      } catch (err) {
+        console.error("Error marking notification as read:", err);
+      }
+    };
+
+    markNotificationAsRead();
+  }, [selectedNotificationId]);
+
+  const [permissionGranted, setPermissionGranted] = useState(false);
   const requestPermission = async () => {
     try {
       // Check if notification permission is already granted
@@ -204,9 +252,10 @@ const [permissionGranted, setPermissionGranted] = useState(false);
 
           // Now, get the token with the custom service worker registration
           const currentToken = await getToken(messaging, {
-            vapidKey: "BLTlcJPRE9x4nAGIrupccptg5ZLehvbNlZ9aKAYHWrRWPq-XP_2GSKRMkgq_iiAzs660ARca9GdzyTkVoKfu_GM",
+            vapidKey:
+              "BLTlcJPRE9x4nAGIrupccptg5ZLehvbNlZ9aKAYHWrRWPq-XP_2GSKRMkgq_iiAzs660ARca9GdzyTkVoKfu_GM",
             //vapidKey:
-            //  "BJjfdYHLOsWrNn6I2ii3nyKW_tzzIi94tL2cprgJzM9uqcG2-wr-udlPkiJxgltAhyPaoEWV3WvjYkxuhmLsDs8", // Your VAPID key here 
+            //  "BJjfdYHLOsWrNn6I2ii3nyKW_tzzIi94tL2cprgJzM9uqcG2-wr-udlPkiJxgltAhyPaoEWV3WvjYkxuhmLsDs8", // Your VAPID key here
             serviceWorkerRegistration: registration, // Pass the custom service worker registration
           });
 
@@ -268,7 +317,31 @@ const [permissionGranted, setPermissionGranted] = useState(false);
     onMessage(messaging, (payload) => {
       console.log("Message received: ", payload.data);
 
-     
+      const { title, message, task_id, task_unique_id } = payload.data;
+
+      toast.custom((t) => (
+        <div
+          className={`max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 p-4 transition-all ${
+            t.visible ? "animate-enter" : "animate-leave"
+          }`}
+        >
+          <div className="flex items-start">
+            <div className="flex-1 w-0">
+              <p className="text-sm font-semibold text-gray-900">{title}</p>
+              <p className="mt-1 text-sm text-gray-700">{message}</p>
+              <p className="mt-1 text-xs text-gray-400">{task_unique_id}</p>
+            </div>
+            <div className="ml-4 flex-shrink-0 flex">
+              <button
+                onClick={() => toast.dismiss(t.id)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XIcon size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      ));
     });
   }, []);
 
@@ -290,7 +363,6 @@ const [permissionGranted, setPermissionGranted] = useState(false);
     };
   }, []);
 
-
   return (
     <header className="bg-white text-[#092e46] shadow-md">
       <div className="flex items-center justify-between py-3 max-w-[1250px] mx-auto ">
@@ -303,6 +375,74 @@ const [permissionGranted, setPermissionGranted] = useState(false);
             <div className="relative flex items-center gap-2" ref={userRef}>
               {/* COMMENT BUTTON */}
               <div className="relative">
+
+                {reminders.length > 0 && (
+                  <>
+                    <button
+                      onClick={() => setRemindersOpen(!remindersOpen)}
+                      className="relative p-2 rounded hover:bg-gray-100 border border-gray-200 mr-3"
+                    >
+                      <Bell
+                        size={16}
+                        className="text-gray-600 hover:text-gray-800"
+                      />
+                      <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                        {reminders.length}
+                      </span>
+                    </button>
+
+                    {remindersOpen && (
+                      <div
+                        ref={remindersRef}
+                        className="absolute -right-48 mt-2 w-96 bg-white border border-gray-300 rounded shadow z-50 p-3 text-[13px]"
+                      >
+                        <div className="font-semibold text-gray-800 mb-2">
+                          Upcoming Reminders
+                        </div>
+
+                        <ul className="space-y-2 max-h-60 overflow-y-auto px-1">
+                          {reminders.map((reminder) => {
+                            const formattedTime = new Date(
+                              reminder.reminder_at
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            });
+
+                            return (
+                              <li
+                                key={reminder.id}
+                                onClick={() => {
+                                  setSelectedTaskId(reminder.task_id);
+                                }}
+                                className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all duration-150 rounded-md px-3 py-2 cursor-pointer"
+                              >
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <p className="text-sm text-gray-800 leading-snug">
+                                      <span className="font-semibold text-gray-900">
+                                        {reminder.task_unique_id}
+                                      </span>{" "}
+                                      - {reminder.notes}
+                                    </p>
+                                  </div>
+                                  <div className="text-xs text-gray-400 ml-2 whitespace-nowrap">
+                                    {formattedTime}
+                                  </div>
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                )}
+
+
                 <button
                   onClick={() => setCommentsOpen(!commentsOpen)}
                   className="relative p-2 rounded hover:bg-gray-100 border border-gray-200"
@@ -374,6 +514,8 @@ const [permissionGranted, setPermissionGranted] = useState(false);
                     </ul>
                   </div>
                 )}
+
+                
               </div>
 
               {/* USER DROPDOWN */}
