@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { FlagIcon } from "lucide-react";
+import { getSocket } from "../../utils/Socket";
 
 export default function MilestoneInfo({ taskId, fetchAgain }) {
   const [milestones, setMilestones] = useState([]);
+  const socket = getSocket();
 
   const fetchMilestones = async () => {
     try {
@@ -33,6 +35,21 @@ export default function MilestoneInfo({ taskId, fetchAgain }) {
   useEffect(() => {
     fetchMilestones();
   }, [taskId, fetchAgain]);
+
+ useEffect(() => {
+  const handleBenchmarkUpdated = (data) => {
+    if (data.task_id == taskId) {
+      fetchMilestones();
+    }
+  };
+
+  socket.on("benchmarkupdated", handleBenchmarkUpdated);
+
+  return () => {
+    socket.off("benchmarkupdated", handleBenchmarkUpdated);
+  };
+}, [taskId]);
+
 
   const formatDate = (dateStr) => {
     try {

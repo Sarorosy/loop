@@ -35,11 +35,13 @@ import MilestoneInfo from "./detailsUtils/MilestoneInfo";
 import TransferModal from "./detailsUtils/TransferModal";
 import UpdateTaskProgress from "./UpdateTaskProgress";
 import ReminderModal from "./ReminderModal";
+import { getSocket } from "../utils/Socket";
 
 export default function TaskDetails({ taskId, onClose }) {
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const socket = getSocket();
 
   const [addFollowersOpen, setAddFollowersOpen] = useState(false);
   const [addTagsOpen, setAddTagsOpen] = useState(false);
@@ -85,15 +87,14 @@ export default function TaskDetails({ taskId, onClose }) {
   const [fetchAgain, setFetchAgain] = useState(true);
   const fetchTaskDetails = async (needToLoad = true) => {
     try {
-      if(needToLoad){
-
+      if (needToLoad) {
         setLoading(true);
       }
       setFetchAgain(true);
       const res = await fetch("https://loopback-skci.onrender.com/api/tasks/details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_id: taskId, user_id : user?.id }),
+        body: JSON.stringify({ task_id: taskId, user_id: user?.id }),
       });
       const data = await res.json();
       if (data.status) setTask(data.data);
@@ -101,7 +102,7 @@ export default function TaskDetails({ taskId, onClose }) {
     } catch (err) {
       console.error("Failed to fetch task details", err);
     } finally {
-      if(needToLoad){
+      if (needToLoad) {
         setLoading(false);
       }
       setFetchAgain(false);
@@ -112,24 +113,21 @@ export default function TaskDetails({ taskId, onClose }) {
   }, [taskId]);
   const [hasAccess, setHasAccess] = useState(true);
 
-useEffect(() => {
-  if (!task || loading || !user?.id) return;
+  useEffect(() => {
+    if (!task || loading || !user?.id) return;
 
-  const isSuperAdmin = user.fld_admin_type === "SUPERADMIN";
-  const isAddedBy = task.fld_added_by == user.id;
-  const isAssigned = task.fld_assign_to == user.id;
-  const isFollower = task.fld_follower
-    ?.split(",")
-    .map((id) => id.trim())
-    .includes(String(user.id));
+    const isSuperAdmin = user.fld_admin_type === "SUPERADMIN";
+    const isAddedBy = task.fld_added_by == user.id;
+    const isAssigned = task.fld_assign_to == user.id;
+    const isFollower = task.fld_follower
+      ?.split(",")
+      .map((id) => id.trim())
+      .includes(String(user.id));
 
+    const access = isSuperAdmin || isAddedBy || isAssigned || isFollower;
 
-  const access = isSuperAdmin || isAddedBy || isAssigned || isFollower;
-
-  setHasAccess(access);
-}, [task, user, loading]);
-
-
+    setHasAccess(access);
+  }, [task, user, loading]);
 
   const handleMarkAsOnGoing = async () => {
     setMarking(true);
@@ -235,7 +233,104 @@ useEffect(() => {
   };
 
   const [reminderOpen, setReminderOpen] = useState(false);
- 
+
+  useEffect(() => {
+    socket.on("markedAsOnGoing", (data) => {
+      if (data.task_id == task?.id) {
+        setTask((prev) => ({
+          ...prev,
+          is_marked_as_ongoing: 1,
+          marked_as_ongoing_by: data.user_id,
+          ongoing_by_name: data.user_name,
+        }));
+      }
+    });
+
+    return () => {
+      socket.off("markedAsOnGoing"); // Clean up on component unmount
+    };
+  }, [task]);
+
+  useEffect(() => {
+    const handleTagsUpdated = (data) => {
+      if (data.task_id == task?.id) {
+        setTask((prev) => ({
+          ...prev,
+          task_tag: data.tag_ids,
+          tag_names: data.tag_names,
+        }));
+      }
+    };
+
+    socket.on("tagsUpdated", handleTagsUpdated);
+
+    return () => {
+      socket.off("tagsUpdated", handleTagsUpdated);
+    };
+  }, [task]);
+
+  useEffect(() => {
+    const handleTaskStatusUpdated = (data) => {
+      if (data.fld_task_id == task?.id) {
+        setTask((prev) => ({
+          ...prev,
+          fld_task_status: data.fld_task_status,
+        }));
+      }
+    };
+
+    socket.on("taskStatusUpdated", handleTaskStatusUpdated);
+
+    return () => {
+      socket.off("taskStatusUpdated", handleTaskStatusUpdated);
+    };
+  }, [task]);
+
+  useEffect(() => {
+    const handleTaskDeleted = (data) => {
+      if (data.task_id == task?.id) {
+        toast.error("TASK HAS BEEN DELETED!");
+        onClose();
+      }
+    };
+
+    socket.on("taskDeleted", handleTaskDeleted);
+
+    return () => {
+      socket.off("taskDeleted", handleTaskDeleted);
+    };
+  }, [task]);
+
+  useEffect(() => {
+    const handleFollowersUpdated = (data) => {
+      if (data.task_id == task?.id) {
+        setTask((prev) => ({
+          ...prev,
+          followers: data.followers,
+        }));
+      }
+    };
+
+    socket.on("followersUpdated", handleFollowersUpdated);
+
+    return () => {
+      socket.off("followersUpdated", handleFollowersUpdated);
+    };
+  }, [task]);
+  useEffect(() => {
+    const handleTaskEdited = (data) => {
+      if (data.id == task?.id) {
+       fetchTaskDetails(false);
+      }
+    };
+
+    socket.on("task_updated", handleTaskEdited);
+
+    return () => {
+      socket.off("task_updated", handleTaskEdited);
+    };
+  }, [task]);
+
   {
     !loading && !task && (
       <motion.div
@@ -250,38 +345,36 @@ useEffect(() => {
     );
   }
 
- if (!hasAccess) {
-  return (
-    <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto flex items-center justify-center text-red-600 font-semibold text-[14px]"
-    >
-      {/* Close Button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 text-white bg-red-500 rounded p-1 transition"
-        aria-label="Close"
+  if (!hasAccess) {
+    return (
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto flex items-center justify-center text-red-600 font-semibold text-[14px]"
       >
-       <X  size={15}/>
-      </button>
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white bg-red-500 rounded p-1 transition"
+          aria-label="Close"
+        >
+          <X size={15} />
+        </button>
 
-      {/* Content */}
-      <div className="flex flex-col items-center justify-center h-[100px] bg-orange-50 rounded-md text-center p-6 border border-orange-200">
-        <div className="text-orange-500 mb-2">
-          <TriangleAlert />
+        {/* Content */}
+        <div className="flex flex-col items-center justify-center h-[100px] bg-orange-50 rounded-md text-center p-6 border border-orange-200">
+          <div className="text-orange-500 mb-2">
+            <TriangleAlert />
+          </div>
+          <h3 className="text-sm font-medium text-orange-700">
+            Umm... You don’t have access to this task.
+          </h3>
         </div>
-        <h3 className="text-sm font-medium text-orange-700">
-          Umm... You don’t have access to this task.
-        </h3>
-      </div>
-    </motion.div>
-  );
-}
-
-
+      </motion.div>
+    );
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -443,28 +536,24 @@ useEffect(() => {
                           }}
                         />
                         <div className="mx-2 w-px h-5 bg-gray-300 inline-block align-middle" />
-                          {(task.hasReminder && task.hasReminder == 1) ? (
-                            
-                              <BellRing
-                          data-tooltip-id="my-tooltip"
-                          data-tooltip-content="Reminder Active"
-                          size={25}
-                          className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded"
-                          
-                        />
-                          ) : (
-
-                        <Bell
-                          data-tooltip-id="my-tooltip"
-                          data-tooltip-content="Add Reminder"
-                          size={22}
-                          className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded"
-                          onClick={() => {
-                            setReminderOpen(true);
-                          }}
-                        />
-                          )}
-
+                        {task.hasReminder && task.hasReminder == 1 ? (
+                          <BellRing
+                            data-tooltip-id="my-tooltip"
+                            data-tooltip-content="Reminder Active"
+                            size={25}
+                            className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded"
+                          />
+                        ) : (
+                          <Bell
+                            data-tooltip-id="my-tooltip"
+                            data-tooltip-content="Add Reminder"
+                            size={22}
+                            className="cursor-pointer text-orange-500 hover:bg-gray-100 p-1 rounded"
+                            onClick={() => {
+                              setReminderOpen(true);
+                            }}
+                          />
+                        )}
                       </p>
                     </div>
                   </div>
@@ -762,7 +851,7 @@ useEffect(() => {
                           <div className="flex justify-end items-center">
                             <button
                               onClick={() => {
-                                console.log(task.tag_names)
+                                console.log(task.tag_names);
                                 const hasTags =
                                   task.tag_names
                                     ?.split(",")
@@ -996,7 +1085,9 @@ useEffect(() => {
             onClose={() => {
               setAddFollowersOpen(false);
             }}
-            after={()=>{fetchTaskDetails(false)}}
+            after={() => {
+              fetchTaskDetails(false);
+            }}
           />
         )}
 
@@ -1007,7 +1098,9 @@ useEffect(() => {
             onClose={() => {
               setAddTagsOpen(false);
             }}
-           after={()=>{fetchTaskDetails(false)}}
+            after={() => {
+              fetchTaskDetails(false);
+            }}
           />
         )}
         {transferModalOpen && (
@@ -1016,14 +1109,18 @@ useEffect(() => {
             onClose={() => {
               setTransferModalOpen(false);
             }}
-            after={()=>{fetchTaskDetails(false)}}
+            after={() => {
+              fetchTaskDetails(false);
+            }}
           />
         )}
         {updateTaskModalOpen && (
           <UpdateTaskProgress
             taskId={taskId}
             task={task}
-            after={()=>{fetchTaskDetails(false)}}
+            after={() => {
+              fetchTaskDetails(false);
+            }}
             onClose={() => {
               setUpdateTaskModalOpen(false);
             }}

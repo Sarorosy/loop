@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../utils/idb";
+import { getSocket } from "../utils/Socket";
 
 export default function History({ taskId, fetchAgain }) {
   const [remarks, setRemarks] = useState([]);
@@ -7,6 +8,7 @@ export default function History({ taskId, fetchAgain }) {
   const [reminders, setReminders] = useState([]);
   const [activeTab, setActiveTab] = useState("remarks");
   const { user } = useAuth();
+  const socket = getSocket();
 
   useEffect(() => {
     fetchRemarks();
@@ -69,6 +71,32 @@ export default function History({ taskId, fetchAgain }) {
 
   return `${day} ${month} ${year} ${hours}:${minutes} ${ampm}`;
 }
+
+useEffect(() => {
+
+  const handleRemarksAdded = (data) => {
+      if (data.fld_task_id == taskId) {
+      setRemarks((prev) => [
+        {
+          id: data.remarkId,
+          fld_task_id: taskId,
+          fld_admin_type: data.fld_admin_type,
+          fld_remark: data.fld_remark,
+          fld_file: data.fld_file,
+          fld_addedon: data.fld_addedon,
+          added_by_name: "User",
+        },
+        ...prev,
+      ]);
+    }
+    };
+
+  socket.on("remarksAdded", handleRemarksAdded);
+
+  return () => {
+    socket.off("remarksAdded", handleRemarksAdded); // Clean up on component unmount
+  };
+}, [taskId]);
 
 
   return (

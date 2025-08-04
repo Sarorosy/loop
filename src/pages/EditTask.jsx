@@ -339,7 +339,7 @@ export default function EditTask() {
       formDataToSend.append("description", formData.description || "");
       formDataToSend.append("bucket_name", formData.bucketId);
       formDataToSend.append("project_name", formData.projectId);
-      formDataToSend.append("due_date", formData.dueDate);
+      formDataToSend.append("due_date", (formData.dueDate.trim("")) ?? null);
       formDataToSend.append("due_time", formData.dueTime || "");
       formDataToSend.append("recurring", formData.recurring);
       formDataToSend.append(
@@ -487,7 +487,7 @@ export default function EditTask() {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-white w-full f-13 mt-5">
+          <form  className="bg-white w-full f-13 mt-5">
             {/* Basic Information */}
             <div className="mb-8">
               <h2 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -1002,7 +1002,8 @@ export default function EditTask() {
             {/* Submit Button */}
             <div className="flex justify-end pt-4 border-t border-gray-200">
               <button
-                type="submit"
+                type="button"
+                onClick={handleSubmit}
                 className="inline-flex items-center px-2 py-1.5 border border-transparent text-[13px] leading-none font-medium rounded shadow-sm text-white bg-orange-500 hover:bg-orange-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-orange-500 transition-colors"
               >
                 Update Task <ChevronsRight size={14} />

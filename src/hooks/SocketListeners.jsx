@@ -1,7 +1,6 @@
 // utils/socketListeners.js
 
 export const handleTaskCreated = (user, setTasks, page) => (task) => {
-  console.log("📥 task_created:", task);
 
   const isSuperAdmin = user?.fld_admin_type === "SUPERADMIN";
   const isAssignedToUser = parseInt(task.fld_assign_to) === parseInt(user?.id);
@@ -40,6 +39,47 @@ export const handleReminderAdded = (user, setTasks) => ({ user_id, task_id }) =>
   setTasks((prev) =>
     prev.map((task) =>
       task.task_id == task_id ? { ...task, hasReminder: 1 } : task
+    )
+  );
+};
+export const tagsUpdated = (user, setTasks) => ({  task_id , tag_names, tag_ids}) => {
+  
+  setTasks((prev) =>
+    prev.map((task) =>
+      task.task_id == task_id ? { ...task, tag_names: tag_names, task_tag: tag_ids } : task
+    )
+  );
+};
+export const taskStatusUpdated = (user, setTasks) => ({ fld_task_id, fld_task_status}) => {
+  
+  setTasks((prev) =>
+    prev.map((task) =>
+      task.task_id == fld_task_id ? { ...task, fld_task_status: fld_task_status } : task
+    )
+  );
+};
+
+export const taskDeleted = (user, setTasks) => ({ task_id }) => {
+  setTasks((prev) =>
+    prev.filter((task) => task.task_id !== task_id)
+  );
+};
+
+export const taskMileStoneUpdated = (user, setTasks) => ({ task_id, completed_benchmarks}) => {
+  
+  setTasks((prev) =>
+    prev.map((task) =>
+      task.task_id == task_id ? { ...task, fld_completed_benchmarks: completed_benchmarks } : task
+    )
+  );
+};
+export const taskUpdated = (user, setTasks) => (updatedTask) => {
+
+  setTasks((prevTasks) =>
+    prevTasks.map((task) =>
+      task.task_id === updatedTask.id
+        ? { ...task, ...updatedTask }
+        : task
     )
   );
 };

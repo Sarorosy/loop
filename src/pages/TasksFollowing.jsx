@@ -14,9 +14,11 @@ import TaskLoader from "../utils/TaskLoader";
 import Sort from "./Sort";
 import ReminderModal from "./ReminderModal";
 import SocketHandler from '../hooks/SocketHandler';
+import { getSocket } from "../utils/Socket";
 
 function TasksFollowing() {
   const { user } = useAuth();
+  const socket = getSocket();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const tableRef = useRef(null);
@@ -46,10 +48,12 @@ function TasksFollowing() {
   DataTable.use(DT);
 
   // Separate function outside the component
-  const fetchTasks = async (user, setTasks, setLoading, filterParam) => {
+  const fetchTasks = async (user, setTasks, setLoading, filterParam, needLoad = true) => {
     //if (!user) return;
 
-    setLoading(true);
+    if(needLoad){
+      setLoading(true);
+    }
     try {
       const res = await fetch("https://loopback-skci.onrender.com/api/tasks/following", {
         method: "POST",
@@ -84,6 +88,20 @@ function TasksFollowing() {
   useEffect(() => {
     fetchDropdownData();
   }, []);
+
+  useEffect(() => {
+      const handleFollowersUpdated = (data) => {
+        if (data.followerIds && data.followerIds.includes(user?.id)) {
+          fetchTasks(user, setTasks, setLoading, filters, false);
+        }
+      };
+  
+      socket.on("followersUpdated", handleFollowersUpdated);
+  
+      return () => {
+        socket.off("followersUpdated", handleFollowersUpdated);
+      };
+    }, [user]);
 
   const fetchDropdownData = async () => {
     try {
