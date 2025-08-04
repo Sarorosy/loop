@@ -22,7 +22,7 @@ export const getSocket = () => {
     // Disconnected
     socket.on("disconnect", (reason) => {
       console.warn("❌ Socket disconnected:", reason);
-      alert("Disconnected from socket. Please check your connection.");
+      //alert("Disconnected from socket. Please check your connection.");
     });
 
     // Reconnect attempt

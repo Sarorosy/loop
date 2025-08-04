@@ -97,6 +97,25 @@ function TabLink({ label, icon: Icon, onClick }) {
 export default function Header() {
   const { user, logout } = useAuth();
   const socket = getSocket();
+
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
+  useEffect(() => {
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+    socket.on("connect_error", handleDisconnect);
+
+    // Clean up the listeners on unmount
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+      socket.off("connect_error", handleDisconnect);
+    };
+  }, [socket]);
+
   const navigate = useNavigate();
   const [openedTab, setOpenedTab] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -132,9 +151,12 @@ export default function Header() {
         setCommentsOpen(false);
       }
 
-      if (remindersRef.current && !remindersRef.current.contains(event.target)) {
-      setRemindersOpen(false);
-    }
+      if (
+        remindersRef.current &&
+        !remindersRef.current.contains(event.target)
+      ) {
+        setRemindersOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -189,8 +211,6 @@ export default function Header() {
     fetchNotifications();
     fetchReminders();
   }, [pathname]);
-
- 
 
   useEffect(() => {
     socket.on("newReminder", (data) => {
@@ -375,7 +395,6 @@ export default function Header() {
             <div className="relative flex items-center gap-2" ref={userRef}>
               {/* COMMENT BUTTON */}
               <div className="relative">
-
                 {reminders.length > 0 && (
                   <>
                     <button
@@ -441,7 +460,6 @@ export default function Header() {
                     )}
                   </>
                 )}
-
 
                 <button
                   onClick={() => setCommentsOpen(!commentsOpen)}
@@ -514,8 +532,6 @@ export default function Header() {
                     </ul>
                   </div>
                 )}
-
-                
               </div>
 
               {/* USER DROPDOWN */}
@@ -525,13 +541,21 @@ export default function Header() {
                   className="flex items-center px-2 py-2 rounded gap-1 hover:bg-gray-100"
                 >
                   <CircleUserRound className="" size={18} />
-                  <span className="leading-none">
+                  <span className="leading-none flex items-center">
                     Welcome -{" "}
                     <span className="text-orange-600 font-bold">
                       {user.fld_first_name + " " + user?.fld_last_name}
                     </span>
                   </span>
                   <ChevronDown className="" size={15} />
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      isConnected ? "bg-green-500" : "bg-red-500"
+                    }`}
+                    title={
+                      isConnected ? "Socket Connected" : "Socket Disconnected"
+                    }
+                  ></div>
                 </button>
 
                 <AnimatePresence>
