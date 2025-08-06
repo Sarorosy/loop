@@ -193,7 +193,7 @@ function Dashboard() {
         const progress = calculateTaskProgress(row);
         const displayText = progress >= 100 ? "✔" : `${Math.round(progress)}%`;
 
-        const size = 35; // Circle size
+        const size = 40; // Circle size
         const strokeWidth = 3;
         const radius = (size - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;

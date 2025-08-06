@@ -176,3 +176,18 @@ div.dt-container .dt-paging .dt-paging-button:hover{
 
 }
 /* ------------------------------------- */
+/* task loader infinity */
+.infinity path {
+  stroke-dasharray: 50; /* Adjust for path length */
+  stroke-dashoffset: 50;
+  animation: drawInfinity 2s linear infinite;
+}
+
+@keyframes drawInfinity {
+  0% {
+    stroke-dashoffset: 50;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}

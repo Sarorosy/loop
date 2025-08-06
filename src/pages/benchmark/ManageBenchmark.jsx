@@ -104,7 +104,25 @@ export default function ManageBenchmark({ onClose }) {
 
         {/* Table */}
         {loading ? (
-          <p className="text-center text-[13px] text-gray-500">Loading milestones...</p>
+          <div className="flex justify-center">
+          <p className="text-center text-[13px] text-gray-500 flex items-center gap-2 ">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="50"
+              height="50"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#f16639"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="infinity"
+            >
+              <path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8" />
+            </svg>
+            Loading milestones...
+          </p>
+          </div>
         ) : benchmarks.length === 0 ? (
           <p className="text-center text-[13px] text-gray-500">No milestones found.</p>
         ) : (

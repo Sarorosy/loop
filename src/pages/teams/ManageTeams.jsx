@@ -1,6 +1,14 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, RefreshCcw, X, Users, User, Calendar, Settings } from "lucide-react";
+import {
+  Plus,
+  RefreshCcw,
+  X,
+  Users,
+  User,
+  Calendar,
+  Settings,
+} from "lucide-react";
 import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
 import $ from "jquery";
@@ -28,8 +36,8 @@ export default function ManageTeams({ onClose }) {
       setLoading(true);
 
       if (tableRef.current && $.fn.dataTable.isDataTable(tableRef.current)) {
-      $(tableRef.current).DataTable().destroy();
-    }
+        $(tableRef.current).DataTable().destroy();
+      }
 
       const response = await fetch(
         "https://loopback-skci.onrender.com/api/helper/allteams",
@@ -81,7 +89,7 @@ export default function ManageTeams({ onClose }) {
         }
         const members = Array.isArray(data) ? data : [data];
         const displayMembers = members.join(", ");
-        
+
         return `
           <div class="max-w-xs">
             <span class="text-[13px]">${displayMembers}</span>}
@@ -110,7 +118,9 @@ export default function ManageTeams({ onClose }) {
         return `
           <div class="flex items-center gap-2">
            
-            <span class="text-[13px]">${formatDate(date.toLocaleDateString())}</span>
+            <span class="text-[13px]">${formatDate(
+              date.toLocaleDateString()
+            )}</span>
           </div>
         `;
       },
@@ -191,7 +201,7 @@ export default function ManageTeams({ onClose }) {
       toast.error("Please select a team to delete");
       return;
     }
-    
+
     try {
       const response = await fetch(
         `https://loopback-skci.onrender.com/api/helper/team/delete/${selectedTeam?.id}`,
@@ -203,7 +213,7 @@ export default function ManageTeams({ onClose }) {
         }
       );
       const data = await response.json();
-      
+
       if (data.status) {
         toast.success("Team deleted successfully!");
         fetchUsers();
@@ -234,22 +244,22 @@ export default function ManageTeams({ onClose }) {
   }, []);
 
   return (
-
     <div className="">
       {/* Header */}
       <div className="">
         <div className="flex items-center justify-between">
           <div className="flex items-end gap-2">
             {/* <Users size={20} className="text-blue-600" /> */}
-            <h2 className="text-[16px] font-semibold text-gray-800 leading-none">Manage Teams</h2>
+            <h2 className="text-[16px] font-semibold text-gray-800 leading-none">
+              Manage Teams
+            </h2>
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-[13px] text-gray-600 leading-none">
-                  {teams.length} team{teams.length !== 1 ? 's' : ''} found
+                  {teams.length} team{teams.length !== 1 ? "s" : ""} found
                 </span>
               </div>
-              
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -258,15 +268,17 @@ export default function ManageTeams({ onClose }) {
               onClick={fetchUsers}
               disabled={loading}
             >
-              <RefreshCcw size={11} className={` ${loading ? 'animate-spin' : ''}`} />
-              
+              <RefreshCcw
+                size={11}
+                className={` ${loading ? "animate-spin" : ""}`}
+              />
             </button>
             <button
               className="bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded text-[13px] font-medium transition-colors duration-200 flex items-center gap-1 leading-none"
               onClick={() => setAddopen(true)}
             >
-              
-              Add Team<Plus size={11}  className="" />
+              Add Team
+              <Plus size={11} className="" />
             </button>
           </div>
         </div>
@@ -282,14 +294,27 @@ export default function ManageTeams({ onClose }) {
 
       {/* Content */}
       <div className="bg-white w-full f-13 mt-5">
-        
-
         {/* DataTable */}
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="flex items-center gap-2">
-              <RefreshCcw className="w-5 h-5 animate-spin text-blue-600" />
-              <span className="text-[13px] text-gray-600">Loading teams...</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="50"
+                height="50"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#f16639"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="infinity"
+              >
+                <path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8" />
+              </svg>
+              <span className="text-[13px] text-gray-600">
+                Loading teams...
+              </span>
             </div>
           </div>
         ) : teams.length === 0 ? (
@@ -316,9 +341,7 @@ export default function ManageTeams({ onClose }) {
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {/* DataTable will populate this */}
-                </tbody>
+                <tbody>{/* DataTable will populate this */}</tbody>
               </table>
             </div>
           </div>
@@ -327,25 +350,16 @@ export default function ManageTeams({ onClose }) {
 
       {/* Modals */}
       <AnimatePresence>
-        {addOpen && (
-          
-            <AddTeam
-              onClose={handleAddClose}
-              after={fetchUsers}
-            />
-          
-        )}
-        
+        {addOpen && <AddTeam onClose={handleAddClose} after={fetchUsers} />}
+
         {editOpen && selectedTeam && (
-          
-            <EditTeam
-              onClose={handleEditClose}
-              teamData={selectedTeam}
-              onUpdate={fetchUsers}
-            />
-          
+          <EditTeam
+            onClose={handleEditClose}
+            teamData={selectedTeam}
+            onUpdate={fetchUsers}
+          />
         )}
-        
+
         {deleteOpen && selectedTeam && (
           <ConfirmationModal
             title="Delete Team"
@@ -356,6 +370,5 @@ export default function ManageTeams({ onClose }) {
         )}
       </AnimatePresence>
     </div>
-
   );
 }
