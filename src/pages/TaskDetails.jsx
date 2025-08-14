@@ -375,6 +375,36 @@ export default function TaskDetails({ taskId, onClose }) {
       </motion.div>
     );
   }
+  if(!task && !loading){
+    return (
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed top-0 left-0 w-full h-full bg-white z-50 overflow-y-auto flex items-center justify-center text-red-600 font-semibold text-[14px]"
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white bg-red-500 rounded p-1 transition"
+          aria-label="Close"
+        >
+          <X size={15} />
+        </button>
+
+        {/* Content */}
+        <div className="flex flex-col items-center justify-center h-[100px] bg-orange-50 rounded-md text-center p-6 border border-orange-200">
+          <div className="text-orange-500 mb-2">
+            <TriangleAlert />
+          </div>
+          <h3 className="text-sm font-medium text-orange-700">
+            Failed to load task details or Task not found.
+          </h3>
+        </div>
+      </motion.div>
+    );
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
