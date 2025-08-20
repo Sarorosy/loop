@@ -250,7 +250,7 @@ export default function UpdateTaskProgress({ taskId, task, onClose, after }) {
           <div className="mb-4">
             <label className="text-[13px]">Remarks</label>
             <Editor
-              apiKey="2crkajrj0p3qpzebc7qfndt5c6xoy8vwer3qt5hsqqyv8hb8"
+              apiKey="7mqa4e0vi9zdak79ba4ychlk6vk82gnnahx0tjex886qvxks"
               onInit={(evt, editor) => (editorRef.current = editor)}
               value={remarks}
               onEditorChange={(newContent) => setRemarks(newContent)}
